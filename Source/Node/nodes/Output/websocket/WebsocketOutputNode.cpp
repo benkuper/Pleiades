@@ -11,14 +11,12 @@
 WebsocketOutputNode::WebsocketOutputNode(var params) :
 	Node(getTypeString(), OUTPUT, params)
 {
-	for (int i = 0; i < 4; i++)
-	{
-		inCloudSlots.add(addSlot("Cloud In "+String(i), true, POINTCLOUD));
-	}
+	for (int i = 0; i < 4; i++) inClouds.add(addSlot("Cloud In " + String(i), true, POINTCLOUD));
+	for (int i = 0; i < 2; i++) inClusters.add(addSlot("ClusterIn " + String(i), true, CLUSTERS));
 
 	port = addIntParameter("Local Port", "Port to bind the server to", 6060, 1024, 65535);
 	downSample = addIntParameter("Downsample", "Simple down sample before sending to the clients, not 2d downsampling, but once every x.", 1, 1, 16);
-	forceIds = addBoolParameter("Force IDs", "If checked, this will force ordered ids instead of taking the initial ones", false);
+	forceIds = addBoolParameter("Force IDs", "If checked, this will force ordered ids instead of taking the initial ones. Only work on single clouds", false);
 
 	initServer();
 }
@@ -54,13 +52,20 @@ void WebsocketOutputNode::initServer()
 
 void WebsocketOutputNode::processInternal()
 {
-	int id = 0;
-	for (auto& s : inCloudSlots)
+	int id = 100;
+	for (auto& s : inClouds)
 	{
 		if (s->isEmpty()) continue;
 		PCloud c = slotCloudMap[s];
 		if (forceIds->boolValue()) c.id = id++;
 		streamCloud(c);
+	}
+
+	for (auto& s : inClusters)
+	{
+		if (s->isEmpty()) continue;
+		Array<PCloud> c = slotClustersMap[s];
+		streamClusters(c);
 	}
 }
 

@@ -74,11 +74,11 @@
                     file="Source/Node/nodes/Filter/tracking/TrackingNode.cpp"/>
               <FILE id="Fv8PCG" name="TrackingNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/TrackingNode.h"/>
             </GROUP>
-            <GROUP id="{8DDE9474-2911-DBDA-906E-7513AC8FA652}" name="euclideansegmentation">
-              <FILE id="X31DKo" name="EuclideanSegmentationNode.cpp" compile="0"
-                    resource="0" file="Source/Node/nodes/Filter/euclideansegmentation/EuclideanSegmentationNode.cpp"/>
-              <FILE id="RtVSEq" name="EuclideanSegmentationNode.h" compile="0" resource="0"
-                    file="Source/Node/nodes/Filter/euclideansegmentation/EuclideanSegmentationNode.h"/>
+            <GROUP id="{8DDE9474-2911-DBDA-906E-7513AC8FA652}" name="euclideancluster">
+              <FILE id="nh3kUr" name="EuclideanClusterNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/euclideancluster/EuclideanClusterNode.cpp"/>
+              <FILE id="kauJmc" name="EuclideanClusterNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/euclideancluster/EuclideanClusterNode.h"/>
             </GROUP>
             <GROUP id="{64806125-C071-EDF0-A63E-D0DDB020CD5B}" name="passthrough">
               <FILE id="YrCrLH" name="PassthroughNode.cpp" compile="0" resource="0"

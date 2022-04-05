@@ -42,6 +42,10 @@ public:
 
 	//Buffer data
 	HashMap<NodeConnectionSlot*, PCloud> slotCloudMap;
+	HashMap<NodeConnectionSlot*, Array<PCloud>> slotClustersMap;
+	HashMap<NodeConnectionSlot*, Eigen::Matrix4f> slotMatrixMap;
+	HashMap<NodeConnectionSlot*, Eigen::Vector3f> slotVectorMap;
+	HashMap<NodeConnectionSlot*, PIndices> slotIndicesMap;
 
 	//process
 	SpinLock processLock;

@@ -19,7 +19,7 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 	setShowPane(true);
 
 	bringToFrontOnSelect = false;
-	enableSnapping = true;
+	enableSnapping = false;
 
 	updatePositionOnDragMove = true;
 

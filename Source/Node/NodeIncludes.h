@@ -35,7 +35,7 @@
 
 #include "nodes/Filter/cropbox/CropboxNode.h"
 #include "nodes/Filter/downsample/DownsampleNode.h"
-#include "nodes/Filter/euclideansegmentation/EuclideanSegmentationNode.h"
+#include "nodes/Filter/euclideancluster/EuclideanClusterNode.h"
 #include "nodes/Filter/passthrough/PassthroughNode.h"
 #include "nodes/Filter/planesegmentation/PlaneSegmentationNode.h"
 #include "nodes/Filter/prediction/PredictionNode.h"

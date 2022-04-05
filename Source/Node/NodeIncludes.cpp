@@ -21,9 +21,9 @@
 
 #include "nodes/Filter/cropbox/CropboxNode.cpp"
 #include "nodes/Filter/downsample/DownsampleNode.cpp"
-#include "nodes/Filter/euclideansegmentation/EuclideanSegmentationNode.cpp"
 #include "nodes/Filter/passthrough/PassthroughNode.cpp"
 #include "nodes/Filter/planesegmentation/PlaneSegmentationNode.cpp"
+#include "nodes/Filter/euclideancluster/EuclideanClusterNode.cpp"
 #include "nodes/Filter/prediction/PredictionNode.cpp"
 #include "nodes/Filter/tracking/TrackingNode.cpp"
 #include "nodes/Filter/transform/TransformNode.cpp"

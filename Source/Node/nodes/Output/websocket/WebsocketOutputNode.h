@@ -17,7 +17,8 @@ public:
     WebsocketOutputNode(var params = var());
     ~WebsocketOutputNode();
 
-    Array<NodeConnectionSlot*> inCloudSlots;
+    Array<NodeConnectionSlot*> inClouds;
+    Array<NodeConnectionSlot*> inClusters;
 
     IntParameter* downSample;
     IntParameter* port;

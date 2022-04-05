@@ -15,10 +15,10 @@ CropBoxNode::CropBoxNode(var params) :
 	out = addSlot("Out", false, POINTCLOUD);
 
 	minPoint = addPoint3DParameter("Min", "Min Point");
-	minPoint->setVector(-10, 0, -10);
+	minPoint->setVector(-1, -1, -1);
 
 	maxPoint = addPoint3DParameter("Max", "Max Point");
-	maxPoint->setVector(10, 0, 10);
+	maxPoint->setVector(1, 1, 1);
 
 	keepOrganized = addBoolParameter("Keep Organized", "If checked, this will keep the 2D structure of the input cloud", false);
 	cleanUp = addBoolParameter("Clean up", "If checked, this will remove any bad points", false);
@@ -31,6 +31,7 @@ CropBoxNode::~CropBoxNode()
 
 void CropBoxNode::processInternal()
 {
+
 	PCloud source = slotCloudMap[in];
 	if (source.cloud->empty()) return;
 

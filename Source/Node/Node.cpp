@@ -37,19 +37,23 @@ void Node::process()
 {
 
 	GenericScopedLock lock(processLock);
-
 	long ms = Time::getMillisecondCounter();
 
-	if (!isInit) init();
-
-	if (isInit)
+	try
 	{
-		if (enabled->boolValue()) processInternal();
-		else processInternalPassthrough();
+		if (!isInit) init();
+		if (isInit)
+		{
+			if (enabled->boolValue()) processInternal();
+			else processInternalPassthrough();
+		}
+	}
+	catch (std::exception e)
+	{
+		NLOGERROR(niceName, "Exception during process :\n" << e.what());
 	}
 
 	processTimeMS = Time::getMillisecondCounter() - ms;
-
 	removeNextToProcess();
 }
 
@@ -71,18 +75,26 @@ void Node::receivePointCloud(NodeConnectionSlot* slot, PCloud cloud)
 
 void Node::receiveClusters(NodeConnectionSlot* slot, Array<PCloud> clusters)
 {
+	slotClustersMap.set(slot, clusters);
+	if (slot->processOnReceive) addNextToProcess();
 }
 
 void Node::receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix)
 {
+	slotMatrixMap.set(slot, matrix);
+	if (slot->processOnReceive) addNextToProcess();
 }
 
 void Node::receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector)
 {
+	slotVectorMap.set(slot, vector);
+	if (slot->processOnReceive) addNextToProcess();
 }
 
 void Node::receiveIndices(NodeConnectionSlot* slot, PIndices indices)
 {
+	slotIndicesMap.set(slot, indices);
+	if (slot->processOnReceive) addNextToProcess();
 }
 
 void Node::sendPointCloud(NodeConnectionSlot* slot, PCloud cloud)

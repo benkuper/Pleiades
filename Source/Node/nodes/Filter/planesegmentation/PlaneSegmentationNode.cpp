@@ -48,13 +48,23 @@ void PlaneSegmentationNode::processInternal()
 	if (ds == 1) pcl::copyPointCloud(*source.cloud, *cloud);
 	else
 	{
-		cloud.reset(new Cloud(ceil(source.cloud->width * 1.0f / ds), ceil(source.cloud->height * 1.0f / ds)));
-
-		for (int ty = 0; ty < (int)source.cloud->height; ty += ds)
+		if (source.cloud->isOrganized())
 		{
-			for (int tx = 0; tx < (int)source.cloud->width; tx += ds)
+			cloud.reset(new Cloud(ceil(source.cloud->width * 1.0f / ds), ceil(source.cloud->height * 1.0f / ds)));
+
+			for (int ty = 0; ty < (int)source.cloud->height; ty += ds)
 			{
-				cloud->at(floor(tx / ds), floor(ty / ds)) = source.cloud->at(tx, ty);
+				for (int tx = 0; tx < (int)source.cloud->width; tx += ds)
+				{
+					cloud->at(floor(tx / ds), floor(ty / ds)) = source.cloud->at(tx, ty);
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < source.cloud->size(); i += ds)
+			{
+				cloud->push_back(source.cloud->points[i]);
 			}
 		}
 	}
