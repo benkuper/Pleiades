@@ -1,29 +1,37 @@
 #include "MainComponent.h"
+#include "Node/NodeIncludes.h"
+
+String getAppVersion();
 
 //==============================================================================
-MainComponent::MainComponent()
+MainContentComponent::MainContentComponent() :
+	OrganicMainContentComponent()
 {
-    setSize (600, 400);
+	//ParameterUI::showAlwaysNotifyOption = false;
+	//ParameterUI::showControlModeOption = false;
+	//ControllableUI::showDashboardOption = false;
+	//ControllableUI::showDetectiveOption = false;
+	//ControllableUI::showScriptControlAddressOption = false;
+	//IntStepperUI::showHexModeOption = false;
+
+	//getCommandManager().registerAllCommandsForTarget(this);
+
+	ViewStatsTimer::getInstance(); //init timer
 }
 
-MainComponent::~MainComponent()
+MainContentComponent::~MainContentComponent()
 {
+	ViewStatsTimer::deleteInstance();
 }
 
-//==============================================================================
-void MainComponent::paint (juce::Graphics& g)
+void MainContentComponent::init()
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Node List", &NodeManagerPanel::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Node View", &NodeManagerViewPanel::create));
+	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Visualizer", &AugmentaOutputsPanel::create));
 
-    g.setFont (juce::Font (16.0f));
-    g.setColour (juce::Colours::white);
-    g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
-}
+	ShapeShifterManager::getInstance()->setDefaultFileData(BinaryData::default_playout);
+	ShapeShifterManager::getInstance()->setLayoutInformations("playout", ProjectInfo::projectName + String("/layouts"));
 
-void MainComponent::resized()
-{
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+	OrganicMainContentComponent::init();
 }

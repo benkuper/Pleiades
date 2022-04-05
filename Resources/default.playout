@@ -1,0 +1,52 @@
+{
+  "mainLayout": {
+    "type": 1,
+    "width": 1920,
+    "height": 989,
+    "direction": 2,
+    "shifters": [
+      {
+        "type": 1,
+        "width": 1920,
+        "height": 989,
+        "direction": 1,
+        "shifters": [
+          {
+            "type": 0,
+            "width": 150,
+            "height": 989,
+            "currentContent": "Node List",
+            "tabs": [
+              {
+                "name": "Node List"
+              }
+            ]
+          },
+          {
+            "type": 0,
+            "width": 1371,
+            "height": 989,
+            "currentContent": "Node View",
+            "tabs": [
+              {
+                "name": "Node View"
+              }
+            ]
+          },
+          {
+            "type": 0,
+            "width": 387,
+            "height": 989,
+            "currentContent": "Inspector",
+            "tabs": [
+              {
+                "name": "Inspector"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "windows": null
+}

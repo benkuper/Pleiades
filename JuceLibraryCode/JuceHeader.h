@@ -18,7 +18,13 @@
 #include <juce_events/juce_events.h>
 #include <juce_graphics/juce_graphics.h>
 #include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_opengl/juce_opengl.h>
+#include <juce_organicui/juce_organicui.h>
+#include <juce_osc/juce_osc.h>
+#include <juce_simpleweb/juce_simpleweb.h>
 
+#include "BinaryData.h"
 
 #if defined (JUCE_PROJUCER_VERSION) && JUCE_PROJUCER_VERSION < JUCE_VERSION
  /** If you've hit this error then the version of the Projucer that was used to generate this project is
@@ -35,7 +41,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "Pleiades";
     const char* const  companyName    = "";
-    const char* const  versionString  = "1.0.0";
+    const char* const  versionString  = "1.0.0b1";
     const int          versionNumber  = 0x10000;
 }
 #endif

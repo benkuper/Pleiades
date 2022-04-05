@@ -1,9 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" headerPath="../../Source&#10;D:\Softwares\SDK\orbbec\SDK\include&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"
+              bundleIdentifier="com.benkuper.Pleiades" version="1.0.0b1" cppLanguageStandard="17">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
+    <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
+      <FILE id="XCbp5T" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
+      <FILE id="VXBD5c" name="default.playout" compile="0" resource="1" file="Resources/default.playout"/>
+      <FILE id="nv0f3E" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>
+      <FILE id="ddDsaL" name="icon2.png" compile="0" resource="1" file="Resources/icon2.png"/>
+    </GROUP>
     <GROUP id="{4E050059-E3E2-F190-7D9B-785AB5FEE200}" name="Source">
+      <GROUP id="{D09A1C47-1D12-2316-BD48-12D8D8D2E1FC}" name="Common">
+        <FILE id="CdI1wi" name="PCLHelpers.cpp" compile="1" resource="0" file="Source/Common/PCLHelpers.cpp"/>
+        <FILE id="r6PoFs" name="PCLHelpers.h" compile="0" resource="0" file="Source/Common/PCLHelpers.h"/>
+      </GROUP>
+      <GROUP id="{A2C2D26E-D07F-DD33-37C2-0B46BADEC47A}" name="Viz">
+        <FILE id="nbKowY" name="Viz.cpp" compile="1" resource="0" file="Source/Viz/Viz.cpp"/>
+        <FILE id="DkTa07" name="Viz.h" compile="0" resource="0" file="Source/Viz/Viz.h"/>
+      </GROUP>
+      <GROUP id="{83B4852A-DD1B-1EB1-32DB-D152BB1C56B3}" name="Node">
+        <GROUP id="{F25D3BB4-9900-B24B-9F56-76B0034BBE74}" name="Connection">
+          <GROUP id="{113147B8-2C22-8462-1830-773CD586BDBB}" name="ui">
+            <FILE id="tWPGQZ" name="NodeConnectionManagerViewUI.cpp" compile="0"
+                  resource="0" file="Source/Node/Connection/ui/NodeConnectionManagerViewUI.cpp"/>
+            <FILE id="eSvFYN" name="NodeConnectionManagerViewUI.h" compile="0"
+                  resource="0" file="Source/Node/Connection/ui/NodeConnectionManagerViewUI.h"/>
+            <FILE id="ads1nz" name="NodeConnectionViewUI.cpp" compile="0" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnectionViewUI.cpp"/>
+            <FILE id="izJfHB" name="NodeConnectionViewUI.h" compile="0" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnectionViewUI.h"/>
+            <FILE id="nVoiMW" name="NodeConnector.cpp" compile="0" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnector.cpp"/>
+            <FILE id="QCx6uI" name="NodeConnector.h" compile="0" resource="0" file="Source/Node/Connection/ui/NodeConnector.h"/>
+          </GROUP>
+          <FILE id="lw9x5X" name="NodeConnection.cpp" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnection.cpp"/>
+          <FILE id="lLIdeJ" name="NodeConnection.h" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnection.h"/>
+          <FILE id="VanmXN" name="NodeConnectionManager.cpp" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnectionManager.cpp"/>
+          <FILE id="iD8uY6" name="NodeConnectionManager.h" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnectionManager.h"/>
+          <FILE id="P31fdY" name="NodeConnectionSlot.cpp" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnectionSlot.cpp"/>
+          <FILE id="UnHOrO" name="NodeConnectionSlot.h" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnectionSlot.h"/>
+        </GROUP>
+        <GROUP id="{380F6A2A-D491-E6E0-91BB-E9D04A0CD058}" name="nodes">
+          <GROUP id="{31144102-26CD-D6B4-C97F-686E022E6F1B}" name="Output">
+            <GROUP id="{B4F607DD-4224-4FFC-8F18-F02F25B77D54}" name="websocket">
+              <FILE id="uWiPQC" name="WebsocketOutputNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Output/websocket/WebsocketOutputNode.cpp"/>
+              <FILE id="INmQ1W" name="WebsocketOutputNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Output/websocket/WebsocketOutputNode.h"/>
+            </GROUP>
+            <GROUP id="{92A4F432-58C2-3A85-ADF1-8A7190F8C966}" name="augmenta">
+              <FILE id="WJjme0" name="AugmentaOutputNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Output/augmenta/AugmentaOutputNode.cpp"/>
+              <FILE id="xIqmaJ" name="AugmentaOutputNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Output/augmenta/AugmentaOutputNode.h"/>
+            </GROUP>
+          </GROUP>
+          <GROUP id="{E6992AFD-0D64-AC68-683F-4505B5819100}" name="Filter">
+            <GROUP id="{E03ED48B-9E1C-C159-D9BE-362AF5C361C2}" name="prediction">
+              <FILE id="R2kNKb" name="PredictionNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/prediction/PredictionNode.cpp"/>
+              <FILE id="GMq5pS" name="PredictionNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/prediction/PredictionNode.h"/>
+            </GROUP>
+            <GROUP id="{2D9B2750-D29D-74A5-2E78-4BA72778E34A}" name="tracking">
+              <FILE id="W2TdEe" name="TrackingNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/tracking/TrackingNode.cpp"/>
+              <FILE id="Fv8PCG" name="TrackingNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/TrackingNode.h"/>
+            </GROUP>
+            <GROUP id="{8DDE9474-2911-DBDA-906E-7513AC8FA652}" name="euclideansegmentation">
+              <FILE id="X31DKo" name="EuclideanSegmentationNode.cpp" compile="0"
+                    resource="0" file="Source/Node/nodes/Filter/euclideansegmentation/EuclideanSegmentationNode.cpp"/>
+              <FILE id="RtVSEq" name="EuclideanSegmentationNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/euclideansegmentation/EuclideanSegmentationNode.h"/>
+            </GROUP>
+            <GROUP id="{64806125-C071-EDF0-A63E-D0DDB020CD5B}" name="passthrough">
+              <FILE id="YrCrLH" name="PassthroughNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/passthrough/PassthroughNode.cpp"/>
+              <FILE id="TewbNh" name="PassthroughNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/passthrough/PassthroughNode.h"/>
+            </GROUP>
+            <GROUP id="{0001D6CD-1EB2-58C7-59FD-B67376D4BF27}" name="cropbox">
+              <FILE id="tpxNdn" name="CropboxNode.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/cropbox/CropboxNode.cpp"/>
+              <FILE id="SZSaZu" name="CropboxNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/cropbox/CropboxNode.h"/>
+            </GROUP>
+            <GROUP id="{D44EC16A-A213-F4BE-091A-9669C58A5D89}" name="planesegmentation">
+              <FILE id="KlrmYh" name="PlaneSegmentationNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/planesegmentation/PlaneSegmentationNode.cpp"/>
+              <FILE id="uIrVVq" name="PlaneSegmentationNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/planesegmentation/PlaneSegmentationNode.h"/>
+            </GROUP>
+            <GROUP id="{E0FA36A4-55FA-0474-9B8D-0B99ABD32D79}" name="transform">
+              <FILE id="oDm8gV" name="TransformNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/transform/TransformNode.cpp"/>
+              <FILE id="TGvVnd" name="TransformNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/transform/TransformNode.h"/>
+            </GROUP>
+            <GROUP id="{D5A95CD6-3BAB-BD22-A375-C7987EF8789C}" name="downsample">
+              <FILE id="w1Dr7y" name="DownsampleNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/downsample/DownsampleNode.cpp"/>
+              <FILE id="vR3mOR" name="DownsampleNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/downsample/DownsampleNode.h"/>
+            </GROUP>
+          </GROUP>
+          <GROUP id="{CF09C6E6-DFE8-AE77-A05A-9513E1FCEF9A}" name="Source">
+            <GROUP id="{1FDEE9BC-EE50-1696-4782-6D8494929F93}" name="astraplus">
+              <FILE id="ReG8sP" name="AstraPlusNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Source/astraplus/AstraPlusNode.cpp"/>
+              <FILE id="s7gSU3" name="AstraPlusNode.h" compile="0" resource="0" file="Source/Node/nodes/Source/astraplus/AstraPlusNode.h"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP id="{13390BBF-D435-B625-B193-8619FF70E520}" name="ui">
+          <FILE id="feywrm" name="NodeManagerUI.cpp" compile="0" resource="0"
+                file="Source/Node/ui/NodeManagerUI.cpp"/>
+          <FILE id="RsINte" name="NodeManagerUI.h" compile="0" resource="0" file="Source/Node/ui/NodeManagerUI.h"/>
+          <FILE id="VqHLyi" name="NodeManagerViewUI.cpp" compile="0" resource="0"
+                file="Source/Node/ui/NodeManagerViewUI.cpp"/>
+          <FILE id="k79rRU" name="NodeManagerViewUI.h" compile="0" resource="0"
+                file="Source/Node/ui/NodeManagerViewUI.h"/>
+          <FILE id="OWyWhf" name="NodeUI.cpp" compile="0" resource="0" file="Source/Node/ui/NodeUI.cpp"/>
+          <FILE id="Mj8V1g" name="NodeUI.h" compile="0" resource="0" file="Source/Node/ui/NodeUI.h"/>
+          <FILE id="A13OT8" name="NodeViewUI.cpp" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.cpp"/>
+          <FILE id="lQ0ufp" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
+        </GROUP>
+        <FILE id="uynnCo" name="NodeIncludes.cpp" compile="1" resource="0"
+              file="Source/Node/NodeIncludes.cpp"/>
+        <FILE id="JUkHgG" name="NodeIncludes.h" compile="0" resource="0" file="Source/Node/NodeIncludes.h"/>
+        <FILE id="tcLltj" name="Node.cpp" compile="0" resource="0" file="Source/Node/Node.cpp"/>
+        <FILE id="woQZSh" name="Node.h" compile="0" resource="0" file="Source/Node/Node.h"/>
+        <FILE id="B8talX" name="NodeManager.cpp" compile="0" resource="0" file="Source/Node/NodeManager.cpp"/>
+        <FILE id="lnyp1v" name="NodeManager.h" compile="0" resource="0" file="Source/Node/NodeManager.h"/>
+        <FILE id="jVvZmt" name="NodeFactory.cpp" compile="0" resource="0" file="Source/Node/NodeFactory.cpp"/>
+        <FILE id="GnsTkL" name="NodeFactory.h" compile="0" resource="0" file="Source/Node/NodeFactory.h"/>
+      </GROUP>
+      <GROUP id="{9A1FE16F-A034-1FC0-6E6B-6CA38A4845AA}" name="Engine">
+        <FILE id="o4nbnr" name="PleiadesEngine.cpp" compile="1" resource="0"
+              file="Source/Engine/PleiadesEngine.cpp"/>
+        <FILE id="tmXA0x" name="PleiadesEngine.h" compile="0" resource="0"
+              file="Source/Engine/PleiadesEngine.h"/>
+      </GROUP>
+      <FILE id="VQdgvc" name="Main.h" compile="0" resource="0" file="Source/Main.h"/>
       <FILE id="T9KPFn" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="DaOHff" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="ndIuUq" name="MainComponent.cpp" compile="1" resource="0"
@@ -12,10 +154,13 @@
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022">
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib"
+            smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades" binaryPath="Binaries/Debug"
+                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\lib&#10;C:\Program Files\PCL 1.10.1\lib"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades" binaryPath="Binaries/Release"
+                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\lib&#10;C:\Program Files\PCL 1.10.1\lib"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Softwares/JUCE/modules"/>
@@ -23,14 +168,24 @@
         <MODULEPATH id="juce_events" path="../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_graphics" path="../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_osc" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_opengl" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_organicui" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_osc" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_simpleweb" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
 </JUCERPROJECT>

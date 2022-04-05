@@ -68,3 +68,6 @@ extras/Projucer/JUCECompileEngine.dylib
 
 
 **/VisualStudio2022/
+
+Binaries/Debug
+Binaries/Release
