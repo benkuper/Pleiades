@@ -51,6 +51,8 @@ public:
 
     SpinLock itemLoopLock;
 
+    void clear() override;
+
     void run() override;
 
     void addItemInternal(Node* item, var data) override;
@@ -58,4 +60,6 @@ public:
 
     void startLoadFile() override;
     void endLoadFile() override;
+
+    void afterLoadJSONDataInternal() override;
 };

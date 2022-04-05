@@ -98,9 +98,17 @@ void RootNodeManager::removeItemInternal(Node* item)
 }
 
 
+void RootNodeManager::clear()
+{
+	stopThread(1000);
+	NodeManager::clear();
+}
+
 void RootNodeManager::run()
 {
 	long lastFrameTime = Time::getMillisecondCounter();
+
+	nextToProcess.clear();
 
 	while (!threadShouldExit())
 	{
@@ -135,14 +143,21 @@ void RootNodeManager::run()
 		int timeToWait = 10 - processTimeMS;
 		if (timeToWait > 0) wait(timeToWait); //to make dynamically changing with process time
 	}
+
+	nextToProcess.clear();
+
 }
 
 void RootNodeManager::startLoadFile()
 {
-	stopThread(1000);
 }
 
 void RootNodeManager::endLoadFile()
 {
+}
+
+void RootNodeManager::afterLoadJSONDataInternal()
+{
+	NodeManager::afterLoadJSONDataInternal();
 	startThread();
 }

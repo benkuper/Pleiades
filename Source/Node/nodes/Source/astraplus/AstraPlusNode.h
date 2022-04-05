@@ -12,7 +12,8 @@
 
 
 class AstraPlusNode :
-    public Node
+    public Node,
+    public Thread //process-independant frame grabbing
 {
 public:
     AstraPlusNode(var params = var());
@@ -26,15 +27,15 @@ public:
     static std::shared_ptr<ob::VideoStreamProfile> colorProfile;
     static std::shared_ptr<ob::VideoStreamProfile> depthProfile;
     std::shared_ptr<ob::Config> config;
-    //std::shared_ptr<PointCloudFilter> pointCloud;
 
     NodeConnectionSlot* out;
-
     IntParameter* downSample;
-
 
     float ifx;
     float ify;
+    
+    SpinLock frameLock;
+    uint8_t* depthData;
 
     bool initInternal() override;
 
@@ -43,6 +44,10 @@ public:
    // void setupPointCloud();
 
     void processInternal() override;
+
+    void run() override;
+
+    void onContainerParameterChangedInternal(Parameter* p) override;
 
     String getTypeString() const override { return getTypeStringStatic(); }
     static String getTypeStringStatic() { return "Astra+"; }

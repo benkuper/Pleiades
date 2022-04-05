@@ -15,8 +15,10 @@ std::shared_ptr<ob::VideoStreamProfile>AstraPlusNode::depthProfile;
 
 AstraPlusNode::AstraPlusNode(var params) :
 	Node(getTypeString(), Node::SOURCE, params),
+	Thread("AstraPlus"),
 	ifx(0),
-	ify(0)
+	ify(0),
+	depthData(nullptr)
 {
 	out = addSlot("Out", false, POINTCLOUD);
 
@@ -25,12 +27,14 @@ AstraPlusNode::AstraPlusNode(var params) :
 
 AstraPlusNode::~AstraPlusNode()
 {
+	stopThread(1000);
 }
 
 void AstraPlusNode::clearItem()
 {
 	Node::clearItem();
 	out = nullptr;
+	if (depthData != nullptr) free(depthData);
 }
 
 bool AstraPlusNode::initInternal()
@@ -52,6 +56,14 @@ bool AstraPlusNode::initInternal()
 		pipeline->start(config);
 		//setupPointCloud();
 	}
+
+	//Init depth data
+	if (depthData != nullptr) free(depthData);
+	int dataSize = depthProfile->width() * depthProfile->height() * 2;
+	depthData = (uint8_t*)malloc(dataSize);
+	memset(depthData, 0, dataSize);
+
+	startThread();
 
 	return true;
 }
@@ -118,10 +130,6 @@ void AstraPlusNode::processInternal()
 	if (pipeline == nullptr) init();
 	jassert(pipeline != nullptr);
 
-
-	auto frameset = pipeline->waitForFrames(100);
-	if (frameset == nullptr || frameset->depthFrame() == nullptr) return;
-
 	if (ifx == 0 || ify == 0)
 	{
 		OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(OBSensorType::OB_SENSOR_DEPTH);
@@ -129,54 +137,93 @@ void AstraPlusNode::processInternal()
 		ify = intrinsic.fy;
 	}
 
+
+	if (depthData == nullptr) return;
+
 	int dw = depthProfile->width();
 	int dh = depthProfile->height();
-	//int numPoints = dw * dh;
-
-	std::shared_ptr<ob::DepthFrame> frame = frameset->depthFrame();
-	uint8_t* depthData = (uint8_t*)frame->data();
-
-	//DBG("Depth data size : " << (int)frame->dataSize() << " / num points " << numPoints);
 
 	int ds = downSample->intValue();
-	int downW = ceil(dw*1.0f / ds);
-	int downH = ceil(dh*1.0f / ds);
+	int downW = ceil(dw * 1.0f / ds);
+	int downH = ceil(dh * 1.0f / ds);
 	CloudPtr cloud(new Cloud(downW, downH));
 
 	float fx = 2 * atan(dw * 1.0f / (2.0f * ifx));
 	float fy = 2 * atan(dh * 1.0f / (2.0f * ify));
 
-	for (int ty = 0; ty < dh; ty += ds)
 	{
-		for (int tx = 0; tx < dw; tx += ds)
+		GenericScopedLock lock(frameLock);
+		for (int ty = 0; ty < dh; ty += ds)
 		{
-			float relX = .5f - (tx * 1.0f / dw);
-			float relY = .5f - (ty * 1.0f / dh);
-
-
-			int index = tx + ty * dw;
-			int dp = depthData[index * 2 + 1] << 8 | depthData[index * 2];
-
-			//float xzFactor = tan(fx / 2) * 2;
-			//float yzFactor = tan(fy / 2) * 2;
-
-			float d = dp / 1000.0f;
-
-
-			float x = relX * d * fx;// x_over_z;// * p.z;
-			float y = relY * d * fy;// y_over_z;// * p.z;
-			float z = d;
-
-			try
+			for (int tx = 0; tx < dw; tx += ds)
 			{
-				cloud->at(floor(tx / ds), floor(ty / ds)) = pcl::PointXYZ(x, y, z);
-			}
-			catch (...)
-			{
-				LOG("here");
+				float relX = .5f - (tx * 1.0f / dw);
+				float relY = .5f - (ty * 1.0f / dh);
+
+				int index = tx + ty * dw;
+				int dp = depthData[index * 2 + 1] << 8 | depthData[index * 2];
+
+				float d = dp / 1000.0f;
+
+				float x = relX * d * fx;
+				float y = relY * d * fy;
+				float z = d;
+
+				try
+				{
+					cloud->at(floor(tx / ds), floor(ty / ds)) = pcl::PointXYZ(x, y, z);
+				}
+				catch (...)
+				{
+					LOG("here");
+				}
 			}
 		}
 	}
 
 	sendPointCloud(out, { 0, cloud });
+}
+
+void AstraPlusNode::run()
+{
+	wait(10);
+
+	while (!threadShouldExit())
+	{
+		auto frameset = pipeline->waitForFrames(100);
+		if (frameset == nullptr)
+		{
+			wait(10);
+			continue;
+		}
+
+		if (threadShouldExit()) break;
+
+		if (std::shared_ptr<ob::DepthFrame> frame = frameset->depthFrame())
+		{
+			uint8_t* data = (uint8_t*)frame->data();
+
+			{
+				GenericScopedLock lock(frameLock);
+				if (depthData == nullptr) continue;
+				memcpy(depthData, data, frame->dataSize());
+			}
+		}
+	}
+
+	NNLOG("Astraplus stop reading frames");
+}
+
+void AstraPlusNode::onContainerParameterChangedInternal(Parameter* p)
+{
+	Node::onContainerParameterChangedInternal(p);
+
+	if (p == enabled)
+	{
+		if (!enabled->boolValue())
+		{
+			stopThread(1000);
+		}
+		else if (pipeline != nullptr) startThread();
+	}
 }
