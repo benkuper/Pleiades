@@ -26,10 +26,18 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 	removeMouseListener(this);
 	addMouseListener(this, true);
 	setDisableDefaultMouseEvents(true);
+
+	ViewStatsTimer::getInstance()->addListener(this);
+	statsLabel.setFont(12);
+	statsLabel.setColour(statsLabel.textColourId, NORMAL_COLOR.brighter(.6f));
+	statsLabel.setOpaque(false);
+	statsLabel.setJustificationType(Justification::centredRight);
+	addAndMakeVisible(statsLabel);
 }
 
 NodeManagerViewUI::~NodeManagerViewUI()
 {
+	if (ViewStatsTimer* vs = ViewStatsTimer::getInstanceWithoutCreating()) vs->removeListener(this);
 }
 
 BaseNodeViewUI* NodeManagerViewUI::createUIForItem(Node* n)
@@ -42,6 +50,12 @@ void NodeManagerViewUI::resized()
 	BaseManagerViewUI::resized();
 	connectionManagerUI->setBounds(getLocalBounds());
 	connectionManagerUI->resized();
+}
+
+void NodeManagerViewUI::resizedInternalHeader(Rectangle<int>& r)
+{
+	BaseManagerViewUI::resizedInternalHeader(r);
+	statsLabel.setBounds(r.removeFromRight(150));
 }
 
 void NodeManagerViewUI::mouseDown(const MouseEvent& e)
@@ -66,6 +80,14 @@ void NodeManagerViewUI::mouseUp(const MouseEvent& e)
 {
 	if (connectionManagerUI->tmpConnectionUI != nullptr) connectionManagerUI->endCreateConnection();
 	else if (e.eventComponent == this) BaseManagerViewUI::mouseUp(e);
+}
+
+void NodeManagerViewUI::refreshStats()
+{
+	if (RootNodeManager* n = dynamic_cast<RootNodeManager*>(manager))
+	{
+		statsLabel.setText(String(n->processTimeMS) + "ms, " + String(n->averageFPS)+", fps", dontSendNotification);
+	}
 }
 
 NodeConnector* NodeManagerViewUI::getCandidateConnector(bool lookForInput, NodeConnectionType connectionType, BaseNodeViewUI* excludeUI)

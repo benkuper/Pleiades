@@ -46,7 +46,15 @@ public:
 
     Array<Node*, CriticalSection> nextToProcess;
 
+    int processTimeMS;
+    int averageFPS;
+
+    SpinLock itemLoopLock;
+
     void run() override;
+
+    void addItemInternal(Node* item, var data) override;
+    void removeItemInternal(Node* item) override;
 
     void startLoadFile() override;
     void endLoadFile() override;

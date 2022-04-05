@@ -17,13 +17,11 @@ public:
     WebsocketOutputNode(var params = var());
     ~WebsocketOutputNode();
 
-    void clearItem() override;
-
-    NodeConnectionSlot* inCloudSlot;
-    NodeConnectionSlot* inClustersSlot;
+    Array<NodeConnectionSlot*> inCloudSlots;
 
     IntParameter* downSample;
     IntParameter* port;
+    BoolParameter* forceIds;
 
     SimpleWebSocketServer server;
 

@@ -13,21 +13,26 @@
 class NodeConnectionManagerViewUI;
 
 class NodeManagerViewUI :
-    public BaseManagerViewUI<NodeManager, Node, BaseNodeViewUI>
+    public BaseManagerViewUI<NodeManager, Node, BaseNodeViewUI>,
+    public ViewStatsTimer::Listener
 {
 public:
     NodeManagerViewUI(NodeManager * manager);
     ~NodeManagerViewUI();
 
+    Label statsLabel;
     std::unique_ptr< NodeConnectionManagerViewUI> connectionManagerUI;
 
     BaseNodeViewUI* createUIForItem(Node * n) override;
 
     void resized() override;
+    void resizedInternalHeader(Rectangle<int>& r) override;
 
     void mouseDown(const MouseEvent& e) override;
     void mouseDrag(const MouseEvent& e) override;
     void mouseUp(const MouseEvent& e) override;
+
+    void refreshStats() override;
 
     NodeConnector * getCandidateConnector(bool lookForInput, NodeConnectionType connectionType, BaseNodeViewUI* excludeUI = nullptr);
 

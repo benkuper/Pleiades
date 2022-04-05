@@ -13,7 +13,7 @@
 class Node;
 class NodeConnection;
 
-enum NodeConnectionType {UNKNOWN, POINTCLOUD, VECTOR3, MATRIX, CLUSTER, INDICES };
+enum NodeConnectionType {UNKNOWN, POINTCLOUD, VECTOR, MATRIX, CLUSTER, INDICES };
 
 class NodeConnectionSlot
 {
@@ -34,4 +34,6 @@ public:
 	void removeConnection(NodeConnection * c);
 
 	bool isConnectedTo(NodeConnectionSlot* s);
+
+	bool isEmpty() const { return connections.size() == 0; }
 };

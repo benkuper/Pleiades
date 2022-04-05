@@ -14,5 +14,7 @@ NodeFactory::NodeFactory()
 {
     //defs.add(Definition::createDef<ContainerNode>("", ContainerNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AstraPlusNode>("Source", AstraPlusNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<PlaneSegmentationNode>("Filter", PlaneSegmentationNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<CropBoxNode>("Filter", CropBoxNode::getTypeStringStatic()));
     defs.add(Definition::createDef<WebsocketOutputNode>("Output", WebsocketOutputNode::getTypeStringStatic()));
 }

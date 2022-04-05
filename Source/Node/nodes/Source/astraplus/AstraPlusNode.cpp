@@ -63,7 +63,7 @@ void AstraPlusNode::setupProfiles()
 	for (int i = 0; i < (int)colorProfiles->count(); i++) {
 		auto profile = colorProfiles->getProfile(i)->as<ob::VideoStreamProfile>();
 		if ((profile->format() == OB_FORMAT_YUYV || profile->format() == OB_FORMAT_I420) && profile->width() == 640) {
-			NLOG(niceName, "Using color profile " << (int)profile->width() << "x" << (int)profile->height() << " @ " << (int)profile->fps() << " fps");
+			NNLOG("Using color profile " << (int)profile->width() << "x" << (int)profile->height() << " @ " << (int)profile->fps() << " fps");
 			colorProfile = profile;
 			break;
 		}
@@ -76,7 +76,7 @@ void AstraPlusNode::setupProfiles()
 	for (int i = 0; i < (int)depthProfiles->count(); i++) {
 		auto profile = depthProfiles->getProfile(i)->as<ob::VideoStreamProfile>();
 		if ((profile->format() == OB_FORMAT_YUYV || profile->format() == OB_FORMAT_Y16) && profile->width() == targetWidth && profile->height() == targetHeight) {
-			NLOG(niceName, "Using depth profile " << (int)profile->width() << "x" << (int)profile->height() << " @ " << (int)profile->fps() << " fps");
+			NNLOG("Using depth profile " << (int)profile->width() << "x" << (int)profile->height() << " @ " << (int)profile->fps() << " fps");
 			depthProfile = profile;
 			break;
 		}

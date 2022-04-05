@@ -17,6 +17,8 @@ class BaseNodeViewUI;
 
 class NodeAudioProcessor;
 
+#define NNLOG(t) if(logEnabled->boolValue()) NLOG(niceName, t);
+
 
 class Node :
 	public BaseItem
@@ -28,6 +30,8 @@ public:
 		var params = var());
 
 	virtual ~Node();
+
+	BoolParameter* logEnabled;
 
 	bool isInit = false;
 
@@ -61,13 +65,13 @@ public:
 	virtual void receivePointCloud(NodeConnectionSlot* slot, PCloud cloud);
 	virtual void receiveClusters(NodeConnectionSlot* slot, Array<PCloud> clusters);
 	virtual void receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
-	virtual void receiveVector3(NodeConnectionSlot* slot, Eigen::Vector3f vector);
+	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
 
 	void sendPointCloud(NodeConnectionSlot* slot, PCloud cloud);
 	void sendClusters(NodeConnectionSlot* slot, Array<PCloud> clusters);
 	void sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
-	void sendVector3(NodeConnectionSlot* slot, Eigen::Vector3f vector);
+	void sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);
 
 	//Helpers

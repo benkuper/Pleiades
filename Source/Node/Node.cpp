@@ -15,6 +15,7 @@ Node::Node(StringRef name, NodeType type, var params) :
 	processTimeMS(0),
 	nodeNotifier(5)
 {
+	logEnabled = addBoolParameter("Log", "If enabled, this will show log messages for this node", false);
 }
 
 Node::~Node()
@@ -76,7 +77,7 @@ void Node::receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix)
 {
 }
 
-void Node::receiveVector3(NodeConnectionSlot* slot, Eigen::Vector3f vector)
+void Node::receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector)
 {
 }
 
@@ -118,14 +119,14 @@ void Node::sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix)
 	}
 }
 
-void Node::sendVector3(NodeConnectionSlot* slot, Eigen::Vector3f vector)
+void Node::sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector)
 {
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
 		if (!c->dest->node->enabled->boolValue()) continue;
-		c->dest->node->receiveVector3(c->dest, vector);
+		c->dest->node->receiveVector(c->dest, vector);
 	}
 }
 
@@ -149,11 +150,13 @@ NodeConnectionSlot* Node::getSlotWithName(StringRef name, bool isInput)
 
 void Node::addNextToProcess()
 {
+	if (Engine::mainEngine->isClearing) return;
 	RootNodeManager::getInstance()->nextToProcess.addIfNotAlreadyThere(this);
 }
 
 void Node::removeNextToProcess()
 {
+	if (Engine::mainEngine->isClearing) return;
 	RootNodeManager::getInstance()->nextToProcess.removeAllInstancesOf(this);
 }
 

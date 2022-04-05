@@ -128,7 +128,7 @@ void NodeConnection::loadJSONDataItemInternal(var data)
 	{
 		if (Node* n = nodeManager->getItemWithName(data.getProperty("source", "")))
 		{
-			setSource(n->getSlotWithName(data.getProperty("sourceSlot", "").toString(), true));
+			setSource(n->getSlotWithName(data.getProperty("sourceSlot", "").toString(), false));
 		}
 	}
 
@@ -150,7 +150,8 @@ Colour NodeConnection::getColorForType(NodeConnectionType t)
 	case CLUSTER: return GREEN_COLOR;
 	case MATRIX: return RED_COLOR;
 	case INDICES: return YELLOW_COLOR;
-	case VECTOR3: return Colours::purple;
+	case VECTOR: return Colours::purple;
+	default: break;
 	}
 
 	return Colours::black;

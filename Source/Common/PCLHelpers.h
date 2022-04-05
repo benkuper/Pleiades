@@ -19,6 +19,7 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/crop_box.h>
 #include <pcl/ModelCoefficients.h>
+#include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #pragma warning(pop)
@@ -31,6 +32,6 @@ typedef pcl::PointIndices PIndices;
 
 struct PCloud
 {
-	int id;
+	int id = 0;
 	CloudPtr cloud;
 };

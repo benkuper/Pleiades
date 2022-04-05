@@ -1,4 +1,5 @@
 #include "NodeManager.h"
+
 /*
   =============================================================================
 
@@ -9,13 +10,13 @@
   =============================================================================
 */
 
-juce_ImplementSingleton(RootNodeManager); 
+juce_ImplementSingleton(RootNodeManager);
 
 NodeManager::NodeManager() :
 	BaseManager("Nodes")
 {
 	managerFactory = NodeFactory::getInstance();
-	
+
 	connectionManager.reset(new NodeConnectionManager(this));
 	connectionManager->hideInRemoteControl = true;
 	connectionManager->defaultHideInRemoteControl = true;
@@ -70,45 +71,69 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 
 RootNodeManager::RootNodeManager() :
 	NodeManager(),
-	Thread("Nodes")
+	Thread("Nodes"),
+	processTimeMS(1),
+	averageFPS(0)
 {
 	Engine::mainEngine->addEngineListener(this);
 }
 
 RootNodeManager::~RootNodeManager()
 {
-	if(Engine::mainEngine != nullptr) Engine::mainEngine->removeEngineListener(this);
+	if (Engine::mainEngine != nullptr) Engine::mainEngine->removeEngineListener(this);
 	stopThread(1000);
 }
 
+
+void RootNodeManager::addItemInternal(Node* item, var data)
+{
+	GenericScopedLock lock(itemLoopLock);
+	NodeManager::addItemInternal(item, data);
+}
+
+void RootNodeManager::removeItemInternal(Node* item)
+{
+	GenericScopedLock lock(itemLoopLock);
+	NodeManager::removeItemInternal(item);
+}
+
+
 void RootNodeManager::run()
 {
+	long lastFrameTime = Time::getMillisecondCounter();
+
 	while (!threadShouldExit())
 	{
+		long millis = Time::getMillisecondCounter();
+
 		try
 		{
 			{
-				GenericScopedLock lock(items.getLock());
+				GenericScopedLock lock(itemLoopLock);
 				for (auto& i : items) if (i->type == Node::SOURCE) i->process();
-				while (!nextToProcess.isEmpty())
+				while (!threadShouldExit() && !nextToProcess.isEmpty())
 				{
-					DBG("Next to process, " << nextToProcess.size());
 					Array<Node*> processList;
 					processList.addArray(nextToProcess);
-					for (auto& n : processList)
-					{
-						DBG("Process : " << n->niceName);
-						n->process();
-					}
+					for (auto& n : processList) n->process();
 				}
 			}
 		}
 		catch (std::exception e)
 		{
 			LOGERROR("Error during process : " << e.what());
+			nextToProcess.clear();
 		}
 
-		wait(10); //to make dynamically changing with process time
+		long t = Time::getMillisecondCounter();
+		processTimeMS = t - millis;
+
+		int frameDiff = t - lastFrameTime;
+		averageFPS = 1000 / jmax(frameDiff, 1);
+		lastFrameTime = t;
+
+		int timeToWait = 10 - processTimeMS;
+		if (timeToWait > 0) wait(timeToWait); //to make dynamically changing with process time
 	}
 }
 
