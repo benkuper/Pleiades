@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+  <MAINGROUP id="BPh6Ie" name="Pleiades">
+    <GROUP id="{4E050059-E3E2-F190-7D9B-785AB5FEE200}" name="Source">
+      <FILE id="T9KPFn" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="DaOHff" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="ndIuUq" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../Softwares/JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+</JUCERPROJECT>
