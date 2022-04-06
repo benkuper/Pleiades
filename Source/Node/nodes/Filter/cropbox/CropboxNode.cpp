@@ -32,22 +32,22 @@ CropBoxNode::~CropBoxNode()
 void CropBoxNode::processInternal()
 {
 
-	PCloud source = slotCloudMap[in];
-	if (source.cloud->empty()) return;
+	CloudPtr source = slotCloudMap[in];
+	if (source->empty()) return;
 
 	Vector3D minV = minPoint->getVector();
 	Vector3D maxV = maxPoint->getVector();
-	CloudPtr cloud(new Cloud(source.cloud->width, source.cloud->height));
+	CloudPtr cloud(new Cloud(source->width, source->height));
 
-	CloudPtr sCloud = source.cloud;
+	CloudPtr sCloud = source;
 
-	NNLOG("Cloud in size : " << source.cloud->size());
+	NNLOG("Cloud in size : " << source->size());
 	if (cleanUp->boolValue())
 	{
 
-		sCloud = CloudPtr(new Cloud(source.cloud->width, source.cloud->height));
+		sCloud = CloudPtr(new Cloud(source->width, source->height));
 		pcl::Indices indices;
-		pcl::removeNaNFromPointCloud(*source.cloud, *sCloud, indices);
+		pcl::removeNaNFromPointCloud(*source, *sCloud, indices);
 		NNLOG("Clean cloud size : " << sCloud->size());
 	}
 
@@ -59,7 +59,7 @@ void CropBoxNode::processInternal()
 	filter.filter(*cloud);
 
 	NNLOG("After crop : " << cloud->size());
-	sendPointCloud(out, { source.id , cloud });
+	sendPointCloud(out, cloud);
 }
 
 void CropBoxNode::onContainerParameterChangedInternal(Parameter* p)

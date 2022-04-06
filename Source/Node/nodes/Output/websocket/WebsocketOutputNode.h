@@ -17,21 +17,31 @@ public:
     WebsocketOutputNode(var params = var());
     ~WebsocketOutputNode();
 
+    enum DataType {
+        CloudType = 0,
+        ClusterType = 1,
+        DebugBoxType = 2,
+        DebugPointType = 3,
+        DebugLineType = 4,
+        DebugPlaneType = 5
+    };
+
     Array<NodeConnectionSlot*> inClouds;
     Array<NodeConnectionSlot*> inClusters;
 
     IntParameter* downSample;
     IntParameter* port;
-    BoolParameter* forceIds;
 
     SimpleWebSocketServer server;
+
 
     void initServer();
 
     void processInternal() override;
 
-    void streamCloud(PCloud cloud);
-    void streamClusters(Array<PCloud> clusters);
+    void streamCloud(CloudPtr cloud, int id);
+    void streamClusters(Array<ClusterPtr> clusters);
+    void streamCluster(ClusterPtr cluster);
 
     void onContainerParameterChangedInternal(Parameter* p) override;
 

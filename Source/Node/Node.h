@@ -41,8 +41,8 @@ public:
 	OwnedArray<NodeConnectionSlot, CriticalSection> outSlots;
 
 	//Buffer data
-	HashMap<NodeConnectionSlot*, PCloud> slotCloudMap;
-	HashMap<NodeConnectionSlot*, Array<PCloud>> slotClustersMap;
+	HashMap<NodeConnectionSlot*, CloudPtr> slotCloudMap;
+	HashMap<NodeConnectionSlot*, Array<ClusterPtr>> slotClustersMap;
 	HashMap<NodeConnectionSlot*, Eigen::Matrix4f> slotMatrixMap;
 	HashMap<NodeConnectionSlot*, Eigen::Vector3f> slotVectorMap;
 	HashMap<NodeConnectionSlot*, PIndices> slotIndicesMap;
@@ -66,14 +66,14 @@ public:
 	NodeConnectionSlot* addSlot(StringRef name, bool isInput, NodeConnectionType t);
 
 	//IO
-	virtual void receivePointCloud(NodeConnectionSlot* slot, PCloud cloud);
-	virtual void receiveClusters(NodeConnectionSlot* slot, Array<PCloud> clusters);
+	virtual void receivePointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
+	virtual void receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
 	virtual void receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
 	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
 
-	void sendPointCloud(NodeConnectionSlot* slot, PCloud cloud);
-	void sendClusters(NodeConnectionSlot* slot, Array<PCloud> clusters);
+	void sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
+	void sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
 	void sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
 	void sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);

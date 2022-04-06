@@ -16,8 +16,7 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 
 	port = addIntParameter("Local Port", "Port to bind the server to", 6060, 1024, 65535);
 	downSample = addIntParameter("Downsample", "Simple down sample before sending to the clients, not 2d downsampling, but once every x.", 1, 1, 16);
-	forceIds = addBoolParameter("Force IDs", "If checked, this will force ordered ids instead of taking the initial ones. Only work on single clouds", false);
-
+	
 	initServer();
 }
 
@@ -52,34 +51,34 @@ void WebsocketOutputNode::initServer()
 
 void WebsocketOutputNode::processInternal()
 {
-	int id = 100;
+	int id = 1;
 	for (auto& s : inClouds)
 	{
 		if (s->isEmpty()) continue;
-		PCloud c = slotCloudMap[s];
-		if (forceIds->boolValue()) c.id = id++;
-		streamCloud(c);
+		CloudPtr c = slotCloudMap[s];
+		streamCloud(c, id++);
 	}
 
 	for (auto& s : inClusters)
 	{
 		if (s->isEmpty()) continue;
-		Array<PCloud> c = slotClustersMap[s];
+		Array<ClusterPtr> c = slotClustersMap[s];
 		streamClusters(c);
 	}
 }
 
-void WebsocketOutputNode::streamCloud(PCloud cloud)
+void WebsocketOutputNode::streamCloud(CloudPtr cloud, int id)
 {
 	if (server.getNumActiveConnections() == 0) return;
-	if (cloud.cloud == nullptr) return;
-
+	
 	MemoryOutputStream os;
-	os.writeInt(cloud.id);
+	os.writeByte(CloudType); //cloud type
+	os.writeInt(id); //write 1000+ id to specify that it doesn't have metadata
+
 	int ds = downSample->intValue();
-	for (int i = 0; i < cloud.cloud->size(); i += ds)
+	for (int i = 0; i < cloud->size(); i += ds)
 	{
-		auto p = cloud.cloud->points[i];
+		auto p = cloud->points[i];
 		os.writeFloat(p.x);
 		os.writeFloat(p.y);
 		os.writeFloat(p.z);
@@ -87,10 +86,37 @@ void WebsocketOutputNode::streamCloud(PCloud cloud)
 	server.send((char*)os.getData(), os.getDataSize());
 }
 
-void WebsocketOutputNode::streamClusters(Array<PCloud> clusters)
+void WebsocketOutputNode::streamClusters(Array<ClusterPtr> clusters)
 {
 	if (server.getNumActiveConnections() == 0) return;
-	for (int i = 0; i < clusters.size(); i++) streamCloud(clusters[i]);
+	for (int i = 0; i < clusters.size(); i++) streamCluster(clusters[i]);
+}
+
+void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
+{
+	if (server.getNumActiveConnections() == 0) return;
+	if (cluster->cloud == nullptr) return;
+
+	MemoryOutputStream os;
+	os.writeByte(ClusterType); //cluster type
+	os.writeInt(cluster->id);
+	os.writeInt((int)cluster->state); //cluster type
+	os.writeFloat(cluster->boundingBoxMin.x);
+	os.writeFloat(cluster->boundingBoxMin.y);
+	os.writeFloat(cluster->boundingBoxMin.z);
+	os.writeFloat(cluster->boundingBoxMax.x);
+	os.writeFloat(cluster->boundingBoxMax.y);
+	os.writeFloat(cluster->boundingBoxMax.z);
+
+	int ds = downSample->intValue();
+	for (int i = 0; i < cluster->cloud->size(); i += ds)
+	{
+		auto p = cluster->cloud->points[i];
+		os.writeFloat(p.x);
+		os.writeFloat(p.y);
+		os.writeFloat(p.z);
+	}
+	server.send((char*)os.getData(), os.getDataSize());
 }
 
 void WebsocketOutputNode::onContainerParameterChangedInternal(Parameter* p)

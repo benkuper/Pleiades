@@ -25,10 +25,13 @@
 #include "nodes/Filter/planesegmentation/PlaneSegmentationNode.cpp"
 #include "nodes/Filter/euclideancluster/EuclideanClusterNode.cpp"
 #include "nodes/Filter/prediction/PredictionNode.cpp"
-#include "nodes/Filter/tracking/TrackingNode.cpp"
 #include "nodes/Filter/transform/TransformNode.cpp"
 #include "nodes/Output/augmenta/AugmentaOutputNode.cpp"
 #include "nodes/Output/websocket/WebsocketOutputNode.cpp"
+
+#include "nodes/Filter/tracking/tracker/Hungarian/Hungarian.cpp"
+#include "nodes/Filter/tracking/TrackingNode.cpp"
+
 
 #include "nodes/Source/astraplus/AstraPlusNode.cpp"
 

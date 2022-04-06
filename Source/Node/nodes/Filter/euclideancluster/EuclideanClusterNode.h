@@ -23,7 +23,7 @@ public:
     FloatParameter * tolerance;
     IntParameter* minSize;
     IntParameter * maxSize;
-
+    BoolParameter* computeBox;
 
     void processInternal() override;
 

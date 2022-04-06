@@ -67,13 +67,13 @@ NodeConnectionSlot* Node::addSlot(StringRef name, bool isInput, NodeConnectionTy
 }
 
 
-void Node::receivePointCloud(NodeConnectionSlot* slot, PCloud cloud)
+void Node::receivePointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 {
 	slotCloudMap.set(slot, cloud);
 	if (slot->processOnReceive) addNextToProcess();
 }
 
-void Node::receiveClusters(NodeConnectionSlot* slot, Array<PCloud> clusters)
+void Node::receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 {
 	slotClustersMap.set(slot, clusters);
 	if (slot->processOnReceive) addNextToProcess();
@@ -97,7 +97,7 @@ void Node::receiveIndices(NodeConnectionSlot* slot, PIndices indices)
 	if (slot->processOnReceive) addNextToProcess();
 }
 
-void Node::sendPointCloud(NodeConnectionSlot* slot, PCloud cloud)
+void Node::sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 {
 	if (slot == nullptr) return;
 
@@ -109,7 +109,7 @@ void Node::sendPointCloud(NodeConnectionSlot* slot, PCloud cloud)
 	}
 }
 
-void Node::sendClusters(NodeConnectionSlot* slot, Array<PCloud> clusters)
+void Node::sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 {
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)

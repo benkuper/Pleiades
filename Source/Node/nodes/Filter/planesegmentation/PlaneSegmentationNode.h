@@ -23,6 +23,7 @@ public:
     NodeConnectionSlot* planeCenterSlot;
     NodeConnectionSlot* planeNormalSlot;
 
+    BoolParameter* autoFind;
     BoolParameter* continuous;
     Trigger* findPlane;
 

@@ -30,12 +30,14 @@ public:
 
     NodeConnectionSlot* out;
     IntParameter* downSample;
+    BoolParameter* processOnlyOnNewFrame;
 
     float ifx;
     float ify;
     
     SpinLock frameLock;
     uint8_t* depthData;
+    bool newFrameAvailable;
 
     bool initInternal() override;
 

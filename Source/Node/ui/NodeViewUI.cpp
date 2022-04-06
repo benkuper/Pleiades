@@ -95,8 +95,8 @@ void BaseNodeViewUI::resized()
 	Rectangle<int> outR = getLocalBounds().removeFromRight(w).reduced(0, 10);
 
 	//add some space on top of connectors
-	inR.removeFromTop(5);
-	outR.removeFromTop(5);
+	//inR.removeFromTop(5);
+	//outR.removeFromTop(5);
 
 	for (auto& i : inConnectors)
 	{

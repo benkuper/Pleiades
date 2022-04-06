@@ -19,6 +19,7 @@ PlaneSegmentationNode::PlaneSegmentationNode(var params) :
 	planeCenterSlot = addSlot("Plane Center", false, VECTOR);
 	planeNormalSlot = addSlot("Plane Normal", false, VECTOR);
 
+	autoFind = addBoolParameter("Auto Find", "If checked, this will automatically find a plane if not found yet", true);
 	continuous = addBoolParameter("Continuous Search", "If checked, search always for the plane. Otherwise, it will only search when triggering", false);
 	findPlane = addTrigger("Find Plane", "Find the plane. Now.");
 
@@ -35,40 +36,40 @@ PlaneSegmentationNode::~PlaneSegmentationNode()
 
 void PlaneSegmentationNode::processInternal()
 {
-	PCloud source = slotCloudMap[in];
-	if (source.cloud->empty()) return;
+	CloudPtr source = slotCloudMap[in];
+	if (source->empty()) return;
 
-	//jassert(source.cloud->isOrganized());
+	//jassert(source->isOrganized());
 
 	int ds = downSample->intValue();
 
 
-
 	CloudPtr cloud(new Cloud());
-	if (ds == 1) pcl::copyPointCloud(*source.cloud, *cloud);
+	if (ds == 1) pcl::copyPointCloud(*source, *cloud);
 	else
 	{
-		if (source.cloud->isOrganized())
+		if (source->isOrganized())
 		{
-			cloud.reset(new Cloud(ceil(source.cloud->width * 1.0f / ds), ceil(source.cloud->height * 1.0f / ds)));
+			cloud.reset(new Cloud(ceil(source->width * 1.0f / ds), ceil(source->height * 1.0f / ds)));
 
-			for (int ty = 0; ty < (int)source.cloud->height; ty += ds)
+			for (int ty = 0; ty < (int)source->height; ty += ds)
 			{
-				for (int tx = 0; tx < (int)source.cloud->width; tx += ds)
+				for (int tx = 0; tx < (int)source->width; tx += ds)
 				{
-					cloud->at(floor(tx / ds), floor(ty / ds)) = source.cloud->at(tx, ty);
+					cloud->at(floor(tx / ds), floor(ty / ds)) = source->at(tx, ty);
 				}
 			}
 		}
 		else
 		{
-			for (int i = 0; i < source.cloud->size(); i += ds)
+			for (int i = 0; i < source->size(); i += ds)
 			{
-				cloud->push_back(source.cloud->points[i]);
+				cloud->push_back(source->points[i]);
 			}
 		}
 	}
 
+	if (autoFind->boolValue() && planeCenter == Eigen::Vector3f::Zero()) findOnNextProcess = true;
 
 	if (continuous->boolValue() || findOnNextProcess)
 	{
@@ -120,7 +121,7 @@ void PlaneSegmentationNode::processInternal()
 			extract.setIndices(inliers);
 			if (invertPlane->boolValue()) extract.setNegative(true);
 			extract.filterDirectly(cloud);
-			sendPointCloud(planeCloud, { source.id, cloud });
+			sendPointCloud(planeCloud, cloud);
 		}
 
 		findOnNextProcess = false;
@@ -128,13 +129,13 @@ void PlaneSegmentationNode::processInternal()
 
 	if (!out->isEmpty())
 	{
-		CloudPtr transformedCloud(new Cloud(source.cloud->width, source.cloud->height));
+		CloudPtr transformedCloud(new Cloud(source->width, source->height));
 
 		Eigen::Affine3f transform = Eigen::Affine3f::Identity();
 		transform.rotate(reproj);
 		transform.translate(-planeCenter);
-		pcl::transformPointCloud(*source.cloud, *transformedCloud, transform);
-		sendPointCloud(out, { 0, transformedCloud });
+		pcl::transformPointCloud(*source, *transformedCloud, transform);
+		sendPointCloud(out, transformedCloud);
 	}
 
 

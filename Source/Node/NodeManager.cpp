@@ -150,11 +150,9 @@ void RootNodeManager::run()
 
 void RootNodeManager::startLoadFile()
 {
+	startThread();
 }
 
-void RootNodeManager::endLoadFile()
-{
-}
 
 void RootNodeManager::afterLoadJSONDataInternal()
 {

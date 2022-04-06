@@ -39,10 +39,12 @@
 #include "nodes/Filter/passthrough/PassthroughNode.h"
 #include "nodes/Filter/planesegmentation/PlaneSegmentationNode.h"
 #include "nodes/Filter/prediction/PredictionNode.h"
-#include "nodes/Filter/tracking/TrackingNode.h"
 #include "nodes/Filter/transform/TransformNode.h"
 #include "nodes/Output/augmenta/AugmentaOutputNode.h"
 #include "nodes/Output/websocket/WebsocketOutputNode.h"
+
+#include "nodes/Filter/tracking/tracker/Hungarian/Hungarian.h"
+#include "nodes/Filter/tracking/TrackingNode.h"
 
 #include "nodes/Source/astraplus/AstraPlusNode.h"
 

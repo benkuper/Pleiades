@@ -59,7 +59,6 @@ public:
     void removeItemInternal(Node* item) override;
 
     void startLoadFile() override;
-    void endLoadFile() override;
 
     void afterLoadJSONDataInternal() override;
 };

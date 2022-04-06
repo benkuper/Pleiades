@@ -14,9 +14,11 @@ EuclideanClusterNode::EuclideanClusterNode(var params) :
 	in = addSlot("In", true, POINTCLOUD);
 	out = addSlot("Out", false, CLUSTERS);
 
-	tolerance = addFloatParameter("Tolerance", "The neighbour distance to tolerate when searching neighbours for clustering", .02f, .001f);
+	tolerance = addFloatParameter("Tolerance", "The neighbour distance to tolerate when searching neighbours for clustering. In mm", .02f, .001f);
 	minSize = addIntParameter("Min Size", "The minimum amount of points that a cluster can have", 100);
 	maxSize = addIntParameter("Max Size", "The maximum amount of points that a cluster can have", 25000);
+
+	computeBox = addBoolParameter("Compute Box", "Compte infos for each cluster", false);
 }
 
 EuclideanClusterNode::~EuclideanClusterNode()
@@ -26,37 +28,74 @@ EuclideanClusterNode::~EuclideanClusterNode()
 
 void EuclideanClusterNode::processInternal()
 {
-	PCloud source = slotCloudMap[in];
-	if (source.cloud->empty()) return;
+	CloudPtr source = slotCloudMap[in];
+	if (source->empty()) return;
 
-	NNLOG("Start extract, num input points : " << (int)source.cloud->size());
+	NNLOG("Start extract, num input points : " << (int)source->size());
 
 	pcl::search::KdTree<PPoint>::Ptr tree(new pcl::search::KdTree<PPoint>);
-	tree->setInputCloud(source.cloud);
+	tree->setInputCloud(source);
 
 	std::vector<pcl::PointIndices> clusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance(tolerance->floatValue()); // 2cm
+	ec.setClusterTolerance(tolerance->floatValue() / 1000.0); // 2cm
 	ec.setMinClusterSize(minSize->intValue());
 	ec.setMaxClusterSize(maxSize->intValue());
 	ec.setSearchMethod(tree);
-	ec.setInputCloud(source.cloud);
+	ec.setInputCloud(source);
 	ec.extract(clusterIndices);
 
 	NNLOG("Extracted, num clusters : " << clusterIndices.size());
 
 	if (out->isEmpty()) return;
 
-	Array<PCloud> clusters;
+	bool compute = computeBox->boolValue();
+
+	Array<ClusterPtr> clusters;
 	for (std::vector<pcl::PointIndices>::const_iterator it = clusterIndices.begin(); it != clusterIndices.end(); ++it)
 	{
 		CloudPtr c(new Cloud());
-		for (const auto& idx : it->indices) c->push_back((*source.cloud)[idx]); //*
+
+		Vector3D<float> minP(INT32_MAX, INT32_MAX, INT32_MAX);
+		Vector3D<float> maxP(INT32_MIN, INT32_MIN, INT32_MIN);
+		Vector3D<float> average(0, 0, 0);
+
+		for (const auto& idx : it->indices)
+		{
+
+			PPoint p = (*source)[idx];
+
+			if (compute)
+			{
+				minP.x = jmin(p.x, minP.x);
+				minP.y = jmin(p.y, minP.y);
+				minP.z = jmin(p.z, minP.z);
+
+				maxP.x = jmax(p.x, maxP.x);
+				maxP.y = jmax(p.y, maxP.y);
+				maxP.z = jmax(p.z, maxP.z);
+
+				average += Vector3D(p.x, p.y, p.z);
+			}
+
+			c->push_back(p); //*
+		}
 
 		c->width = c->size();
 		c->height = 1;
 		c->is_dense = true;
-		clusters.add({ clusters.size(), c });
+
+		ClusterPtr pc(new Cluster(clusters.size(), c));
+
+		if (compute)
+		{
+			average /= it->indices.size();
+			pc->boundingBoxMin = Vector3D<float>(minP.x, minP.y, minP.z);
+			pc->boundingBoxMax = Vector3D<float>(maxP.x, maxP.y, maxP.z);
+			pc->centroid = Vector3D<float>(average.x, average.y, average.z);;
+		}
+
+		clusters.add(pc);
 	}
 
 	sendClusters(out, clusters);

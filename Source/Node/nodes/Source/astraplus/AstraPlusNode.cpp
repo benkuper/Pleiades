@@ -18,11 +18,13 @@ AstraPlusNode::AstraPlusNode(var params) :
 	Thread("AstraPlus"),
 	ifx(0),
 	ify(0),
-	depthData(nullptr)
+	depthData(nullptr),
+	newFrameAvailable(false)
 {
 	out = addSlot("Out", false, POINTCLOUD);
 
 	downSample = addIntParameter("Down Sample", "Simple downsampling from the initial 640x480 point cloud. Value of 2 will result in a 320x240 point cloud", 2, 1, 16);
+	processOnlyOnNewFrame = addBoolParameter("Process only on new frame", "If checked, this will skip processing when no new frame available", false);
 }
 
 AstraPlusNode::~AstraPlusNode()
@@ -139,6 +141,7 @@ void AstraPlusNode::processInternal()
 
 
 	if (depthData == nullptr) return;
+	if (!newFrameAvailable && processOnlyOnNewFrame->boolValue()) return;
 
 	int dw = depthProfile->width();
 	int dh = depthProfile->height();
@@ -181,7 +184,9 @@ void AstraPlusNode::processInternal()
 		}
 	}
 
-	sendPointCloud(out, { 0, cloud });
+	sendPointCloud(out, cloud);
+
+	newFrameAvailable = false;
 }
 
 void AstraPlusNode::run()
@@ -193,7 +198,7 @@ void AstraPlusNode::run()
 		auto frameset = pipeline->waitForFrames(100);
 		if (frameset == nullptr)
 		{
-			wait(10);
+			wait(20);
 			continue;
 		}
 
@@ -207,8 +212,10 @@ void AstraPlusNode::run()
 				GenericScopedLock lock(frameLock);
 				if (depthData == nullptr) continue;
 				memcpy(depthData, data, frame->dataSize());
+				newFrameAvailable = true;
 			}
 		}
+		wait(20);
 	}
 
 	NNLOG("Astraplus stop reading frames");
