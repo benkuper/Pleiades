@@ -80,9 +80,10 @@ public:
 
 		double curT = Time::getMillisecondCounterHiRes() / 1000.0;
 		double delta = curT - lastUpdateTime;
+		age += delta;
+		
 		lastUpdateTime = curT;
 
-		ghostAge += 
 		state = UPDATED;
 	}
 };

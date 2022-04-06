@@ -11,6 +11,7 @@
 NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 	BaseManagerViewUI(manager->niceName, manager)
 {
+
 	addExistingItems(false);
 
 	connectionManagerUI.reset(new NodeConnectionManagerViewUI(this, manager->connectionManager.get()));
@@ -27,12 +28,16 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 	addMouseListener(this, true);
 	setDisableDefaultMouseEvents(true);
 
+
+
 	ViewStatsTimer::getInstance()->addListener(this);
 	statsLabel.setFont(12);
 	statsLabel.setColour(statsLabel.textColourId, NORMAL_COLOR.brighter(.6f));
 	statsLabel.setOpaque(false);
 	statsLabel.setJustificationType(Justification::centredRight);
 	addAndMakeVisible(statsLabel);
+
+
 }
 
 NodeManagerViewUI::~NodeManagerViewUI()
@@ -86,7 +91,7 @@ void NodeManagerViewUI::refreshStats()
 {
 	if (RootNodeManager* n = dynamic_cast<RootNodeManager*>(manager))
 	{
-		statsLabel.setText(String(n->processTimeMS) + "ms, " + String(n->averageFPS)+", fps", dontSendNotification);
+		statsLabel.setText(String(n->processTimeMS) + "ms, " + String(n->averageFPS) + ", fps", dontSendNotification);
 	}
 }
 

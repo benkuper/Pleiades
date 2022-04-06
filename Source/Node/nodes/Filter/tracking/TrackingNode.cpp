@@ -1,4 +1,4 @@
-﻿/*
+/*
   ==============================================================================
 
 	TrackingNode.cpp
@@ -37,8 +37,7 @@ void TrackingNode::processInternal()
 
 	//NNLOG("Start of tracking, new clusters << " << newClusters.size() << ", num clusters " << trackedClusters.size());
 	int numRemoved = trackedClusters.removeIf([](ClusterPtr c) { return c->state == Cluster::WILL_LEAVE; });
-
-	//if(numRemoved > 0) NNLOG(numRemoved << " clusters removed, remaining " << trackedClusters.size());
+	if(numRemoved > 0) NNLOG(numRemoved << " clusters removed, remaining " << trackedClusters.size());
 
 	//Hungarian Matching
 
@@ -127,6 +126,8 @@ void TrackingNode::processInternal()
 	hungarian.Solve(distanceMatrix, matchedClusterIndices);
 
 
+	double curT = Time::getMillisecondCounterHiRes() / 1000.0;
+	
 	for (size_t i = 0; i < trackedClusters.size(); i++)
 	{
 
@@ -155,6 +156,7 @@ void TrackingNode::processInternal()
 						// if it is old enough, we turn it into a ghost
 						cluster->state = Cluster::GHOST;
 						cluster->ghostAge = 0;
+						cluster->lastUpdateTime = curT;
 					}
 					else {
 						// otherwise if it had a brief lifetime, it has good chances to be some unwanted noise
@@ -168,8 +170,8 @@ void TrackingNode::processInternal()
 					}
 					else
 					{
-						double curT = Time::getMillisecondCounterHiRes() / 1000.0;
 						cluster->ghostAge += curT - cluster->lastUpdateTime;
+						cluster->lastUpdateTime = curT;
 					}
 				}
 				/* #endregion */

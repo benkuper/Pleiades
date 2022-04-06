@@ -1,4 +1,3 @@
-#include "NodeManager.h"
 
 /*
   =============================================================================
@@ -21,6 +20,7 @@ NodeManager::NodeManager() :
 	connectionManager->hideInRemoteControl = true;
 	connectionManager->defaultHideInRemoteControl = true;
 	addChildControllableContainer(connectionManager.get());
+
 }
 
 

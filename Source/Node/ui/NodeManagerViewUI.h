@@ -23,6 +23,7 @@ public:
     Label statsLabel;
     std::unique_ptr< NodeConnectionManagerViewUI> connectionManagerUI;
 
+
     BaseNodeViewUI* createUIForItem(Node * n) override;
 
     void resized() override;
