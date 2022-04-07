@@ -27,6 +27,7 @@ class PObject extends THREE.Group
     {
       this.setupBox(data);
       this.setupCentroid(data);
+      this.setupVelocity(data);
     }
 
     this.update(data);
@@ -51,8 +52,8 @@ class PObject extends THREE.Group
   setupBox()
   {
     this.boxGeometry = new THREE.BoxGeometry();
-    this.boxMaterial = new THREE.MeshBasicMaterial( {color: this.color, wireframe:true, transparent:true} );
-    this.boxMaterial.color = new THREE.Color(this.color);
+    this.boxMaterial = new THREE.MeshBasicMaterial({wireframe:true});
+    this.boxMaterial.color = new THREE.Color();
     this.boxMesh = new THREE.Mesh( this.boxGeometry, this.boxMaterial );
     this.add(this.boxMesh);
   }
@@ -60,15 +61,25 @@ class PObject extends THREE.Group
   setupCentroid()
   {
     this.centroidGeometry = new THREE.SphereGeometry();
-    this.centroidMaterial = new THREE.MeshBasicMaterial( {color: this.color} );
-    this.centroidMaterial.color = new THREE.Color(this.color);
+    this.centroidMaterial = new THREE.MeshBasicMaterial();
     this.centroidMesh = new THREE.Mesh( this.centroidGeometry, this.centroidMaterial );
     this.add(this.centroidMesh);
+  }
+
+  setupVelocity()
+  {
+    this.velGeometry = new THREE.BufferGeometry();
+    this.velMaterial = new THREE.LineBasicMaterial();
+    this.velMesh = new THREE.LineSegments( this.velGeometry, this.velMaterial );
+    this.add(this.velMesh);
   }
 
 
   update(data)
   {
+
+    var deltaTime = (Date.now() - this.lastUpdateTime)/1000.0;
+
     var verticesIndex = 5;
 
     if(this.type == 1) //cluster
@@ -92,10 +103,19 @@ class PObject extends THREE.Group
       this.centroidGeometry.translate(centroid.x, centroid.y, centroid.z);
       this.centroidMesh.geometry = this.centroidGeometry;
 
+      const velPoints = [
+        centroid,
+        new THREE.Vector3().add(velocity).multiplyScalar(deltaTime).add(centroid)
+       ];
+
+      this.velGeometry = new THREE.BufferGeometry().setFromPoints(velPoints);
+      this.velMesh.geometry = this.velGeometry;
+    
       if(this.state == 3)
       {
         this.boxMaterial.color = this.ghostColor;
         this.centroidMaterial.color = this.ghostColor;
+        this.velMaterial.color = this.ghostColor;
       } 
       else 
       {
@@ -103,6 +123,7 @@ class PObject extends THREE.Group
         bColor.offsetHSL(0,0,.2);
         this.boxMaterial.color = bColor;
         this.centroidMaterial.color = bColor;
+        this.velMaterial.color = bColor;
       }
 
       verticesIndex += 4 + 12*4; //state = 4 bytes, boxMinMax = 6 * 4 bytes
