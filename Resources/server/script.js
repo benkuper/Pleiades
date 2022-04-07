@@ -29,7 +29,6 @@ class PObject extends THREE.Group
     }
 
     this.update(data);
-    this.lastUpdateTime = Date.now();
     
   }
 
@@ -88,6 +87,9 @@ class PObject extends THREE.Group
     //if(this.state == )
     var vertices = new Float32Array(data.slice(verticesIndex));
     this.cloudGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+ 
+    this.lastUpdateTime = Date.now();
+
   }
 }
 
@@ -165,14 +167,14 @@ class App {
     var objectsToRemove = [];
     var curTime = Date.now();
     
-    for(var i=0;i<objects.length;i++)
+    for(var i=0;i<this.objects.length;i++)
     {
-      if(curTime > objects[i].lastUpdateTime + 1000) objectsToRemove.push(objects[i]);
+      if(curTime > this.objects[i].lastUpdateTime + 1000) objectsToRemove.push(this.objects[i]);
     }
     
     for(var i=0;i<objectsToRemove.length;i++)
     {
-      removeObject(objects[i]);
+      this.removeObject(objectsToRemove[i]);
     }
 
     requestAnimationFrame(this.render.bind(this)); //continuous rendering
@@ -203,9 +205,9 @@ class App {
 
   removeObject(o)
   {
-    console.log("remove object with id",o.id);
+    console.log("remove object with id",o.id,this.objects.indexOf(o));
     this.scene.remove(o);
-    this.objects.slice(this.objects.indexOf(o), 1);
+    this.objects.splice(this.objects.indexOf(o), 1);
   }
 
   clearObjects()
