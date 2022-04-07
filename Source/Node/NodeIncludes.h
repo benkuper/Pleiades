@@ -41,7 +41,7 @@
 #include "nodes/Output/augmenta/AugmentaOutputNode.h"
 #include "nodes/Output/websocket/WebsocketOutputNode.h"
 
-#include "nodes/Filter/tracking/tracker/Hungarian/Hungarian.h"
+#include "nodes/Filter/tracking/Hungarian.h"
 #include "nodes/Filter/tracking/TrackingNode.h"
 
 #include "nodes/Filter/oneeuro/OneEuroFilter.h"

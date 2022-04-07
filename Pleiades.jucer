@@ -84,14 +84,8 @@
                     file="Source/Node/nodes/Filter/prediction/PredictionNode.h"/>
             </GROUP>
             <GROUP id="{2D9B2750-D29D-74A5-2E78-4BA72778E34A}" name="tracking">
-              <GROUP id="{755F944B-5329-342D-ADD4-ADDED033CA19}" name="tracker">
-                <GROUP id="{953AF3B3-6A82-34FA-5CF8-F6AE10ACEC57}" name="Hungarian">
-                  <FILE id="tGp4g1" name="Hungarian.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/tracker/Hungarian/Hungarian.cpp"/>
-                  <FILE id="YrRAtQ" name="Hungarian.h" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/tracker/Hungarian/Hungarian.h"/>
-                </GROUP>
-                <FILE id="SV0sNF" name="Tracker.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/tracker/Tracker.cpp"/>
-                <FILE id="o6XUGs" name="Tracker.h" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/tracker/Tracker.h"/>
-              </GROUP>
+              <FILE id="H9Sv8u" name="Hungarian.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/Hungarian.cpp"/>
+              <FILE id="n0jBml" name="Hungarian.h" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/Hungarian.h"/>
               <FILE id="W2TdEe" name="TrackingNode.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/Filter/tracking/TrackingNode.cpp"/>
               <FILE id="Fv8PCG" name="TrackingNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/tracking/TrackingNode.h"/>

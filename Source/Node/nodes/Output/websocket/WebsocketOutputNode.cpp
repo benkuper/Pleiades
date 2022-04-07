@@ -75,7 +75,7 @@ void WebsocketOutputNode::streamCloud(CloudPtr cloud, int id)
 	
 	MemoryOutputStream os;
 	os.writeByte(CloudType); //cloud type
-	os.writeInt(id); //write 1000+ id to specify that it doesn't have metadata
+	os.writeInt(1000+id); //write 1000+ id to specify that it doesn't have metadata
 
 	int ds = downSample->intValue();
 	for (int i = 0; i < cloud->size(); i += ds)

@@ -27,7 +27,7 @@
 #include "nodes/Output/augmenta/AugmentaOutputNode.cpp"
 #include "nodes/Output/websocket/WebsocketOutputNode.cpp"
 
-#include "nodes/Filter/tracking/tracker/Hungarian/Hungarian.cpp"
+#include "nodes/Filter/tracking/Hungarian.cpp"
 #include "nodes/Filter/tracking/TrackingNode.cpp"
 
 #include "nodes/Filter/oneeuro/OneEuroFilter.cpp"
