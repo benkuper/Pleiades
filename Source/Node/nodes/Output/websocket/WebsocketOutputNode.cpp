@@ -100,6 +100,9 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 	if (cluster->cloud == nullptr) return;
 
 	MemoryOutputStream os;
+
+	NNLOG("Send cluster with id " << cluster->id);
+
 	os.writeByte(ClusterType); //cluster type
 	os.writeInt(cluster->id);
 	os.writeInt((int)cluster->state); //cluster type
