@@ -13,13 +13,14 @@ import * as EssentialsPlugin from "https://cdn.skypack.dev/@tweakpane/plugin-ess
 class PObject extends THREE.Group
 {
 
-  constructor(id, type, data) {
+  constructor(oid, type, data) {
     super();
-    this.objectID = id;
+    this.objectID = oid;
     this.type = type;
 
     this.color = new THREE.Color();
-    this.color.setHSL(this.id / 10.0, 1, .5);
+    this.color.setHSL(this.objectID / 10.0, 1, .5);
+    this.ghostColor = new THREE.Color(.2,.2,.2);
 
     if(type == 0 || type == 1) this.setupCloud();
     if(type == 1)
@@ -51,11 +52,11 @@ class PObject extends THREE.Group
   {
     this.boxGeometry = new THREE.BoxGeometry();
     this.boxMaterial = new THREE.MeshBasicMaterial( {color: this.color, wireframe:true, transparent:true} );
-    this.boxMaterial.color.offsetHSL(0,0,.2);
+    this.boxMaterial.color = new THREE.Color(this.color);
     this.boxMesh = new THREE.Mesh( this.boxGeometry, this.boxMaterial );
     this.add(this.boxMesh);
   }
-
+ 
   setupCentroid()
   {
     
@@ -81,14 +82,27 @@ class PObject extends THREE.Group
 
       this.boxMesh.geometry = this.boxGeometry;
 
+      if(this.state == 3)  this.boxMaterial.color = this.ghostColor;
+      else 
+      {
+        this.boxMaterial.color = new THREE.Color(this.color);
+        this.boxMaterial.color.offsetHSL(0,0,.2);
+      }
+
       verticesIndex += 4 + 6*4; //state = 4 bytes, boxMinMax = 6 * 4 bytes
     }
 
-    //if(this.state == )
+    if(this.state == 3)  this.cloudMaterial.color = this.ghostColor;
+    else  this.cloudMaterial.color = this.color;
+
     var vertices = new Float32Array(data.slice(verticesIndex));
     this.cloudGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
  
     this.lastUpdateTime = Date.now();
+  }
+
+  resetColors()
+  {
 
   }
 }
@@ -198,14 +212,14 @@ class App {
 
   addObject(o)
   {
-    console.log("add object with id",o.id);
+    console.log("add object with id",o.objectID);
     this.scene.add(o);
     this.objects.push(o);
   }
 
   removeObject(o)
   {
-    console.log("remove object with id",o.id,this.objects.indexOf(o));
+    console.log("remove object with id",o.objectID,this.objects.indexOf(o));
     this.scene.remove(o);
     this.objects.splice(this.objects.indexOf(o), 1);
   }
@@ -255,13 +269,12 @@ class App {
     var data = event.data;
 
     var type = new Uint8Array(data.slice(0,1))[0];
-    var id =  new Int32Array(data.slice(1,5))[0];
-
-    var o = this.getObjectWithId(id);
+    var objectID =  new Int32Array(data.slice(1,5))[0];
+    var o = this.getObjectWithId(objectID);
     if(o == null)
     {
       //create object
-      let c = new PObject(id, type, data);
+      let c = new PObject(objectID, type, data);
       this.addObject(c);
     }else if(type == -1) //dataType CLEAR
     {
