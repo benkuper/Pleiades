@@ -47,10 +47,14 @@ public:
 	HashMap<NodeConnectionSlot*, Eigen::Vector3f> slotVectorMap;
 	HashMap<NodeConnectionSlot*, PIndices> slotIndicesMap;
 
+	HashMap<NodeConnectionSlot*, NodeConnectionSlot*> passthroughMap;
+
 	//process
 	SpinLock processLock;
 
 	//Stats
+	double lastProcessTime;
+	double deltaTime;
 	int processTimeMS;
 
 	virtual void clearItem() override;
@@ -60,7 +64,8 @@ public:
 
 	virtual bool initInternal() { return true; }
 	virtual void processInternal() {}
-	virtual void processInternalPassthrough() {}
+	virtual void processInternalPassthrough();
+	virtual void processInternalPassthroughInternal() {}
 
 	//Slots
 	NodeConnectionSlot* addSlot(StringRef name, bool isInput, NodeConnectionType t);
@@ -72,6 +77,8 @@ public:
 	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
 
+	void clearSlotMaps();
+
 	void sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
 	void sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
 	void sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
@@ -79,6 +86,8 @@ public:
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);
 
 	//Helpers
+	void addInOutSlot(NodeConnectionSlot** in, NodeConnectionSlot** out, NodeConnectionType type, StringRef inName = "In", StringRef outName = "out", bool passthrough = true);
+
 	NodeConnectionSlot* getSlotWithName(StringRef name, bool isInput);
 
 	void addNextToProcess();

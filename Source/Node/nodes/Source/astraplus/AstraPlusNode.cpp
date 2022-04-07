@@ -1,3 +1,4 @@
+#include "AstraPlusNode.h"
 /*
   ==============================================================================
 
@@ -187,6 +188,11 @@ void AstraPlusNode::processInternal()
 	sendPointCloud(out, cloud);
 
 	newFrameAvailable = false;
+}
+
+void AstraPlusNode::processInternalPassthroughInternal()
+{
+	processInternal(); //same
 }
 
 void AstraPlusNode::run()

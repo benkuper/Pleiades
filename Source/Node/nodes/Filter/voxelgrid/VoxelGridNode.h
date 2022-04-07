@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    DownsampleNode.h
+    VoxelGridNode.h
     Created: 5 Apr 2022 10:46:00am
     Author:  bkupe
 
@@ -10,12 +10,12 @@
 
 #pragma once
 
-class DownsampleNode :
+class VoxelGridNode :
     public Node
 {
 public:
-    DownsampleNode(var params = var());
-    ~DownsampleNode();
+    VoxelGridNode(var params = var());
+    ~VoxelGridNode();
 
     NodeConnectionSlot* in;
     NodeConnectionSlot* out;
@@ -25,5 +25,5 @@ public:
     void processInternal() override;
 
     String getTypeString() const override { return getTypeStringStatic(); }
-    static String getTypeStringStatic() { return "Downsample"; }
+    static String getTypeStringStatic() { return "Voxel Grid"; }
 };

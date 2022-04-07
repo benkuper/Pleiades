@@ -1,5 +1,6 @@
 #include "MainComponent.h"
 #include "Node/NodeIncludes.h"
+#include "Viz/Viz.h"
 
 String getAppVersion();
 
@@ -28,7 +29,7 @@ void MainContentComponent::init()
 {
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Node List", &NodeManagerPanel::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Node View", &NodeManagerViewPanel::create));
-	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Visualizer", &AugmentaOutputsPanel::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Visualizer", &VizPanel::create));
 
 	ShapeShifterManager::getInstance()->setDefaultFileData(BinaryData::default_playout);
 	ShapeShifterManager::getInstance()->setLayoutInformations("playout", ProjectInfo::projectName + String("/layouts"));

@@ -118,6 +118,8 @@ void RootNodeManager::run()
 		{
 			{
 				GenericScopedLock lock(itemLoopLock);
+				for (auto& i : items) i->clearSlotMaps();
+
 				for (auto& i : items) if (i->type == Node::SOURCE) i->process();
 				while (!threadShouldExit() && !nextToProcess.isEmpty())
 				{

@@ -1,3 +1,4 @@
+#include "Node.h"
 /*
   =============================================================================
 
@@ -12,6 +13,8 @@ Node::Node(StringRef name, NodeType type, var params) :
 	BaseItem(name, true),
 	type(type),
 	isInit(false),
+	lastProcessTime(0),
+	deltaTime(0),
 	processTimeMS(0),
 	nodeNotifier(5)
 {
@@ -35,9 +38,10 @@ void Node::clearItem()
 
 void Node::process()
 {
-
 	GenericScopedLock lock(processLock);
 	long ms = Time::getMillisecondCounter();
+
+	deltaTime = (ms / 1000.0) - lastProcessTime;
 
 	try
 	{
@@ -53,8 +57,31 @@ void Node::process()
 		NLOGERROR(niceName, "Exception during process :\n" << e.what());
 	}
 
-	processTimeMS = Time::getMillisecondCounter() - ms;
+	long t = Time::getMillisecondCounter();
+	processTimeMS = t - ms;
+	lastProcessTime = (t / 1000.0);
+
 	removeNextToProcess();
+}
+
+void Node::processInternalPassthrough()
+{
+	HashMap<NodeConnectionSlot*, NodeConnectionSlot*>::Iterator it(passthroughMap);
+	while (it.next())
+	{
+		NodeConnectionSlot* in = it.getKey();
+		NodeConnectionSlot* out = it.getValue();
+		jassert(in->type == out->type);
+		switch (in->type)
+		{
+		case NodeConnectionType::POINTCLOUD: sendPointCloud(out, slotCloudMap[in]); break;
+		case NodeConnectionType::CLUSTERS: sendClusters(out, slotClustersMap[in]); break;
+		case NodeConnectionType::MATRIX: sendMatrix(out, slotMatrixMap[in]); break;
+		case NodeConnectionType::VECTOR: sendVector(out, slotVectorMap[in]); break;
+		case NodeConnectionType::INDICES: sendIndices(out, slotIndicesMap[in]); break;
+		}
+	}
+	processInternalPassthroughInternal();
 }
 
 NodeConnectionSlot* Node::addSlot(StringRef name, bool isInput, NodeConnectionType t)
@@ -97,6 +124,15 @@ void Node::receiveIndices(NodeConnectionSlot* slot, PIndices indices)
 	if (slot->processOnReceive) addNextToProcess();
 }
 
+void Node::clearSlotMaps()
+{
+	slotCloudMap.clear();
+	slotClustersMap.clear();
+	slotMatrixMap.clear();
+	slotVectorMap.clear();
+	slotIndicesMap.clear();
+}
+
 void Node::sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 {
 	if (slot == nullptr) return;
@@ -104,7 +140,7 @@ void Node::sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
-		if (!c->dest->node->enabled->boolValue()) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receivePointCloud(c->dest, cloud);
 	}
 }
@@ -115,7 +151,7 @@ void Node::sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
-		if (!c->dest->node->enabled->boolValue()) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveClusters(c->dest, clusters);
 	}
 }
@@ -126,7 +162,7 @@ void Node::sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix)
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
-		if (!c->dest->node->enabled->boolValue()) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveMatrix(c->dest, matrix);
 	}
 }
@@ -137,7 +173,7 @@ void Node::sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector)
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
-		if (!c->dest->node->enabled->boolValue()) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveVector(c->dest, vector);
 	}
 }
@@ -148,9 +184,16 @@ void Node::sendIndices(NodeConnectionSlot* slot, PIndices indices)
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
-		if (!c->dest->node->enabled->boolValue()) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveIndices(c->dest, indices);
 	}
+}
+
+void Node::addInOutSlot(NodeConnectionSlot** in, NodeConnectionSlot** out, NodeConnectionType type, StringRef inName, StringRef outName, bool passthrough)
+{
+	*in = addSlot(inName, true, type);
+	*out = addSlot(outName, false, type);
+	if (passthrough) passthroughMap.set(*in,*out);
 }
 
 NodeConnectionSlot* Node::getSlotWithName(StringRef name, bool isInput)

@@ -11,8 +11,7 @@
 CropBoxNode::CropBoxNode(var params) :
 	Node(getTypeString(), OUTPUT, params)
 {
-	in = addSlot("In", true, POINTCLOUD);
-	out = addSlot("Out", false, POINTCLOUD);
+	addInOutSlot(&in, &out, POINTCLOUD);
 
 	minPoint = addPoint3DParameter("Min", "Min Point");
 	minPoint->setVector(-1, -1, -1);

@@ -56,6 +56,7 @@ void WebsocketOutputNode::processInternal()
 	{
 		if (s->isEmpty()) continue;
 		CloudPtr c = slotCloudMap[s];
+		if (c == nullptr) continue;
 		streamCloud(c, id++);
 	}
 
@@ -63,6 +64,7 @@ void WebsocketOutputNode::processInternal()
 	{
 		if (s->isEmpty()) continue;
 		Array<ClusterPtr> c = slotClustersMap[s];
+		if (c.isEmpty()) continue;
 		streamClusters(c);
 	}
 }

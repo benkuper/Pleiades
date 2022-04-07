@@ -12,8 +12,7 @@ TrackingNode::TrackingNode(var params) :
 	Node(getTypeString(), OUTPUT, params),
 	curTrackingID(0)
 {
-	in = addSlot("In", true, CLUSTERS);
-	out = addSlot("Out", false, CLUSTERS);
+	addInOutSlot(&in, &out, CLUSTERS);
 
 	searchDist = addFloatParameter("Search Distance","in meter", .1f,0,1);
 	enableGhosting = addBoolParameter("Enable Ghosting", "", false);

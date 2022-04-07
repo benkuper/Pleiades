@@ -46,6 +46,7 @@ public:
    // void setupPointCloud();
 
     void processInternal() override;
+    void processInternalPassthroughInternal() override;
 
     void run() override;
 

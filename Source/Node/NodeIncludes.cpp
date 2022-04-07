@@ -20,17 +20,18 @@
 #include "NodeManager.cpp"
 
 #include "nodes/Filter/cropbox/CropboxNode.cpp"
-#include "nodes/Filter/downsample/DownsampleNode.cpp"
-#include "nodes/Filter/passthrough/PassthroughNode.cpp"
+#include "nodes/Filter/voxelgrid/VoxelGridNode.cpp"
 #include "nodes/Filter/planesegmentation/PlaneSegmentationNode.cpp"
 #include "nodes/Filter/euclideancluster/EuclideanClusterNode.cpp"
 #include "nodes/Filter/prediction/PredictionNode.cpp"
-#include "nodes/Filter/transform/TransformNode.cpp"
 #include "nodes/Output/augmenta/AugmentaOutputNode.cpp"
 #include "nodes/Output/websocket/WebsocketOutputNode.cpp"
 
 #include "nodes/Filter/tracking/tracker/Hungarian/Hungarian.cpp"
 #include "nodes/Filter/tracking/TrackingNode.cpp"
+
+#include "nodes/Filter/oneeuro/OneEuroFilter.cpp"
+#include "nodes/Filter/oneeuro/OneEuroFilterNode.cpp"
 
 
 #include "nodes/Source/astraplus/AstraPlusNode.cpp"

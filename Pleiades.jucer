@@ -63,6 +63,20 @@
             </GROUP>
           </GROUP>
           <GROUP id="{E6992AFD-0D64-AC68-683F-4505B5819100}" name="Filter">
+            <GROUP id="{815E8A86-4A80-3164-7D9F-5F26C653156F}" name="voxelgrid">
+              <FILE id="LpRlLj" name="VoxelGridNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/voxelgrid/VoxelGridNode.cpp"/>
+              <FILE id="F1dmzF" name="VoxelGridNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/voxelgrid/VoxelGridNode.h"/>
+            </GROUP>
+            <GROUP id="{8365E9CB-43BA-880A-1D47-3D84568287E5}" name="oneeuro">
+              <FILE id="u2xkMB" name="OneEuroFilter.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/oneeuro/OneEuroFilter.cpp"/>
+              <FILE id="aW0sy6" name="OneEuroFilter.h" compile="0" resource="0" file="Source/Node/nodes/Filter/oneeuro/OneEuroFilter.h"/>
+              <FILE id="aretMR" name="OneEuroFilterNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/oneeuro/OneEuroFilterNode.cpp"/>
+              <FILE id="eOJ8da" name="OneEuroFilterNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/oneeuro/OneEuroFilterNode.h"/>
+            </GROUP>
             <GROUP id="{E03ED48B-9E1C-C159-D9BE-362AF5C361C2}" name="prediction">
               <FILE id="R2kNKb" name="PredictionNode.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/Filter/prediction/PredictionNode.cpp"/>
@@ -88,12 +102,6 @@
               <FILE id="kauJmc" name="EuclideanClusterNode.h" compile="0" resource="0"
                     file="Source/Node/nodes/Filter/euclideancluster/EuclideanClusterNode.h"/>
             </GROUP>
-            <GROUP id="{64806125-C071-EDF0-A63E-D0DDB020CD5B}" name="passthrough">
-              <FILE id="YrCrLH" name="PassthroughNode.cpp" compile="0" resource="0"
-                    file="Source/Node/nodes/Filter/passthrough/PassthroughNode.cpp"/>
-              <FILE id="TewbNh" name="PassthroughNode.h" compile="0" resource="0"
-                    file="Source/Node/nodes/Filter/passthrough/PassthroughNode.h"/>
-            </GROUP>
             <GROUP id="{0001D6CD-1EB2-58C7-59FD-B67376D4BF27}" name="cropbox">
               <FILE id="tpxNdn" name="CropboxNode.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/cropbox/CropboxNode.cpp"/>
               <FILE id="SZSaZu" name="CropboxNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/cropbox/CropboxNode.h"/>
@@ -103,17 +111,6 @@
                     file="Source/Node/nodes/Filter/planesegmentation/PlaneSegmentationNode.cpp"/>
               <FILE id="uIrVVq" name="PlaneSegmentationNode.h" compile="0" resource="0"
                     file="Source/Node/nodes/Filter/planesegmentation/PlaneSegmentationNode.h"/>
-            </GROUP>
-            <GROUP id="{E0FA36A4-55FA-0474-9B8D-0B99ABD32D79}" name="transform">
-              <FILE id="oDm8gV" name="TransformNode.cpp" compile="0" resource="0"
-                    file="Source/Node/nodes/Filter/transform/TransformNode.cpp"/>
-              <FILE id="TGvVnd" name="TransformNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/transform/TransformNode.h"/>
-            </GROUP>
-            <GROUP id="{D5A95CD6-3BAB-BD22-A375-C7987EF8789C}" name="downsample">
-              <FILE id="w1Dr7y" name="DownsampleNode.cpp" compile="0" resource="0"
-                    file="Source/Node/nodes/Filter/downsample/DownsampleNode.cpp"/>
-              <FILE id="vR3mOR" name="DownsampleNode.h" compile="0" resource="0"
-                    file="Source/Node/nodes/Filter/downsample/DownsampleNode.h"/>
             </GROUP>
           </GROUP>
           <GROUP id="{CF09C6E6-DFE8-AE77-A05A-9513E1FCEF9A}" name="Source">
@@ -160,7 +157,7 @@
             file="Source/MainComponent.cpp"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_USE_WIN_WEBVIEW2="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib"
             smallIcon="ddDsaL" bigIcon="ddDsaL">

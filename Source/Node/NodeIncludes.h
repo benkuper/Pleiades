@@ -34,17 +34,18 @@
 #include "NodeManager.h"
 
 #include "nodes/Filter/cropbox/CropboxNode.h"
-#include "nodes/Filter/downsample/DownsampleNode.h"
+#include "nodes/Filter/voxelgrid/VoxelGridNode.h"
 #include "nodes/Filter/euclideancluster/EuclideanClusterNode.h"
-#include "nodes/Filter/passthrough/PassthroughNode.h"
 #include "nodes/Filter/planesegmentation/PlaneSegmentationNode.h"
 #include "nodes/Filter/prediction/PredictionNode.h"
-#include "nodes/Filter/transform/TransformNode.h"
 #include "nodes/Output/augmenta/AugmentaOutputNode.h"
 #include "nodes/Output/websocket/WebsocketOutputNode.h"
 
 #include "nodes/Filter/tracking/tracker/Hungarian/Hungarian.h"
 #include "nodes/Filter/tracking/TrackingNode.h"
+
+#include "nodes/Filter/oneeuro/OneEuroFilter.h"
+#include "nodes/Filter/oneeuro/OneEuroFilterNode.h"
 
 #include "nodes/Source/astraplus/AstraPlusNode.h"
 

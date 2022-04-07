@@ -42,15 +42,35 @@ public:
 		lastUpdateTime = Time::getMillisecondCounterHiRes() / 1000.0;
 	}
 
+	Cluster(std::shared_ptr<Cluster>& other)
+	{
+		cloud.reset(new Cloud());
+		pcl::copyPointCloud(*other->cloud, *cloud); //simple reaffectation ? may cause problem in the node chain
+
+		id = other->id;
+		age = other->age;
+		ghostAge = other->ghostAge;
+		oldBoundingBoxMin = other->oldBoundingBoxMin;
+		oldBoundingBoxMax = other->oldBoundingBoxMax;
+		oldCentroid = other->oldCentroid;
+		oldVelocity = other->oldVelocity;
+		boundingBoxMin = other->boundingBoxMin;
+		boundingBoxMax = other->boundingBoxMax;
+		centroid = other->centroid;
+		velocity = other->velocity;
+
+		lastUpdateTime = other->lastUpdateTime;
+		state = other->state;
+	}
+
 	int id = 0;
 	CloudPtr cloud;
-	
-	int frame = 0;
-	float ghostAge = 0;
+
 	float age = 0;
+	float ghostAge = 0;
 
 	double lastUpdateTime = 0;
-	
+
 	Vector3D<float> boundingBoxMin = { 0, 0, 0 };
 	Vector3D<float> boundingBoxMax = { 0, 0, 0 };
 	Vector3D<float> centroid = { 0, 0, 0 };
@@ -67,7 +87,7 @@ public:
 
 	void update(std::shared_ptr<Cluster> newData)
 	{
-		cloud = newData->cloud;
+		pcl::copyPointCloud(*newData->cloud, *cloud);
 
 		oldBoundingBoxMin = Vector3D<float>(boundingBoxMin);
 		oldBoundingBoxMax = Vector3D<float>(boundingBoxMax);
@@ -81,7 +101,7 @@ public:
 		double curT = Time::getMillisecondCounterHiRes() / 1000.0;
 		double delta = curT - lastUpdateTime;
 		age += delta;
-		
+
 		lastUpdateTime = curT;
 
 		state = UPDATED;

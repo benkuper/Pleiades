@@ -1,29 +1,28 @@
 /*
   ==============================================================================
 
-	DownsampleNode.cpp
+	VoxelGridNode.cpp
 	Created: 5 Apr 2022 10:46:00am
 	Author:  bkupe
 
   ==============================================================================
 */
 
-DownsampleNode::DownsampleNode(var params) :
+VoxelGridNode::VoxelGridNode(var params) :
 	Node(getTypeString(), OUTPUT, params)
 {
-	in = addSlot("In", true, POINTCLOUD);
-	out = addSlot("Out", false, POINTCLOUD);
+	addInOutSlot(&in, &out, POINTCLOUD);
 
 	leafSize = addPoint3DParameter("Leaf size", "Size of voxels to use for downsampling.");
 	leafSize->setVector(.01f, .01f, .01f);
 }
 
-DownsampleNode::~DownsampleNode()
+VoxelGridNode::~VoxelGridNode()
 {
 }
 
 
-void DownsampleNode::processInternal()
+void VoxelGridNode::processInternal()
 {
 	CloudPtr source = slotCloudMap[in];
 	if (source->empty()) return;

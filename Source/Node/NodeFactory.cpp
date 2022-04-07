@@ -15,11 +15,13 @@ NodeFactory::NodeFactory()
     //defs.add(Definition::createDef<ContainerNode>("", ContainerNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AstraPlusNode>("Source", AstraPlusNode::getTypeStringStatic()));
 
-    defs.add(Definition::createDef<CropBoxNode>("Filter", CropBoxNode::getTypeStringStatic()));
-    defs.add(Definition::createDef<DownsampleNode>("Filter", DownsampleNode::getTypeStringStatic()));
-    defs.add(Definition::createDef<PlaneSegmentationNode>("Filter", PlaneSegmentationNode::getTypeStringStatic()));
-    defs.add(Definition::createDef<EuclideanClusterNode>("Filter", EuclideanClusterNode::getTypeStringStatic()));
-    defs.add(Definition::createDef<TrackingNode>("Tracking", TrackingNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<CropBoxNode>("Point Cloud", CropBoxNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<VoxelGridNode>("Point Cloud", VoxelGridNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<PlaneSegmentationNode>("Point Cloud", PlaneSegmentationNode::getTypeStringStatic()));
+
+    defs.add(Definition::createDef<EuclideanClusterNode>("Clusters", EuclideanClusterNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<TrackingNode>("Clusters", TrackingNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<OneEuroFilterNode>("Clusters", OneEuroFilterNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<WebsocketOutputNode>("Output", WebsocketOutputNode::getTypeStringStatic()));
 }

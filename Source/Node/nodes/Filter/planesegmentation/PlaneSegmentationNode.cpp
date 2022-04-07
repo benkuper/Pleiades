@@ -13,8 +13,8 @@ PlaneSegmentationNode::PlaneSegmentationNode(var params) :
 	Node(getTypeString(), OUTPUT, params),
 	findOnNextProcess(false)
 {
-	in = addSlot("Cloud In", true, POINTCLOUD);
-	out = addSlot("Transformed", false, POINTCLOUD);
+	addInOutSlot(&in, &out, POINTCLOUD, "In", "Transformed");
+
 	planeCloud = addSlot("Segmented", false, POINTCLOUD);
 	planeCenterSlot = addSlot("Plane Center", false, VECTOR);
 	planeNormalSlot = addSlot("Plane Normal", false, VECTOR);
