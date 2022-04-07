@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "JuceHeader.h"
+
 #pragma warning(push)
 #pragma warning(disable : 4324 4201 4996 4189 4127 4018 4005)
 #include <pcl/pcl_base.h>
@@ -34,34 +36,9 @@ typedef pcl::PointIndices PIndices;
 class Cluster
 {
 public:
-	Cluster(int id, CloudPtr cloud) :
-		id(id),
-		cloud(cloud)
-	{
-		state = ENTERED;
-		lastUpdateTime = Time::getMillisecondCounterHiRes() / 1000.0;
-	}
+	Cluster(int id, CloudPtr cloud);
 
-	Cluster(std::shared_ptr<Cluster>& other)
-	{
-		cloud.reset(new Cloud());
-		pcl::copyPointCloud(*other->cloud, *cloud); //simple reaffectation ? may cause problem in the node chain
-
-		id = other->id;
-		age = other->age;
-		ghostAge = other->ghostAge;
-		oldBoundingBoxMin = other->oldBoundingBoxMin;
-		oldBoundingBoxMax = other->oldBoundingBoxMax;
-		oldCentroid = other->oldCentroid;
-		oldVelocity = other->oldVelocity;
-		boundingBoxMin = other->boundingBoxMin;
-		boundingBoxMax = other->boundingBoxMax;
-		centroid = other->centroid;
-		velocity = other->velocity;
-
-		lastUpdateTime = other->lastUpdateTime;
-		state = other->state;
-	}
+	Cluster(std::shared_ptr<Cluster>& other);
 
 	int id = 0;
 	CloudPtr cloud;
@@ -85,27 +62,13 @@ public:
 	enum State { ENTERED, UPDATED, WILL_LEAVE, GHOST };
 	State state;
 
-	void update(std::shared_ptr<Cluster> newData)
-	{
-		pcl::copyPointCloud(*newData->cloud, *cloud);
-
-		oldBoundingBoxMin = Vector3D<float>(boundingBoxMin);
-		oldBoundingBoxMax = Vector3D<float>(boundingBoxMax);
-		oldCentroid = Vector3D<float>(centroid);
-		oldVelocity = Vector3D<float>(velocity);
-		boundingBoxMin = newData->boundingBoxMin;
-		boundingBoxMax = newData->boundingBoxMax;
-		centroid = newData->centroid;
-		velocity = newData->velocity;
-
-		double curT = Time::getMillisecondCounterHiRes() / 1000.0;
-		double delta = curT - lastUpdateTime;
-		age += delta;
-
-		lastUpdateTime = curT;
-
-		state = UPDATED;
-	}
+	void update(std::shared_ptr<Cluster> newData);
 };
 
 typedef std::shared_ptr<Cluster> ClusterPtr;
+
+namespace pleiades
+{
+	void copyClusters(Array<ClusterPtr>& source, Array<ClusterPtr>& dest);
+}
+

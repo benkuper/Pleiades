@@ -59,7 +59,11 @@ class PObject extends THREE.Group
  
   setupCentroid()
   {
-    
+    this.centroidGeometry = new THREE.SphereGeometry();
+    this.centroidMaterial = new THREE.MeshBasicMaterial( {color: this.color} );
+    this.centroidMaterial.color = new THREE.Color(this.color);
+    this.centroidMesh = new THREE.Mesh( this.centroidGeometry, this.centroidMaterial );
+    this.add(this.centroidMesh);
   }
 
 
@@ -70,26 +74,38 @@ class PObject extends THREE.Group
     if(this.type == 1) //cluster
     {
       this.state = new Int32Array(data.slice(5,9))[0];
-      var bounds = new Float32Array(data.slice(9,9+6*4));
+      var clusterData = new Float32Array(data.slice(9,9 + 12*4));
 
-      var boxMin = new THREE.Vector3(bounds[0],bounds[1],bounds[2]);
-      var boxMax = new THREE.Vector3(bounds[3],bounds[4],bounds[5]);
+      var centroid = new THREE.Vector3(clusterData[0],clusterData[1],clusterData[2]);
+      var velocity = new THREE.Vector3(clusterData[3],clusterData[4],clusterData[5]);
+      var boxMin = new THREE.Vector3(clusterData[6],clusterData[7],clusterData[8]);
+      var boxMax = new THREE.Vector3(clusterData[9],clusterData[10],clusterData[11]);
+
       var boxSize = new THREE.Vector3().add(boxMax).sub(boxMin);
       var boxCenter = new THREE.Vector3().add(boxMin).add(boxMax).divideScalar(2);
       
       this.boxGeometry =  new THREE.BoxGeometry(boxSize.x,boxSize.y,boxSize.z);
       this.boxGeometry.translate(boxCenter.x, boxCenter.y, boxCenter.z);
-
       this.boxMesh.geometry = this.boxGeometry;
+      
+      this.centroidGeometry =  new THREE.SphereGeometry(.01,32,16);
+      this.centroidGeometry.translate(centroid.x, centroid.y, centroid.z);
+      this.centroidMesh.geometry = this.centroidGeometry;
 
-      if(this.state == 3)  this.boxMaterial.color = this.ghostColor;
+      if(this.state == 3)
+      {
+        this.boxMaterial.color = this.ghostColor;
+        this.centroidMaterial.color = this.ghostColor;
+      } 
       else 
       {
-        this.boxMaterial.color = new THREE.Color(this.color);
-        this.boxMaterial.color.offsetHSL(0,0,.2);
+        var bColor = new THREE.Color(this.color);
+        bColor.offsetHSL(0,0,.2);
+        this.boxMaterial.color = bColor;
+        this.centroidMaterial.color = bColor;
       }
 
-      verticesIndex += 4 + 6*4; //state = 4 bytes, boxMinMax = 6 * 4 bytes
+      verticesIndex += 4 + 12*4; //state = 4 bytes, boxMinMax = 6 * 4 bytes
     }
 
     if(this.state == 3)  this.cloudMaterial.color = this.ghostColor;
@@ -212,22 +228,21 @@ class App {
 
   addObject(o)
   {
-    console.log("add object with id",o.objectID);
+    //console.log("add object with id",o.objectID);
     this.scene.add(o);
     this.objects.push(o);
   }
 
   removeObject(o)
   {
-    console.log("remove object with id",o.objectID,this.objects.indexOf(o));
+    //console.log("remove object with id",o.objectID,this.objects.indexOf(o));
     this.scene.remove(o);
     this.objects.splice(this.objects.indexOf(o), 1);
   }
 
   clearObjects()
   {
-    for(var i = 0;i<objects.length;i++) this.scene.remove(o);
-        this.objects.clear();
+    while(this.objects.length > 0) this.removeObject(this.objects[0]);
   }
 
   //Websocket
@@ -254,14 +269,15 @@ class App {
   onSocketClose(event) 
   {
     this.clearObjects();
-    setTimeout(function () {this.connectWebSocket();}, 1000);
+    var _app = this;
+    setTimeout(function () { _app.connectWebSocket(); }, 1000);
   };
 
   onSocketError(event)
   {
     if(this.socketFirstConnect) console.log("WebSocket Error: " + error);
-      socketFirstConnect = false;
-      this.clearObjects();
+    this.socketFirstConnect = false;
+    this.clearObjects();
   }
   
   onSocketMessage(event) 

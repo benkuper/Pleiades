@@ -106,6 +106,13 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 	os.writeByte(ClusterType); //cluster type
 	os.writeInt(cluster->id);
 	os.writeInt((int)cluster->state); //cluster type
+
+	os.writeFloat(cluster->centroid.x);
+	os.writeFloat(cluster->centroid.y);
+	os.writeFloat(cluster->centroid.z);
+	os.writeFloat(cluster->velocity.x);
+	os.writeFloat(cluster->velocity.y);
+	os.writeFloat(cluster->velocity.z);
 	os.writeFloat(cluster->boundingBoxMin.x);
 	os.writeFloat(cluster->boundingBoxMin.y);
 	os.writeFloat(cluster->boundingBoxMin.z);

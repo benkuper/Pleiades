@@ -16,6 +16,9 @@ OneEuroFilterNode::OneEuroFilterNode(var params) :
 	minCutOff = addFloatParameter("Min Cutoff", "Minimum cutoff", 1, 0);
 	beta = addFloatParameter("Beta", "Beta", 10, 0);
 	derivativeCutOff = addFloatParameter("Derivative CutOff", "", 0, 0);
+
+	affectCentroid = addBoolParameter("Affect Centroid", "", true);
+	affectBoundingBox = addBoolParameter("Affect Bouding Box", "", true);
 }
 
 OneEuroFilterNode::~OneEuroFilterNode()
@@ -29,6 +32,8 @@ void OneEuroFilterNode::processInternal()
 
 	for (auto& cf : filters) cf->hasProcessed = true;
 
+	bool affectC = affectCentroid->boolValue();
+	bool affectB = affectBoundingBox->boolValue();
 	for (auto& s : sources)
 	{
 		if (!idFilterMap.contains(s->id))
@@ -40,10 +45,13 @@ void OneEuroFilterNode::processInternal()
 		}
 
 		ClusterFilter* cf = idFilterMap[s->id];
-		s->centroid = (&cf->filters[0])->filter(s->oldCentroid, s->centroid, deltaTime);
-		s->boundingBoxMin = (&cf->filters[1])->filter(s->oldBoundingBoxMin, s->boundingBoxMin, deltaTime);
-		s->boundingBoxMax = (&cf->filters[2])->filter(s->oldBoundingBoxMax, s->boundingBoxMax, deltaTime);
-		
+		if(affectC) s->centroid = (&cf->filters[0])->filter(s->oldCentroid, s->centroid, deltaTime);
+		if (affectB)
+		{
+			s->boundingBoxMin = (&cf->filters[1])->filter(s->oldBoundingBoxMin, s->boundingBoxMin, deltaTime);
+			s->boundingBoxMax = (&cf->filters[2])->filter(s->oldBoundingBoxMax, s->boundingBoxMax, deltaTime);
+		}
+
 		cf->hasProcessed = true;
 	}
 

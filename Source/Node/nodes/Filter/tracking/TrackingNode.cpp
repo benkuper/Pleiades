@@ -14,13 +14,13 @@ TrackingNode::TrackingNode(var params) :
 {
 	addInOutSlot(&in, &out, CLUSTERS);
 
-	searchDist = addFloatParameter("Search Distance","in meter", .1f,0,1);
+	searchDist = addFloatParameter("Search Distance", "in meter", .1f, 0, 1);
 	enableGhosting = addBoolParameter("Enable Ghosting", "", false);
 	ghostSearchDist = addFloatParameter("Ghost Search Distance", "in meter", .1f);
-	minAgeForGhost = addFloatParameter("Min Ghost Age", "in seconds.",1); // Minimum required age to become a ghost, default 1
-	maxGhostAge = addFloatParameter("Max Ghost Age","in seconds.", 1); // Maximum time in sec a ghost can remain, default 0.5f
+	minAgeForGhost = addFloatParameter("Min Ghost Age", "in seconds.", 1); // Minimum required age to become a ghost, default 1
+	maxGhostAge = addFloatParameter("Max Ghost Age", "in seconds.", 1); // Maximum time in sec a ghost can remain, default 0.5f
 
-	clearClusters = addTrigger("Clear clusters","");
+	clearClusters = addTrigger("Clear clusters", "");
 }
 
 TrackingNode::~TrackingNode()
@@ -36,7 +36,7 @@ void TrackingNode::processInternal()
 
 	//NNLOG("Start of tracking, new clusters << " << newClusters.size() << ", num clusters " << trackedClusters.size());
 	int numRemoved = trackedClusters.removeIf([](ClusterPtr c) { return c->state == Cluster::WILL_LEAVE; });
-	if(numRemoved > 0) NNLOG(numRemoved << " clusters removed, remaining " << trackedClusters.size());
+	if (numRemoved > 0) NNLOG(numRemoved << " clusters removed, remaining " << trackedClusters.size());
 
 	//Hungarian Matching
 
@@ -63,7 +63,7 @@ void TrackingNode::processInternal()
 
 		ClusterPtr cluster = trackedClusters[i];
 
-		auto timeDiff = curTime - cluster->lastUpdateTime;
+		double timeDiff = curTime - cluster->lastUpdateTime;
 
 		Vector3D<float> predictedCentroid = cluster->centroid + cluster->velocity * timeDiff; // Dumb prediction
 
@@ -83,17 +83,6 @@ void TrackingNode::processInternal()
 
 		distanceMatrix.set(i, tDistMatrix);
 	}
-
-
-	String matDbg;
-	for (int i = 0; i < distanceMatrix.size(); i++)
-	{
-		matDbg += String(i) + " [";
-		for (int j = 0; j < distanceMatrix[i].size(); j++) matDbg += String(distanceMatrix[i][j]) + ",";
-		matDbg += "]\n";
-	}
-
-	DBG(matDbg);
 
 	// Weight distance to reduce new object, potential false-positive to "steal" ids, see doc.
 	// https://docs.google.com/document/d/1iQvuF4_4AHZbrWNMZPK_ZoerLovdRzTVwKP8m-xlYKM/edit
@@ -124,14 +113,17 @@ void TrackingNode::processInternal()
 
 	hungarian.Solve(distanceMatrix, matchedClusterIndices);
 
+	
 
 	double curT = Time::getMillisecondCounterHiRes() / 1000.0;
-	
+
 	for (size_t i = 0; i < trackedClusters.size(); i++)
 	{
 
 		ClusterPtr cluster = trackedClusters[i];
 		int matchedID = matchedClusterIndices[i];
+
+		if (matchedID != -1 && distanceMatrix[i][matchedID] == INT32_MAX) matchedID = -1;
 
 		if (matchedID != -1)
 		{
@@ -188,8 +180,8 @@ void TrackingNode::processInternal()
 		ClusterPtr cluster = newClusters[newClusterIndices[i]];
 		cluster->id = curTrackingID++;
 		cluster->state = Cluster::ENTERED;
+
 		NNLOG("Add new cluster width id " << cluster->id);
-		//cluster->oid = newClustersIndexStart + i;
 		trackedClusters.add(cluster);
 	}
 

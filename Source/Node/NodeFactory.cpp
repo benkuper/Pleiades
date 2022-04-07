@@ -22,6 +22,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<EuclideanClusterNode>("Clusters", EuclideanClusterNode::getTypeStringStatic()));
     defs.add(Definition::createDef<TrackingNode>("Clusters", TrackingNode::getTypeStringStatic()));
     defs.add(Definition::createDef<OneEuroFilterNode>("Clusters", OneEuroFilterNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<PredictionNode>("Clusters", PredictionNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<WebsocketOutputNode>("Output", WebsocketOutputNode::getTypeStringStatic()));
 }

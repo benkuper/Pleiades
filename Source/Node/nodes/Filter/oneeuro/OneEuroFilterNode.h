@@ -24,7 +24,7 @@ public:
 	{
 		//keeping track
 		int associatedID = 0;
-		bool hasProcessed = false; //flag to check if should be removed 
+		bool hasProcessed = false;
 		const int numFilters = 3;
 		OneEuroFilter filters[3];
 	};
@@ -35,6 +35,9 @@ public:
 	FloatParameter* minCutOff;
 	FloatParameter* beta;
 	FloatParameter* derivativeCutOff;
+
+	BoolParameter* affectCentroid;
+	BoolParameter* affectBoundingBox;
 
 	void processInternal() override;
 
