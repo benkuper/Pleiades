@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b1" cppLanguageStandard="17">
+              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/servus/include">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
       <FILE id="XCbp5T" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -151,17 +151,20 @@
             file="Source/MainComponent.cpp"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_USE_WIN_WEBVIEW2="1"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_USE_WIN_WEBVIEW2="1" ORGANICUI_USE_WEBSERVER="1"
+               ORGANICUI_USE_SERVUS="1" JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS="1"
+               JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
+               JUCE_IP_AND_PORT_DETECTION="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib"
             smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades" binaryPath="Binaries/Debug"
                        defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\lib\win&#10;C:\Program Files\PCL 1.10.1\lib"
-                       headerPath="../../Source&#10;../../External/orbbec/include&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
+                       headerPath="&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades" binaryPath="Binaries/Release"
                        defines="LSUFFIX=" libraryPath="..\..\External\orbbec\lib\win&#10;C:\Program Files\PCL 1.10.1\lib"
-                       headerPath="../../Source&#10;../../External/orbbec/include&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
+                       headerPath="C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Softwares/JUCE/modules"/>
@@ -177,13 +180,13 @@
       </MODULEPATHS>
     </VS2022>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="ddDsaL" bigIcon="ddDsaL"
-                externalLibraries="atomic&#10;OrbbecSDK&#10;postfilter&#10;udev&#10;pcl_common&#10;pcl_features&#10;pcl_filters&#10;pcl_io&#10;pcl_io_ply&#10;pcl_kdtree&#10;pcl_ml&#10;pcl_octree&#10;pcl_sample_consensus&#10;pcl_search&#10;pcl_segmentation&#10;pcl_tracking&#10;pcl_registration&#10;&#10;"
+                externalLibraries="atomic&#10;Servus&#10;OrbbecSDK&#10;postfilter&#10;udev&#10;pcl_common&#10;pcl_features&#10;pcl_filters&#10;pcl_io&#10;pcl_io_ply&#10;pcl_kdtree&#10;pcl_ml&#10;pcl_octree&#10;pcl_sample_consensus&#10;pcl_search&#10;pcl_segmentation&#10;pcl_tracking&#10;pcl_registration&#10;&#10;"
                 extraCompilerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/orbbec/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
-                       headerPath="../../Source&#10;../../External/orbbec/include&#10;/usr/include/pcl-1.11&#10;/usr/include/eigen3&#10;/usr/include/flann&#10;"/>
-        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/orbbec/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"
-                       headerPath="../../Source&#10;../../External/orbbec/include&#10;/usr/include/pcl-1.11&#10;/usr/include/eigen3&#10;/usr/include/flann&#10;"/>
+        <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/orbbec/lib/raspberry&#10;../../External/servus/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
+                       headerPath="/usr/include/pcl-1.11&#10;/usr/include/eigen3&#10;/usr/include/flann&#10;"/>
+        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/orbbec/lib/raspberry&#10;../../External/servus/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"
+                       headerPath="/usr/include/pcl-1.11&#10;/usr/include/eigen3&#10;/usr/include/flann&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core"/>
