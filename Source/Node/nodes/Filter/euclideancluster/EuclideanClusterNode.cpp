@@ -45,7 +45,7 @@ void EuclideanClusterNode::processInternal()
 	ec.setInputCloud(source);
 	ec.extract(clusterIndices);
 
-	NNLOG("Extracted, num clusters : " << clusterIndices.size());
+	NNLOG("Extracted, num clusters : " << (int)clusterIndices.size());
 
 	if (out->isEmpty()) return;
 

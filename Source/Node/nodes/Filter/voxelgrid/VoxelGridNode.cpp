@@ -38,7 +38,7 @@ void VoxelGridNode::processInternal()
 	sor.setLeafSize(ls.x, ls.y, ls.z);
 	sor.filter(*cloud);
 
-	NNLOG("After downsample, num clusters : " << cloud->size());
+	NNLOG("After downsample, num clusters : " << (int)cloud->size());
 
 	sendPointCloud(out, cloud );
 }

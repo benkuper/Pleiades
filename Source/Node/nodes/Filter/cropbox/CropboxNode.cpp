@@ -40,14 +40,14 @@ void CropBoxNode::processInternal()
 
 	CloudPtr sCloud = source;
 
-	NNLOG("Cloud in size : " << source->size());
+	NNLOG("Cloud in size : " << (int)source->size());
 	if (cleanUp->boolValue())
 	{
 
 		sCloud = CloudPtr(new Cloud(source->width, source->height));
 		pcl::Indices indices;
 		pcl::removeNaNFromPointCloud(*source, *sCloud, indices);
-		NNLOG("Clean cloud size : " << sCloud->size());
+		NNLOG("Clean cloud size : " << (int)sCloud->size());
 	}
 
 	pcl::CropBox<pcl::PointXYZ> filter;
@@ -57,7 +57,7 @@ void CropBoxNode::processInternal()
 	filter.setMax(Eigen::Vector4f(maxV.x, maxV.y, maxV.z, 1));
 	filter.filter(*cloud);
 
-	NNLOG("After crop : " << cloud->size());
+	NNLOG("After crop : " << (int)cloud->size());
 	sendPointCloud(out, cloud);
 }
 

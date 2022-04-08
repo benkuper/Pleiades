@@ -109,7 +109,7 @@ void PlaneSegmentationNode::processInternal()
 		planeCenter /= inliers->indices.size();
 
 		int diff = Time::getMillisecondCounter() - millis;
-		NNLOG("Found plane with " << inliers->indices.size() << " points in " << diff << "ms.\nPlane center " << planeCenter.x() << ", " << planeCenter.y() << ", " << planeCenter.z() << ".Plane Normal " << planeNormal.x() << ", " << planeNormal.y() << ", " << planeNormal.z());
+		NNLOG("Found plane with " << (int)inliers->indices.size() << " points in " << diff << "ms.\nPlane center " << planeCenter.x() << ", " << planeCenter.y() << ", " << planeCenter.z() << ".Plane Normal " << planeNormal.x() << ", " << planeNormal.y() << ", " << planeNormal.z());
 
 		reproj = Eigen::Quaternionf::FromTwoVectors(planeNormal, Eigen::Vector3f(0, -1, 0));
 
