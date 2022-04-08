@@ -31,7 +31,11 @@ public:
 
     IntParameter* downSample;
     IntParameter* port;
-
+	
+	BoolParameter* doStreamClouds;
+	BoolParameter* doStreamClusters;
+	BoolParameter* streamClusterPoints;
+ 
     SimpleWebSocketServer server;
 
 

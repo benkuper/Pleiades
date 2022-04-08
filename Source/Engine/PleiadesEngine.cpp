@@ -15,6 +15,7 @@ PleiadesEngine::PleiadesEngine() :
 	Engine(ProjectInfo::projectName, ".star")
 {
 	Engine::mainEngine = this;
+	addChildControllableContainer(RootNodeManager::getInstance());
 }
 
 PleiadesEngine::~PleiadesEngine()

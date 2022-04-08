@@ -16,7 +16,9 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 
 	port = addIntParameter("Local Port", "Port to bind the server to", 6060, 1024, 65535);
 	downSample = addIntParameter("Downsample", "Simple down sample before sending to the clients, not 2d downsampling, but once every x.", 1, 1, 16);
-	
+	doStreamClouds = addBoolParameter("Stream Clouds", "Stream Clouds", true);
+	doStreamClusters = addBoolParameter("Stream Clusters", "Stream Clusters", true);
+	streamClusterPoints = addBoolParameter("Stream Cluster Points","Stream cloud inside clusters", true);
 	initServer();
 }
 
@@ -51,6 +53,8 @@ void WebsocketOutputNode::initServer()
 
 void WebsocketOutputNode::processInternal()
 {
+	if(doStreamClouds->boolValue())
+	{
 	int id = 1;
 	for (auto& s : inClouds)
 	{
@@ -59,13 +63,18 @@ void WebsocketOutputNode::processInternal()
 		if (c == nullptr) continue;
 		streamCloud(c, id++);
 	}
+	}
 
+
+	if(doStreamClusters->boolValue())
+	{
 	for (auto& s : inClusters)
 	{
 		if (s->isEmpty()) continue;
 		Array<ClusterPtr> c = slotClustersMap[s];
 		if (c.isEmpty()) continue;
 		streamClusters(c);
+	}
 	}
 }
 
@@ -98,7 +107,8 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 {
 	if (server.getNumActiveConnections() == 0) return;
 	if (cluster->cloud == nullptr) return;
-
+	
+	bool includeContent = streamClusterPoints->boolValue();
 	MemoryOutputStream os;
 
 	NNLOG("Send cluster with id " << cluster->id);
@@ -120,6 +130,8 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 	os.writeFloat(cluster->boundingBoxMax.y);
 	os.writeFloat(cluster->boundingBoxMax.z);
 
+	if(includeContent)
+	{
 	int ds = downSample->intValue();
 	for (int i = 0; i < cluster->cloud->size(); i += ds)
 	{
@@ -127,6 +139,7 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 		os.writeFloat(p.x);
 		os.writeFloat(p.y);
 		os.writeFloat(p.z);
+	}
 	}
 	server.send((char*)os.getData(), os.getDataSize());
 }
