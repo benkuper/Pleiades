@@ -124,6 +124,13 @@ void Node::receiveIndices(NodeConnectionSlot* slot, PIndices indices)
 	if (slot->processOnReceive) addNextToProcess();
 }
 
+void Node::receiveImage(NodeConnectionSlot* slot, ImagePtr image)
+{
+	slotImageMap.set(slot, image);
+	if (slot->processOnReceive) addNextToProcess();
+}
+
+
 void Node::clearSlotMaps()
 {
 	slotCloudMap.clear();
@@ -189,11 +196,22 @@ void Node::sendIndices(NodeConnectionSlot* slot, PIndices indices)
 	}
 }
 
+void Node::sendImage(NodeConnectionSlot* slot, ImagePtr image)
+{
+	if (slot == nullptr) return;
+	for (auto& c : slot->connections)
+	{
+		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
+		c->dest->node->receiveImage(c->dest, image);
+	}
+}
+
 void Node::addInOutSlot(NodeConnectionSlot** in, NodeConnectionSlot** out, NodeConnectionType type, StringRef inName, StringRef outName, bool passthrough)
 {
 	*in = addSlot(inName, true, type);
 	*out = addSlot(outName, false, type);
-	if (passthrough) passthroughMap.set(*in,*out);
+	if (passthrough) passthroughMap.set(*in, *out);
 }
 
 NodeConnectionSlot* Node::getSlotWithName(StringRef name, bool isInput)

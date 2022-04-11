@@ -148,9 +148,10 @@ Colour NodeConnection::getColorForType(NodeConnectionType t)
 	{
 	case POINTCLOUD: return BLUE_COLOR;
 	case CLUSTERS: return GREEN_COLOR;
-	case MATRIX: return RED_COLOR;
+	case MATRIX: return Colours::orange;
 	case INDICES: return YELLOW_COLOR;
 	case VECTOR: return Colours::purple;
+	case RGB: return RED_COLOR;
 	default: break;
 	}
 

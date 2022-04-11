@@ -19,14 +19,12 @@ PlaneSegmentationNode::PlaneSegmentationNode(var params) :
 	planeCenterSlot = addSlot("Plane Center", false, VECTOR);
 	planeNormalSlot = addSlot("Plane Normal", false, VECTOR);
 
-	autoFind = addBoolParameter("Auto Find", "If checked, this will automatically find a plane if not found yet", true);
 	continuous = addBoolParameter("Continuous Search", "If checked, search always for the plane. Otherwise, it will only search when triggering", false);
 	findPlane = addTrigger("Find Plane", "Find the plane. Now.");
 
 	downSample = addIntParameter("Down Sample", "Down sample for the segmentation. The transformed cloud keep the source resolution", 1, 1, 16);
 	distanceThreshold = addFloatParameter("Distance Threshold", "Distance Threshold", .01, 0);
 	invertPlane = addBoolParameter("Invert Plane", "If checked, send the cloud without the plane points.If not, sends only the plane points", false);
-	;
 }
 
 PlaneSegmentationNode::~PlaneSegmentationNode()
@@ -68,8 +66,6 @@ void PlaneSegmentationNode::processInternal()
 			}
 		}
 	}
-
-	if (autoFind->boolValue() && planeCenter == Eigen::Vector3f::Zero()) findOnNextProcess = true;
 
 	if (continuous->boolValue() || findOnNextProcess)
 	{
@@ -141,6 +137,39 @@ void PlaneSegmentationNode::processInternal()
 
 	sendVector(planeCenterSlot, planeCenter);
 	sendVector(planeNormalSlot, planeNormal);
+}
+
+var PlaneSegmentationNode::getJSONData()
+{
+	var data = Node::getJSONData();
+	var planeData;
+	planeData.append(planeCenter.x());
+	planeData.append(planeCenter.y());
+	planeData.append(planeCenter.z());
+
+	planeData.append(planeNormal.x());
+	planeData.append(planeNormal.y());
+	planeData.append(planeNormal.z());
+
+	planeData.append(reproj.w());
+	planeData.append(reproj.x());
+	planeData.append(reproj.y());
+	planeData.append(reproj.z());
+
+	data.getDynamicObject()->setProperty("planeData", planeData);
+	return data;
+}
+
+void PlaneSegmentationNode::loadJSONDataItemInternal(var data)
+{
+	Node::loadJSONDataItemInternal(data);
+	var planeData = data.getProperty("planeData",var());
+	if (planeData.size() >= 10)
+	{
+		planeCenter = Eigen::Vector3f(planeData[0], planeData[1], planeData[2]);
+		planeNormal = Eigen::Vector3f(planeData[3], planeData[4], planeData[5]);
+		reproj = Eigen::Quaternionf(planeData[6], planeData[7], planeData[8], planeData[9]);
+	}
 }
 
 void PlaneSegmentationNode::onContainerParameterChangedInternal(Parameter* p)

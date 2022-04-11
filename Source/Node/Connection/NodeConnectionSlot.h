@@ -13,7 +13,7 @@
 class Node;
 class NodeConnection;
 
-enum NodeConnectionType {UNKNOWN, POINTCLOUD, VECTOR, MATRIX, CLUSTERS, INDICES };
+enum NodeConnectionType {UNKNOWN, POINTCLOUD, VECTOR, MATRIX, CLUSTERS, INDICES, RGB };
 
 class NodeConnectionSlot
 {

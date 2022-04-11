@@ -23,7 +23,6 @@ public:
     NodeConnectionSlot* planeCenterSlot;
     NodeConnectionSlot* planeNormalSlot;
 
-    BoolParameter* autoFind;
     BoolParameter* continuous;
     Trigger* findPlane;
 
@@ -38,6 +37,9 @@ public:
     bool findOnNextProcess;
 
     void processInternal() override;
+
+    var getJSONData() override;
+    void loadJSONDataItemInternal(var data) override;
 
     void onContainerParameterChangedInternal(Parameter* p) override;
     void onContainerTriggerTriggered(Trigger* t) override;

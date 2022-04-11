@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/servus/include">
+              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/servus/include&#10;../../External/opencv/include">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
       <FILE id="XCbp5T" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -63,6 +63,10 @@
             </GROUP>
           </GROUP>
           <GROUP id="{E6992AFD-0D64-AC68-683F-4505B5819100}" name="Filter">
+            <GROUP id="{F400B7FE-2811-A656-5DA9-42E0971626BF}" name="qrcode">
+              <FILE id="rOPWRe" name="QRCodeNode.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeNode.cpp"/>
+              <FILE id="ECqMCd" name="QRCodeNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeNode.h"/>
+            </GROUP>
             <GROUP id="{815E8A86-4A80-3164-7D9F-5F26C653156F}" name="voxelgrid">
               <FILE id="LpRlLj" name="VoxelGridNode.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/Filter/voxelgrid/VoxelGridNode.cpp"/>
@@ -156,14 +160,14 @@
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
                JUCE_IP_AND_PORT_DETECTION="1"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib"
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455.lib"
             smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades" binaryPath="Binaries/Debug"
-                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\lib\win&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\lib\win&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
                        headerPath="&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades" binaryPath="Binaries/Release"
-                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\lib\win&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\lib\win&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
                        headerPath="C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

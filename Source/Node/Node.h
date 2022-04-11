@@ -46,6 +46,7 @@ public:
 	HashMap<NodeConnectionSlot*, Eigen::Matrix4f> slotMatrixMap;
 	HashMap<NodeConnectionSlot*, Eigen::Vector3f> slotVectorMap;
 	HashMap<NodeConnectionSlot*, PIndices> slotIndicesMap;
+	HashMap<NodeConnectionSlot*, ImagePtr> slotImageMap;
 
 	HashMap<NodeConnectionSlot*, NodeConnectionSlot*> passthroughMap;
 
@@ -76,6 +77,7 @@ public:
 	virtual void receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
 	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
+	virtual void receiveImage(NodeConnectionSlot* slot, ImagePtr indices);
 
 	void clearSlotMaps();
 
@@ -84,6 +86,7 @@ public:
 	void sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
 	void sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);
+	void sendImage(NodeConnectionSlot* slot, ImagePtr indices);
 
 	//Helpers
 	void addInOutSlot(NodeConnectionSlot** in, NodeConnectionSlot** out, NodeConnectionType type, StringRef inName = "In", StringRef outName = "out", bool passthrough = true);

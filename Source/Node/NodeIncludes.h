@@ -23,6 +23,14 @@
 #include "libobsensor/ObSensor.hpp"
 #pragma warning(pop)
 
+//opencv
+#include "opencv2/core.hpp"
+#include "opencv2/calib3d.hpp"
+#include "opencv2/features2d.hpp"
+
+
+typedef std::shared_ptr<Image> ImagePtr;
+
 // classes
 
 #include "Connection/NodeConnectionSlot.h"
@@ -47,7 +55,10 @@
 #include "nodes/Filter/oneeuro/OneEuroFilter.h"
 #include "nodes/Filter/oneeuro/OneEuroFilterNode.h"
 
+#include "nodes/Filter/qrcode/QRCodeNode.h"
+
 #include "nodes/Source/astraplus/AstraPlusNode.h"
+
 
 
 #include "Connection/ui/NodeConnector.h"
