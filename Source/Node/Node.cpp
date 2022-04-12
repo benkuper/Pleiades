@@ -1,4 +1,3 @@
-#include "Node.h"
 /*
   =============================================================================
 
@@ -25,6 +24,16 @@ Node::~Node()
 {
 	slotCloudMap.clear();
 	masterReference.clear();
+}
+
+String Node::getUIInfos()
+{
+	return String();
+}
+
+Image Node::getPreviewImage()
+{
+	return Image();
 }
 
 void Node::clearItem()
@@ -124,7 +133,7 @@ void Node::receiveIndices(NodeConnectionSlot* slot, PIndices indices)
 	if (slot->processOnReceive) addNextToProcess();
 }
 
-void Node::receiveImage(NodeConnectionSlot* slot, ImagePtr image)
+void Node::receiveImage(NodeConnectionSlot* slot, Image image)
 {
 	slotImageMap.set(slot, image);
 	if (slot->processOnReceive) addNextToProcess();
@@ -196,7 +205,7 @@ void Node::sendIndices(NodeConnectionSlot* slot, PIndices indices)
 	}
 }
 
-void Node::sendImage(NodeConnectionSlot* slot, ImagePtr image)
+void Node::sendImage(NodeConnectionSlot* slot, Image image)
 {
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)

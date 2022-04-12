@@ -9,7 +9,7 @@
 */
 
 TrackingNode::TrackingNode(var params) :
-	Node(getTypeString(), OUTPUT, params),
+	Node(getTypeString(), FILTER, params),
 	curTrackingID(0)
 {
 	addInOutSlot(&in, &out, CLUSTERS);

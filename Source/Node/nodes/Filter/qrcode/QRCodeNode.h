@@ -17,26 +17,29 @@ public:
     QRCodeNode(var params = var());
     ~QRCodeNode();
 
+
     NodeConnectionSlot* inColor;
     NodeConnectionSlot* inDepth;
     NodeConnectionSlot* out;
     NodeConnectionSlot* planeCenterSlot;
-    NodeConnectionSlot* planeNormalSlot;
 
-    BoolParameter* autoFind;
+    enum PreviewImageType { BINARY, CONTOUR, CONTOUR_BINARIZED, LINES, PREVIEW_OUTPUT, PREVIEW_INPUT, EXTRACTED_IMAGE };
+    EnumParameter* previewType;
+    Image qrImage;
+
     BoolParameter* continuous;
     Trigger* findPlane;
+    BoolParameter* transformPlane;
 
     Eigen::Vector3f planeCenter;
-    Eigen::Vector3f planeNormal;
-    Eigen::Quaternionf reproj;
-
     bool findOnNextProcess;
 
     void processInternal() override;
 
     void onContainerParameterChangedInternal(Parameter* p) override;
     void onContainerTriggerTriggered(Trigger* t) override;
+
+    Image getPreviewImage();
 
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;

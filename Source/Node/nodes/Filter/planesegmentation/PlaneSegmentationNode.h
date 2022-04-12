@@ -20,6 +20,7 @@ public:
     NodeConnectionSlot* in;
     NodeConnectionSlot* out;
     NodeConnectionSlot* planeCloud;
+    NodeConnectionSlot* inCenter;
     NodeConnectionSlot* planeCenterSlot;
     NodeConnectionSlot* planeNormalSlot;
 

@@ -9,7 +9,7 @@
 */
 
 EuclideanClusterNode::EuclideanClusterNode(var params) :
-	Node(getTypeString(), OUTPUT, params)
+	Node(getTypeString(), FILTER, params)
 {
 	in = addSlot("In", true, POINTCLOUD);
 	out = addSlot("Out", false, CLUSTERS);

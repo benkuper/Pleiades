@@ -9,7 +9,7 @@
 */
 
 OneEuroFilterNode::OneEuroFilterNode(var params) :
-	Node(getTypeString(), OUTPUT, params)
+	Node(getTypeString(), FILTER, params)
 {
 	addInOutSlot(&in, &out, CLUSTERS);
 

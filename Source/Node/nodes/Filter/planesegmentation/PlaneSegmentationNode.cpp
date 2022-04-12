@@ -10,10 +10,12 @@
 
 
 PlaneSegmentationNode::PlaneSegmentationNode(var params) :
-	Node(getTypeString(), OUTPUT, params),
+	Node(getTypeString(), FILTER, params),
 	findOnNextProcess(false)
 {
 	addInOutSlot(&in, &out, POINTCLOUD, "In", "Transformed");
+
+	inCenter = addSlot("Plane Center In", true, VECTOR);
 
 	planeCloud = addSlot("Segmented", false, POINTCLOUD);
 	planeCenterSlot = addSlot("Plane Center", false, VECTOR);
@@ -35,7 +37,7 @@ PlaneSegmentationNode::~PlaneSegmentationNode()
 void PlaneSegmentationNode::processInternal()
 {
 	CloudPtr source = slotCloudMap[in];
-	if (source->empty()) return;
+	if (source == nullptr || source->empty()) return;
 
 	//jassert(source->isOrganized());
 
@@ -93,18 +95,23 @@ void PlaneSegmentationNode::processInternal()
 			return;
 		}
 
+
+		if (inCenter->isEmpty())
+		{
+			planeCenter.setZero();
+			for (auto& i : inliers->indices)
+			{
+				planeCenter += Eigen::Vector3f(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+			}
+			planeCenter /= inliers->indices.size();
+		}
+
 		planeNormal.x() = coefficients->values[0];
 		planeNormal.y() = coefficients->values[1];
 		planeNormal.z() = coefficients->values[2];
 
-		planeCenter.setZero();
-		for (auto& i : inliers->indices)
-		{
-			planeCenter += Eigen::Vector3f(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-		}
-		planeCenter /= inliers->indices.size();
-
 		int diff = Time::getMillisecondCounter() - millis;
+
 		NNLOG("Found plane with " << (int)inliers->indices.size() << " points in " << diff << "ms.\nPlane center " << planeCenter.x() << ", " << planeCenter.y() << ", " << planeCenter.z() << ".Plane Normal " << planeNormal.x() << ", " << planeNormal.y() << ", " << planeNormal.z());
 
 		reproj = Eigen::Quaternionf::FromTwoVectors(planeNormal, Eigen::Vector3f(0, -1, 0));
@@ -122,6 +129,8 @@ void PlaneSegmentationNode::processInternal()
 
 		findOnNextProcess = false;
 	}
+
+	if (!inCenter->isEmpty()) planeCenter = Eigen::Vector3f(slotVectorMap[inCenter]);
 
 	if (!out->isEmpty())
 	{
@@ -163,7 +172,7 @@ var PlaneSegmentationNode::getJSONData()
 void PlaneSegmentationNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
-	var planeData = data.getProperty("planeData",var());
+	var planeData = data.getProperty("planeData", var());
 	if (planeData.size() >= 10)
 	{
 		planeCenter = Eigen::Vector3f(planeData[0], planeData[1], planeData[2]);

@@ -28,22 +28,29 @@ public:
     static std::shared_ptr<ob::VideoStreamProfile> depthProfile;
     std::shared_ptr<ob::Config> config;
 
-    NodeConnectionSlot* out;
+    NodeConnectionSlot* outDepth;
+    NodeConnectionSlot* outColor;
     IntParameter* downSample;
+    BoolParameter* processDepth;
+    BoolParameter* processColor;
+    BoolParameter* alignDepthToColor;
     BoolParameter* processOnlyOnNewFrame;
+
 
     float ifx;
     float ify;
     
     SpinLock frameLock;
     uint8_t* depthData;
+    
+    Image colorImage;
+
     bool newFrameAvailable;
 
     bool initInternal() override;
 
     void setupProfiles();
     void setupPipeline();
-   // void setupPointCloud();
 
     void processInternal() override;
     void processInternalPassthroughInternal() override;
@@ -51,6 +58,8 @@ public:
     void run() override;
 
     void onContainerParameterChangedInternal(Parameter* p) override;
+
+    Image getPreviewImage() override;
 
     String getTypeString() const override { return getTypeStringStatic(); }
     static String getTypeStringStatic() { return "Astra+"; }

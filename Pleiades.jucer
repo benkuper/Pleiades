@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/servus/include&#10;../../External/opencv/include">
+              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;../../External/zbar/include">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
       <FILE id="XCbp5T" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -20,6 +20,8 @@
         <FILE id="DkTa07" name="Viz.h" compile="0" resource="0" file="Source/Viz/Viz.h"/>
       </GROUP>
       <GROUP id="{83B4852A-DD1B-1EB1-32DB-D152BB1C56B3}" name="Node">
+        <FILE id="rBex6y" name="NodeIncludes2.cpp" compile="1" resource="0"
+              file="Source/Node/NodeIncludes2.cpp"/>
         <GROUP id="{F25D3BB4-9900-B24B-9F56-76B0034BBE74}" name="Connection">
           <GROUP id="{113147B8-2C22-8462-1830-773CD586BDBB}" name="ui">
             <FILE id="tWPGQZ" name="NodeConnectionManagerViewUI.cpp" compile="0"
@@ -64,6 +66,21 @@
           </GROUP>
           <GROUP id="{E6992AFD-0D64-AC68-683F-4505B5819100}" name="Filter">
             <GROUP id="{F400B7FE-2811-A656-5DA9-42E0971626BF}" name="qrcode">
+              <GROUP id="{CD38DEBF-87CA-8666-AE05-C45512EBCFF0}" name="QRCodeScanner">
+                <FILE id="ubdhhD" name="CodeFinder.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/CodeFinder.cpp"/>
+                <FILE id="UdocSi" name="CodeFinder.hpp" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/CodeFinder.hpp"/>
+                <FILE id="eK4Kv4" name="FinderPatternModel.hpp" compile="0" resource="0"
+                      file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/FinderPatternModel.hpp"/>
+                <FILE id="NjaTi6" name="ImageBinarization.cpp" compile="0" resource="0"
+                      file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.cpp"/>
+                <FILE id="LA8iYg" name="ImageBinarization.hpp" compile="0" resource="0"
+                      file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.hpp"/>
+              </GROUP>
+              <GROUP id="{61C57A38-5874-33B7-E869-B997A0ABF043}" name="ui">
+                <FILE id="coEZNY" name="QRCodeNodeUI.cpp" compile="0" resource="0"
+                      file="Source/Node/nodes/Filter/qrcode/ui/QRCodeNodeUI.cpp"/>
+                <FILE id="lo824C" name="QRCodeNodeUI.h" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/ui/QRCodeNodeUI.h"/>
+              </GROUP>
               <FILE id="rOPWRe" name="QRCodeNode.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeNode.cpp"/>
               <FILE id="ECqMCd" name="QRCodeNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeNode.h"/>
             </GROUP>
@@ -160,7 +177,7 @@
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
                JUCE_IP_AND_PORT_DETECTION="1"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455.lib"
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib"
             smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades" binaryPath="Binaries/Debug"

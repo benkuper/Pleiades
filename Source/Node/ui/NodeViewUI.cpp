@@ -22,6 +22,7 @@ BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	statsLabel.setColour(statsLabel.textColourId, NORMAL_COLOR.brighter());
 	statsLabel.setOpaque(false);
 	statsLabel.setJustificationType(Justification::centredRight);
+	statsLabel.setInterceptsMouseClicks(false, false);
 	addAndMakeVisible(statsLabel);
 
 	updateConnectors();
@@ -79,6 +80,20 @@ void BaseNodeViewUI::paint(Graphics& g)
 {
 	BaseItemUI::paint(g);
 
+	Rectangle<int> mr = getMainBounds();
+	mr.removeFromTop(headerHeight + headerGap).reduced(2);
+
+	if (!item->miniMode->boolValue())
+	{
+		GenericScopedLock lock(item->imageLock);
+		Image img = item->getPreviewImage();
+		if(img.isValid())
+		{
+			RectanglePlacement p;
+			p.getTransformToFit(img.getBounds().toFloat(), mr.toFloat());
+			g.drawImage(img, mr.toFloat(), p);
+		}
+	}
 }
 
 void BaseNodeViewUI::paintOverChildren(Graphics& g)
@@ -145,6 +160,7 @@ void BaseNodeViewUI::refreshStats()
 {
 	if (inspectable.wasObjectDeleted()) return;
 	statsLabel.setText(String(item->processTimeMS) + "ms", dontSendNotification);
+	if (!item->miniMode->boolValue() && item->getPreviewImage().isValid()) repaint();
 }
 
 void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)

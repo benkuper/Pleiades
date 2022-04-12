@@ -1,4 +1,3 @@
-#include "AstraPlusNode.h"
 /*
   ==============================================================================
 
@@ -22,9 +21,14 @@ AstraPlusNode::AstraPlusNode(var params) :
 	depthData(nullptr),
 	newFrameAvailable(false)
 {
-	out = addSlot("Out", false, POINTCLOUD);
+	outDepth = addSlot("Out Cloud", false, POINTCLOUD);
+	outColor = addSlot("Out Color", false, RGB);
 
 	downSample = addIntParameter("Down Sample", "Simple downsampling from the initial 640x480 point cloud. Value of 2 will result in a 320x240 point cloud", 2, 1, 16);
+
+	processDepth = addBoolParameter("Process Depth", "If checked, will process depth frames", true);
+	processColor = addBoolParameter("Process Color", "If checked, will process color frames", false);
+	alignDepthToColor = addBoolParameter("Align Depth to Color", "If checked, this  will change the depth frame to pixel match the color frame", true);
 	processOnlyOnNewFrame = addBoolParameter("Process only on new frame", "If checked, this will skip processing when no new frame available", false);
 }
 
@@ -36,7 +40,9 @@ AstraPlusNode::~AstraPlusNode()
 void AstraPlusNode::clearItem()
 {
 	Node::clearItem();
-	out = nullptr;
+	outDepth = nullptr;
+	outColor = nullptr;
+
 	if (depthData != nullptr) free(depthData);
 }
 
@@ -57,7 +63,6 @@ bool AstraPlusNode::initInternal()
 		setupPipeline();
 
 		pipeline->start(config);
-		//setupPointCloud();
 	}
 
 	//Init depth data
@@ -65,6 +70,9 @@ bool AstraPlusNode::initInternal()
 	int dataSize = depthProfile->width() * depthProfile->height() * 2;
 	depthData = (uint8_t*)malloc(dataSize);
 	memset(depthData, 0, dataSize);
+
+
+	colorImage = Image(Image::PixelFormat::RGB, depthProfile->width(), depthProfile->height(), true);
 
 	startThread();
 
@@ -75,22 +83,28 @@ void AstraPlusNode::setupProfiles()
 {
 	auto colorProfiles = pipeline->getStreamProfileList(OB_SENSOR_COLOR);
 
-	for (int i = 0; i < (int)colorProfiles->count(); i++) {
+	const int targetWidth = 640;
+	const int targetHeight = 480;
+
+	for (int i = 0; i < (int)colorProfiles->count(); i++)
+	{
 		auto profile = colorProfiles->getProfile(i)->as<ob::VideoStreamProfile>();
-		if ((profile->format() == OB_FORMAT_YUYV || profile->format() == OB_FORMAT_I420) && profile->width() == 640) {
+		if (profile->format() == OB_FORMAT_MJPG && profile->width() == targetWidth)
+		{
 			NNLOG("Using color profile " << (int)profile->width() << "x" << (int)profile->height() << " @ " << (int)profile->fps() << " fps");
 			colorProfile = profile;
 			break;
 		}
 	}
 
-	const int targetWidth = 640;
-	const int targetHeight = 480;
+
 
 	auto depthProfiles = pipeline->getStreamProfileList(OB_SENSOR_DEPTH);
-	for (int i = 0; i < (int)depthProfiles->count(); i++) {
+	for (int i = 0; i < (int)depthProfiles->count(); i++)
+	{
 		auto profile = depthProfiles->getProfile(i)->as<ob::VideoStreamProfile>();
-		if ((profile->format() == OB_FORMAT_YUYV || profile->format() == OB_FORMAT_Y16) && profile->width() == targetWidth && profile->height() == targetHeight) {
+		if (profile->format() == OB_FORMAT_Y16 && profile->width() == targetWidth && profile->height() == targetHeight)
+		{
 			NNLOG("Using depth profile " << (int)profile->width() << "x" << (int)profile->height() << " @ " << (int)profile->fps() << " fps");
 			depthProfile = profile;
 			break;
@@ -101,30 +115,17 @@ void AstraPlusNode::setupProfiles()
 void AstraPlusNode::setupPipeline()
 {
 	config = std::make_shared<ob::Config>();
-	//config->enableStream(colorProfile);
-	config->enableStream(depthProfile);
+	if (colorProfile != nullptr && processColor->boolValue()) config->enableStream(colorProfile);
+	if (depthProfile != nullptr && processDepth->boolValue())
+	{
+		config->enableStream(depthProfile);
 
-	if (pipeline->getDevice()->isPropertySupported(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL))
-		pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL, false);
-
+		if (pipeline->getDevice()->isPropertySupported(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL))
+			pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL, alignDepthToColor->boolValue());
+		else if (pipeline->getDevice()->isPropertySupported(OB_DEVICE_PROPERTY_DEPTH_ALIGN_SOFTWARE_BOOL))
+			pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_SOFTWARE_BOOL, alignDepthToColor->boolValue());
+	}
 }
-
-//void AstraPlusNode::setupPointCloud()
-//{
-	//pointCloud = pipeline->createFilter<PointCloudFilter>();
-
-	//try {
-	//	CAMERA_PARA cameraParam = { 0 };
-	//	uint32_t    len;
-	//	pipeline->getDevice()->getStructuredData(OB_DATA_TYPE_CAMERA_PARA, &cameraParam, &len);
-	//	pointCloud->setCameraPara(cameraParam);
-	//	pointCloud->setCreatePointFormat(OB_FORMAT_POINT);
-	//}
-	//catch (...) {
-	//	NLOG(niceName,"Set point cloud camera param failed!");
-	//}
-
-//}
 
 void AstraPlusNode::processInternal()
 {
@@ -135,7 +136,8 @@ void AstraPlusNode::processInternal()
 
 	if (ifx == 0 || ify == 0)
 	{
-		OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(OBSensorType::OB_SENSOR_DEPTH);
+		OBSensorType sensorType = alignDepthToColor->boolValue() ? OBSensorType::OB_SENSOR_COLOR : OBSensorType::OB_SENSOR_DEPTH;
+		OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(sensorType);
 		ifx = intrinsic.fx;
 		ify = intrinsic.fy;
 	}
@@ -185,7 +187,8 @@ void AstraPlusNode::processInternal()
 		}
 	}
 
-	sendPointCloud(out, cloud);
+	sendPointCloud(outDepth, cloud);
+	sendImage(outColor, colorImage);
 
 	newFrameAvailable = false;
 }
@@ -210,17 +213,51 @@ void AstraPlusNode::run()
 
 		if (threadShouldExit()) break;
 
-		if (std::shared_ptr<ob::DepthFrame> frame = frameset->depthFrame())
-		{
-			uint8_t* data = (uint8_t*)frame->data();
+		uint8_t* newDepthData = nullptr;
+		uint8_t* newColorData = nullptr;
 
+		int depthDataSize = 0;
+		int colorDataSize = 0;
+
+		if (processDepth->boolValue())
+		{
+			if (std::shared_ptr<ob::DepthFrame> frame = frameset->depthFrame())
 			{
-				GenericScopedLock lock(frameLock);
-				if (depthData == nullptr) continue;
-				memcpy(depthData, data, frame->dataSize());
-				newFrameAvailable = true;
+				newDepthData = (uint8_t*)frame->data();
+				depthDataSize = frame->dataSize();
 			}
 		}
+
+		if (processColor->boolValue())
+		{
+			if (std::shared_ptr<ob::ColorFrame> frame = frameset->colorFrame())
+			{
+				newColorData = (uint8_t*)frame->data();
+				colorDataSize = frame->dataSize();
+			}
+		}
+
+		if (newDepthData != nullptr || newColorData != nullptr)
+		{
+			GenericScopedLock lock(frameLock);
+
+			if (depthData != nullptr && newDepthData != nullptr) memcpy(depthData, newDepthData, depthDataSize);
+			if (newColorData != nullptr && colorImage.isValid())
+			{
+				//Image::BitmapData bmd(colorImage, Image::BitmapData::writeOnly);
+				//memcpy(bmd.data, newColorData, colorDataSize);
+
+				MemoryInputStream is(newColorData, colorDataSize, false);
+
+				JPEGImageFormat format;
+
+				GenericScopedLock lock(imageLock);
+				colorImage = format.decodeImage(is);
+			}
+
+			newFrameAvailable = true;
+		}
+
 		wait(20);
 	}
 
@@ -239,4 +276,22 @@ void AstraPlusNode::onContainerParameterChangedInternal(Parameter* p)
 		}
 		else if (pipeline != nullptr) startThread();
 	}
+	else if (p == alignDepthToColor || p == processColor || p == processDepth)
+	{
+		if (pipeline != nullptr)
+		{
+			pipeline->stop();
+			setupPipeline();
+			pipeline->start(config);
+		}
+
+		//force recalculate intrinsics
+		ifx = 0;
+		ify = 0;
+	}
+}
+
+Image AstraPlusNode::getPreviewImage()
+{
+	return colorImage;
 }

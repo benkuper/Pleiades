@@ -23,16 +23,13 @@
 #include "libobsensor/ObSensor.hpp"
 #pragma warning(pop)
 
-//opencv
-#include "opencv2/core.hpp"
+//opencv and for qrcode pose estimation
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc.hpp"
 #include "opencv2/calib3d.hpp"
-#include "opencv2/features2d.hpp"
-
-
-typedef std::shared_ptr<Image> ImagePtr;
+#include "opencv2/objdetect.hpp"
 
 // classes
-
 #include "Connection/NodeConnectionSlot.h"
 #include "Connection/NodeConnection.h"
 #include "Node.h"
@@ -55,10 +52,12 @@ typedef std::shared_ptr<Image> ImagePtr;
 #include "nodes/Filter/oneeuro/OneEuroFilter.h"
 #include "nodes/Filter/oneeuro/OneEuroFilterNode.h"
 
+#include "nodes/Filter/qrcode/QRCodeScanner/FinderPatternModel.hpp"
+#include "nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.hpp"
+#include "nodes/Filter/qrcode/QRCodeScanner/CodeFinder.hpp"
 #include "nodes/Filter/qrcode/QRCodeNode.h"
 
 #include "nodes/Source/astraplus/AstraPlusNode.h"
-
 
 
 #include "Connection/ui/NodeConnector.h"
