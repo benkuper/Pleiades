@@ -66,16 +66,6 @@
           </GROUP>
           <GROUP id="{E6992AFD-0D64-AC68-683F-4505B5819100}" name="Filter">
             <GROUP id="{F400B7FE-2811-A656-5DA9-42E0971626BF}" name="qrcode">
-              <GROUP id="{CD38DEBF-87CA-8666-AE05-C45512EBCFF0}" name="QRCodeScanner">
-                <FILE id="ubdhhD" name="CodeFinder.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/CodeFinder.cpp"/>
-                <FILE id="UdocSi" name="CodeFinder.hpp" compile="0" resource="0" file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/CodeFinder.hpp"/>
-                <FILE id="eK4Kv4" name="FinderPatternModel.hpp" compile="0" resource="0"
-                      file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/FinderPatternModel.hpp"/>
-                <FILE id="NjaTi6" name="ImageBinarization.cpp" compile="0" resource="0"
-                      file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.cpp"/>
-                <FILE id="LA8iYg" name="ImageBinarization.hpp" compile="0" resource="0"
-                      file="Source/Node/nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.hpp"/>
-              </GROUP>
               <GROUP id="{61C57A38-5874-33B7-E869-B997A0ABF043}" name="ui">
                 <FILE id="coEZNY" name="QRCodeNodeUI.cpp" compile="0" resource="0"
                       file="Source/Node/nodes/Filter/qrcode/ui/QRCodeNodeUI.cpp"/>
