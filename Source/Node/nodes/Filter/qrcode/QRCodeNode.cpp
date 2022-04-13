@@ -21,9 +21,6 @@ QRCodeNode::QRCodeNode(var params) :
 	findPlane = addTrigger("Find Plane", "Find the plane. Now.");
 
 	transformPlane = addBoolParameter("Transform Plane", "If checked, this will tranform the plane", false);
-
-	previewType = addEnumParameter("Preview Type", "Preview Image to show");
-	previewType->addOption("Input", PREVIEW_INPUT)->addOption("Output", PREVIEW_OUTPUT)->addOption("Binary", BINARY)->addOption("Contour", CONTOUR)->addOption("Contour Binarized", CONTOUR_BINARIZED)->addOption("Lines", LINES)->addOption("Extracted Image", EXTRACTED_IMAGE);
 }
 
 QRCodeNode::~QRCodeNode()
@@ -46,82 +43,52 @@ void QRCodeNode::processInternal()
 		cv::Mat image(img.getHeight(), img.getWidth(), CV_8UC3, bmd.data);
 
 		//to fill
-		cv::Mat camera_matrix, dist_coeffs;
-
-		CodeFinder codeFinder(image, false);
-		cv::Mat outputImage = codeFinder.find();
-
 		cv::QRCodeDetector detector;
 
 		std::vector<std::string> decodedInfo;
 		std::vector<cv::Point> points;
 		detector.detectAndDecodeMulti(image, decodedInfo, points);
 
-		if (points.size() > 0)
+
+		NNLOG("Found " << decodedInfo.size() << " tags");
+
+		qrImage = img.createCopy();
+		Graphics g(qrImage);
+
+		Eigen::Vector3f planeOffset;
+		Eigen::Vector3f rot;
+
+		for (int i = 0; i < decodedInfo.size(); i++)
 		{
 			Vector3D<float> coord;
-			for (auto& d : decodedInfo)
+			StringArray sSplit;
+			sSplit.addTokens(decodedInfo[i], ",");
+			coord.x = sSplit[0].getFloatValue();
+			coord.y = sSplit[1].getFloatValue();
+			coord.z = sSplit[2].getFloatValue();
+
+			if (i == 0)
 			{
-				StringArray sSplit;
-				sSplit.addTokens(d, ",");
-				coord.x = sSplit[0].getFloatValue();
-				coord.y = sSplit[1].getFloatValue();
-				coord.z = sSplit[2].getFloatValue();
+				cv::Point p = points[0];
+				int tx = p.x * source->width / image.cols;
+				int ty = p.y * source->height / image.rows;
+
+				PPoint pp = source->at(tx, ty);
+				NNLOG(p.x << "," << p.y << " > " << pp.x << "," << pp.y << "," << pp.z);
+
+				planeCenter.x() = pp.x;
+				planeCenter.y() = pp.y;
+				planeCenter.z() = pp.z;
 			}
 
-			cv::Point p = points[0];
-			int tx = p.x * source->width / image.cols;
-			int ty = p.y * source->height / image.rows;
-
-			PPoint pp = source->at(tx, ty);
-			NNLOG(p.x << "," << p.y << " > " << pp.x << "," << pp.y << "," << pp.z);
-
-			planeCenter.x() = pp.x;
-			planeCenter.y() = pp.y;
-			planeCenter.z() = pp.z;
+			int index = i * 4;
+			for (int j = 0; j < 4; j++)
+			{
+				g.setColour(Colour::fromHSV((index + j) / 4.0, 1, 1, 1));
+				g.drawEllipse(Rectangle<float>(0, 0, 10, 10).withCentre(Point<float>(points[index + j].x, points[index + j].y)), 2);
+				g.drawLine(points[index + j].x, points[index + j].y, points[index + (j + 1)%4].x, points[index + (j + 1) % 4].y, 2);
+			}
 		}
-
-
-
-
-		/*
-		std::vector<QRCode> codes = codeFinder.getAllCodes();
-		QRCode bestCode;
-		if (codes.size() > 0)
-		{
-			NNLOG("Found " << (int)codes.size() << "codes");
-			for (auto& c : codes) if (c.verifyPercentage > bestCode.verifyPercentage) bestCode = c;
-		}
-		else
-		{
-			NNLOG("No QR Code found.");
-		}
-
-
-		DBG("Best code data : " << bestCode.)
-
-			//Generate preview image
-			cv::Mat previewImage;
-		PreviewImageType t = previewType->getValueDataAsEnum<PreviewImageType>();
-
-		switch (t)
-		{
-		case PREVIEW_INPUT: previewImage = image; break;
-		case PREVIEW_OUTPUT: previewImage = outputImage; break;
-		case BINARY: previewImage = codeFinder.drawBinaryImage(); break;
-		case CONTOUR: previewImage = codeFinder.drawAllContours(); break;
-		case CONTOUR_BINARIZED: previewImage = codeFinder.drawAllContoursBinarized(); break;
-		case LINES: previewImage = codeFinder.drawAllLines(); break;
-		case EXTRACTED_IMAGE: previewImage = codeFinder.drawExtractedCodes()[0];
-		}
-
-		Image::PixelFormat fmt = previewImage.type() == CV_8UC3 ? Image::PixelFormat::RGB : Image::PixelFormat::SingleChannel;
-		qrImage = Image(fmt, previewImage.cols, previewImage.rows, true);
-
-		Image::BitmapData outBMD(qrImage, Image::BitmapData::writeOnly);
-		memcpy(outBMD.data, previewImage.data, outBMD.size);
-
-		*/
 
 		findOnNextProcess = false;
 	}

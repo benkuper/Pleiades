@@ -30,6 +30,7 @@ public:
     IntParameter* downSample;
     FloatParameter* distanceThreshold;
     BoolParameter* invertPlane;
+    BoolParameter* cleanUp;
 
     Eigen::Vector3f planeCenter;
     Eigen::Vector3f planeNormal;

@@ -52,9 +52,6 @@
 #include "nodes/Filter/oneeuro/OneEuroFilter.h"
 #include "nodes/Filter/oneeuro/OneEuroFilterNode.h"
 
-#include "nodes/Filter/qrcode/QRCodeScanner/FinderPatternModel.hpp"
-#include "nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.hpp"
-#include "nodes/Filter/qrcode/QRCodeScanner/CodeFinder.hpp"
 #include "nodes/Filter/qrcode/QRCodeNode.h"
 
 #include "nodes/Source/astraplus/AstraPlusNode.h"

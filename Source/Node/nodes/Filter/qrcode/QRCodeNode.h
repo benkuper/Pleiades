@@ -23,8 +23,6 @@ public:
     NodeConnectionSlot* out;
     NodeConnectionSlot* planeCenterSlot;
 
-    enum PreviewImageType { BINARY, CONTOUR, CONTOUR_BINARIZED, LINES, PREVIEW_OUTPUT, PREVIEW_INPUT, EXTRACTED_IMAGE };
-    EnumParameter* previewType;
     Image qrImage;
 
     BoolParameter* continuous;

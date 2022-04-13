@@ -23,6 +23,4 @@
 #include "nodes/Filter/oneeuro/OneEuroFilter.cpp"
 #include "nodes/Filter/oneeuro/OneEuroFilterNode.cpp"
 
-#include "nodes/Filter/qrcode/QRCodeScanner/ImageBinarization.cpp"
-#include "nodes/Filter/qrcode/QRCodeScanner/CodeFinder.cpp"
 #include "nodes/Filter/qrcode/QRCodeNode.cpp"

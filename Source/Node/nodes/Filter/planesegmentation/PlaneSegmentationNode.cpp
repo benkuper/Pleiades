@@ -27,6 +27,7 @@ PlaneSegmentationNode::PlaneSegmentationNode(var params) :
 	downSample = addIntParameter("Down Sample", "Down sample for the segmentation. The transformed cloud keep the source resolution", 1, 1, 16);
 	distanceThreshold = addFloatParameter("Distance Threshold", "Distance Threshold", .01, 0);
 	invertPlane = addBoolParameter("Invert Plane", "If checked, send the cloud without the plane points.If not, sends only the plane points", false);
+	cleanUp = addBoolParameter("Clean Up", "If checked, this will clean bad points (i.e. points at 0,0,0) before transformation", true);
 }
 
 PlaneSegmentationNode::~PlaneSegmentationNode()
@@ -43,6 +44,13 @@ void PlaneSegmentationNode::processInternal()
 
 	int ds = downSample->intValue();
 
+
+	if (cleanUp->boolValue())
+	{
+		DBG("Before cleanup " << (int)source->points.size());
+		source->erase(std::remove_if(source->points.begin(), source->points.end(), [](PPoint p) { return p.x == 0 && p.y == 0 && p.z == 0; }), source->points.end());
+		DBG("After cleanup " << (int)source->points.size() << ", " << (int)source->isOrganized());
+	}
 
 	CloudPtr cloud(new Cloud());
 	if (ds == 1) pcl::copyPointCloud(*source, *cloud);
@@ -131,6 +139,7 @@ void PlaneSegmentationNode::processInternal()
 	}
 
 	if (!inCenter->isEmpty()) planeCenter = Eigen::Vector3f(slotVectorMap[inCenter]);
+
 
 	if (!out->isEmpty())
 	{
