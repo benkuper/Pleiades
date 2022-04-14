@@ -23,6 +23,10 @@ AstraPlusNode::AstraPlusNode(var params) :
 {
 	outDepth = addSlot("Out Cloud", false, POINTCLOUD);
 	outColor = addSlot("Out Color", false, RGB);
+	outCamMatrix = addSlot("Out Camera Matrix", false, MATRIX);
+	outDistCoeffs = addSlot("Out Distortion Coeffs", false, MATRIX);
+
+
 
 	downSample = addIntParameter("Down Sample", "Simple downsampling from the initial 640x480 point cloud. Value of 2 will result in a 320x240 point cloud", 2, 1, 16);
 
@@ -98,7 +102,6 @@ void AstraPlusNode::setupProfiles()
 	}
 
 
-
 	auto depthProfiles = pipeline->getStreamProfileList(OB_SENSOR_DEPTH);
 	for (int i = 0; i < (int)depthProfiles->count(); i++)
 	{
@@ -140,6 +143,12 @@ void AstraPlusNode::processInternal()
 		OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(sensorType);
 		ifx = intrinsic.fx;
 		ify = intrinsic.fy;
+
+		camMatrix = cv::Mat::zeros(3, 3, CV_64FC1);
+		camMatrix.at<double>(0, 0) = intrinsic.fx;
+		camMatrix.at<double>(1, 1) = intrinsic.fy;
+		sendMatrix(outCamMatrix, camMatrix);
+		//, 0, 3, intrinsic.cx, 0, intrinsic.fy, intrinsic.cy, 0, 0, 1);
 	}
 
 
@@ -189,7 +198,6 @@ void AstraPlusNode::processInternal()
 
 	sendPointCloud(outDepth, cloud);
 	sendImage(outColor, colorImage);
-
 	newFrameAvailable = false;
 }
 

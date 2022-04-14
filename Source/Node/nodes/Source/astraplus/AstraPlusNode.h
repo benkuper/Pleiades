@@ -30,6 +30,9 @@ public:
 
     NodeConnectionSlot* outDepth;
     NodeConnectionSlot* outColor;
+    NodeConnectionSlot* outCamMatrix;
+    NodeConnectionSlot* outDistCoeffs;
+
     IntParameter* downSample;
     BoolParameter* processDepth;
     BoolParameter* processColor;
@@ -39,7 +42,8 @@ public:
 
     float ifx;
     float ify;
-    
+    cv::Mat camMatrix;
+
     SpinLock frameLock;
     uint8_t* depthData;
     

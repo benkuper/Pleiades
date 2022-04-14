@@ -28,6 +28,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/calib3d.hpp"
 #include "opencv2/objdetect.hpp"
+#include "opencv2/core/eigen.hpp"
 
 // classes
 #include "Connection/NodeConnectionSlot.h"

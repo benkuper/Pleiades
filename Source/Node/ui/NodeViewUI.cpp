@@ -109,20 +109,26 @@ void BaseNodeViewUI::resized()
 	Rectangle<int> inR = getLocalBounds().removeFromLeft(w).reduced(0, 10);
 	Rectangle<int> outR = getLocalBounds().removeFromRight(w).reduced(0, 10);
 
-	//add some space on top of connectors
-	//inR.removeFromTop(5);
-	//outR.removeFromTop(5);
-
+	Rectangle<int> inCR = inR.removeFromTop(w);
 	for (auto& i : inConnectors)
 	{
-		i->setBounds(inR.removeFromTop(w));
-		inR.removeFromTop(4);
+		i->setBounds(inCR);
+		if (!item->miniMode->boolValue())
+		{
+			inR.removeFromTop(4);
+			inCR = inR.removeFromTop(w);
+		}
 	}
 
+	Rectangle<int> outCR = outR.removeFromTop(w);
 	for (auto& i : outConnectors)
 	{
-		i->setBounds(outR.removeFromTop(w));
-		outR.removeFromTop(4);
+		i->setBounds(outCR);
+		if (!item->miniMode->boolValue())
+		{
+			outR.removeFromTop(4);
+			outCR = outR.removeFromTop(w);
+		}
 	}
 }
 

@@ -115,7 +115,7 @@ void Node::receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 	if (slot->processOnReceive) addNextToProcess();
 }
 
-void Node::receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix)
+void Node::receiveMatrix(NodeConnectionSlot* slot, cv::Mat matrix)
 {
 	slotMatrixMap.set(slot, matrix);
 	if (slot->processOnReceive) addNextToProcess();
@@ -172,7 +172,7 @@ void Node::sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 	}
 }
 
-void Node::sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix)
+void Node::sendMatrix(NodeConnectionSlot* slot, cv::Mat matrix)
 {
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)

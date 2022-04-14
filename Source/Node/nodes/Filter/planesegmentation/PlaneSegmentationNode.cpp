@@ -47,9 +47,7 @@ void PlaneSegmentationNode::processInternal()
 
 	if (cleanUp->boolValue())
 	{
-		DBG("Before cleanup " << (int)source->points.size());
 		source->erase(std::remove_if(source->points.begin(), source->points.end(), [](PPoint p) { return p.x == 0 && p.y == 0 && p.z == 0; }), source->points.end());
-		DBG("After cleanup " << (int)source->points.size() << ", " << (int)source->isOrganized());
 	}
 
 	CloudPtr cloud(new Cloud());

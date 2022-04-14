@@ -43,7 +43,7 @@ public:
 	//Buffer data
 	HashMap<NodeConnectionSlot*, CloudPtr> slotCloudMap;
 	HashMap<NodeConnectionSlot*, Array<ClusterPtr>> slotClustersMap;
-	HashMap<NodeConnectionSlot*, Eigen::Matrix4f> slotMatrixMap;
+	HashMap<NodeConnectionSlot*, cv::Mat> slotMatrixMap;
 	HashMap<NodeConnectionSlot*, Eigen::Vector3f> slotVectorMap;
 	HashMap<NodeConnectionSlot*, PIndices> slotIndicesMap;
 	HashMap<NodeConnectionSlot*, Image> slotImageMap;
@@ -81,7 +81,7 @@ public:
 	//IO
 	virtual void receivePointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
 	virtual void receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
-	virtual void receiveMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
+	virtual void receiveMatrix(NodeConnectionSlot* slot, cv::Mat matrix);
 	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
 	virtual void receiveImage(NodeConnectionSlot* slot, Image indices);
@@ -90,7 +90,7 @@ public:
 
 	void sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
 	void sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
-	void sendMatrix(NodeConnectionSlot* slot, Eigen::Matrix4f matrix);
+	void sendMatrix(NodeConnectionSlot* slot, cv::Mat matrix);
 	void sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);
 	void sendImage(NodeConnectionSlot* slot, Image indices);
