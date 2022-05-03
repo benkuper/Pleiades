@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;../../External/zbar/include">
+              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;../../External/zbar/include">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
       <FILE id="XCbp5T" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -65,6 +65,15 @@
             </GROUP>
           </GROUP>
           <GROUP id="{E6992AFD-0D64-AC68-683F-4505B5819100}" name="Filter">
+            <GROUP id="{38ECD109-9368-8F1E-8E72-FC64D56D20CC}" name="recorder">
+              <FILE id="VFkHws" name="RecorderNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Filter/recorder/RecorderNode.cpp"/>
+              <FILE id="QPw2nr" name="RecorderNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/recorder/RecorderNode.h"/>
+            </GROUP>
+            <GROUP id="{DC82A4FA-6502-E7B6-A91C-63CBA1E40551}" name="merge">
+              <FILE id="LlfMrP" name="MergeNode.cpp" compile="0" resource="0" file="Source/Node/nodes/Filter/merge/MergeNode.cpp"/>
+              <FILE id="DBlugB" name="MergeNode.h" compile="0" resource="0" file="Source/Node/nodes/Filter/merge/MergeNode.h"/>
+            </GROUP>
             <GROUP id="{F400B7FE-2811-A656-5DA9-42E0971626BF}" name="qrcode">
               <GROUP id="{61C57A38-5874-33B7-E869-B997A0ABF043}" name="ui">
                 <FILE id="coEZNY" name="QRCodeNodeUI.cpp" compile="0" resource="0"
@@ -119,6 +128,10 @@
             </GROUP>
           </GROUP>
           <GROUP id="{CF09C6E6-DFE8-AE77-A05A-9513E1FCEF9A}" name="Source">
+            <GROUP id="{3C89C1B2-73BF-EBBE-AF1C-44B78F4E107F}" name="kinect2">
+              <FILE id="iAnUHr" name="Kinect2Node.cpp" compile="0" resource="0" file="Source/Node/nodes/Source/kinect2/Kinect2Node.cpp"/>
+              <FILE id="lcy8RW" name="Kinect2Node.h" compile="0" resource="0" file="Source/Node/nodes/Source/kinect2/Kinect2Node.h"/>
+            </GROUP>
             <GROUP id="{1FDEE9BC-EE50-1696-4782-6D8494929F93}" name="astraplus">
               <FILE id="ReG8sP" name="AstraPlusNode.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/Source/astraplus/AstraPlusNode.cpp"/>
@@ -167,14 +180,14 @@
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
                JUCE_IP_AND_PORT_DETECTION="1"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib"
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;Kinect20.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib&#10;"
             smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades" binaryPath="Binaries/Debug"
-                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\lib\win&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
                        headerPath="&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades" binaryPath="Binaries/Release"
-                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\lib\win&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
                        headerPath="C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -223,7 +236,7 @@
     <MODULE id="juce_gui_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_gui_extra" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_opengl" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_organicui" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_organicui" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_osc" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_simpleweb" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>

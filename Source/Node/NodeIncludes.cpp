@@ -30,7 +30,10 @@
 #include "Connection/ui/NodeConnectionManagerViewUI.cpp"
 
 
+
 #include "nodes/Source/astraplus/AstraPlusNode.cpp"
+#include "nodes/Source/kinect2/Kinect2Node.cpp"
+
 #include "nodes/Output/augmenta/AugmentaOutputNode.cpp"
 #include "nodes/Output/websocket/WebsocketOutputNode.cpp"
 

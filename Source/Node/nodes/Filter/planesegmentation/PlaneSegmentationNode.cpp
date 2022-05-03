@@ -47,7 +47,7 @@ void PlaneSegmentationNode::processInternal()
 
 	if (cleanUp->boolValue())
 	{
-		source->erase(std::remove_if(source->points.begin(), source->points.end(), [](PPoint p) { return p.x == 0 && p.y == 0 && p.z == 0; }), source->points.end());
+		source->erase(std::remove_if(source->points.begin(), source->points.end(), [](PPoint p) { return (p.x == 0 && p.y == 0 && p.z == 0) || std::isinf(p.x) || std::isinf(p.y) || std::isinf(p.z); }), source->points.end());
 	}
 
 	CloudPtr cloud(new Cloud());

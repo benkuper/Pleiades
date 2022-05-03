@@ -24,3 +24,6 @@
 #include "nodes/Filter/oneeuro/OneEuroFilterNode.cpp"
 
 #include "nodes/Filter/qrcode/QRCodeNode.cpp"
+
+#include "nodes/Filter/recorder/RecorderNode.cpp"
+#include "nodes/Filter/merge/MergeNode.cpp"

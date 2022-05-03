@@ -9,6 +9,7 @@
 */
 
 #pragma once
+
 #include "JuceHeader.h"
 #pragma warning(disable:4244 4100 4305)
 

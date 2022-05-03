@@ -49,6 +49,7 @@ public:
     
     Image colorImage;
 
+
     bool newFrameAvailable;
 
     bool initInternal() override;

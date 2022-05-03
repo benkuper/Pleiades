@@ -61,13 +61,29 @@ bool AstraPlusNode::initInternal()
 
 	if (pipeline == nullptr)
 	{
-		NLOG(niceName, "Init");
-		pipeline.reset(new ob::Pipeline());
-		setupProfiles();
-		setupPipeline();
+		try
+		{
+			pipeline.reset(new ob::Pipeline());
+			setupProfiles();
+			setupPipeline();
 
-		pipeline->start(config);
+			pipeline->start(config);
+
+			clearWarning();
+
+			NLOG(niceName, "Astra+ connected and initialized.");
+		}
+		catch (std::exception e)
+		{
+			if (getWarningMessage().isEmpty())
+			{
+				NLOGWARNING(niceName, "Could not initialize Astra+. Is it connected ?");
+				setWarningMessage("Astra+ not connected.");
+			}
+		}
 	}
+
+	if (pipeline == nullptr) return false;
 
 	//Init depth data
 	if (depthData != nullptr) free(depthData);

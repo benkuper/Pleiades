@@ -55,7 +55,12 @@
 
 #include "nodes/Filter/qrcode/QRCodeNode.h"
 
+#include "nodes/Filter/recorder/RecorderNode.h"
+#include "nodes/Filter/merge/MergeNode.h"
+
+
 #include "nodes/Source/astraplus/AstraPlusNode.h"
+#include "nodes/Source/kinect2/Kinect2Node.h"
 
 
 #include "Connection/ui/NodeConnector.h"

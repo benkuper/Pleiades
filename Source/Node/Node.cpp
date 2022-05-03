@@ -152,6 +152,7 @@ void Node::clearSlotMaps()
 void Node::sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 {
 	if (slot == nullptr) return;
+	if (slot->isEmpty()) return;
 
 	for (auto& c : slot->connections)
 	{
@@ -208,6 +209,7 @@ void Node::sendIndices(NodeConnectionSlot* slot, PIndices indices)
 void Node::sendImage(NodeConnectionSlot* slot, Image image)
 {
 	if (slot == nullptr) return;
+	if (slot->isEmpty()) return;
 	for (auto& c : slot->connections)
 	{
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
