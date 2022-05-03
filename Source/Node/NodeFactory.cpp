@@ -12,7 +12,7 @@ juce_ImplementSingleton(NodeFactory)
 
 NodeFactory::NodeFactory()
 {
-    defs.add(Definition::createDef<ContainerNode>("", ContainerNode::getTypeStringStatic()));
+    //defs.add(Definition::createDef<ContainerNode>("", ContainerNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AstraPlusNode>("Source", AstraPlusNode::getTypeStringStatic()));
     defs.add(Definition::createDef<Kinect2Node>("Source", Kinect2Node::getTypeStringStatic()));
 
