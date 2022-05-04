@@ -26,4 +26,6 @@
 #include "nodes/Filter/qrcode/QRCodeNode.cpp"
 
 #include "nodes/Filter/recorder/RecorderNode.cpp"
+
+#include "nodes/Filter/transform/TransformNode.cpp"
 #include "nodes/Filter/merge/MergeNode.cpp"

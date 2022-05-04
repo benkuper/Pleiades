@@ -9,3 +9,19 @@
 */
 
 #pragma once
+
+class MergeNode :
+    public Node
+{
+public:
+    MergeNode(var params = var());
+    ~MergeNode();
+
+    Array<NodeConnectionSlot*> ins;
+    NodeConnectionSlot* out;
+
+    void processInternal() override;
+
+    String getTypeString() const override { return getTypeStringStatic(); }
+    static String getTypeStringStatic() { return "Merge"; }
+};

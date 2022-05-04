@@ -56,10 +56,15 @@
 #include "nodes/Filter/qrcode/QRCodeNode.h"
 
 #include "nodes/Filter/recorder/RecorderNode.h"
+
+#include "nodes/Filter/transform/TransformNode.h"
 #include "nodes/Filter/merge/MergeNode.h"
 
 
+
+
 #include "nodes/Source/astraplus/AstraPlusNode.h"
+#include "nodes/Source/astrapro/AstraProNode.h"
 #include "nodes/Source/kinect2/Kinect2Node.h"
 
 

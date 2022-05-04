@@ -71,5 +71,16 @@ namespace pleiades
 		dest.clear();
 		for (int i = 0; i < source.size(); i++) dest.add(ClusterPtr(new Cluster(*source[i])));
 	}
+
+	Eigen::Quaternionf euler2Quaternion(const float roll, const float pitch, const float yaw)
+	{
+		Eigen::AngleAxisf rollAngle(roll, Eigen::Vector3f::UnitZ());
+		Eigen::AngleAxisf yawAngle(yaw, Eigen::Vector3f::UnitY());
+		Eigen::AngleAxisf pitchAngle(pitch, Eigen::Vector3f::UnitX());
+
+		Eigen::Quaternionf q = rollAngle * yawAngle * pitchAngle;
+
+		return q;
+	}
 }
 

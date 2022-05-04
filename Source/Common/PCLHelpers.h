@@ -70,5 +70,7 @@ typedef std::shared_ptr<Cluster> ClusterPtr;
 namespace pleiades
 {
 	void copyClusters(Array<ClusterPtr>& source, Array<ClusterPtr>& dest);
+
+	Eigen::Quaternionf euler2Quaternion(const float roll, const float pitch, const float yaw);
 }
 

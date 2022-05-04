@@ -55,13 +55,14 @@ void WebsocketOutputNode::processInternal()
 {
 	if(doStreamClouds->boolValue())
 	{
-	int id = 1;
+	int id = 0;
 	for (auto& s : inClouds)
 	{
+		id++; //always increment to have consistent ids
 		if (s->isEmpty()) continue;
 		CloudPtr c = slotCloudMap[s];
 		if (c == nullptr) continue;
-		streamCloud(c, id++);
+		streamCloud(c, id);
 	}
 	}
 
@@ -82,6 +83,8 @@ void WebsocketOutputNode::streamCloud(CloudPtr cloud, int id)
 {
 	if (server.getNumActiveConnections() == 0) return;
 	
+	NNLOG("Send cloud " << id << " with " << cloud->size() << " points");
+
 	MemoryOutputStream os;
 	os.writeByte(CloudType); //cloud type
 	os.writeInt(1000+id); //write 1000+ id to specify that it doesn't have metadata

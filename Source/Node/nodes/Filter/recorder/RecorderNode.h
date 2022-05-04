@@ -56,8 +56,15 @@ public:
 	std::unique_ptr<FileInputStream> clustersIS;
 	std::unique_ptr<FileOutputStream> clustersOS;
 
+	CloudPtr cloud;
+
 	bool changingProgressionFromPlay;
-	double timeAtRecordPlay;
+	double timeAtRecord;
+	double lastRecordedFrameTime;
+	double lastTimeAtPlay;
+
+	double curPlayTime;
+	double totalTime;
 	int numFramesWritten;
 	
 	float targetFrameTime;
@@ -66,8 +73,9 @@ public:
 
 	SpinLock stateLock;
 
+
 	void processInternal() override;
-	bool readNextFrame(float time);
+	bool readNextFrame();
 
 	void setState(RecordState s);
 

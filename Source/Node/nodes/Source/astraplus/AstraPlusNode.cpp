@@ -8,17 +8,19 @@
   ==============================================================================
 */
 
-std::unique_ptr<ob::Context> AstraPlusNode::ctx;
-std::unique_ptr<ob::Pipeline> AstraPlusNode::pipeline;
-std::shared_ptr<ob::VideoStreamProfile> AstraPlusNode::colorProfile;
-std::shared_ptr<ob::VideoStreamProfile>AstraPlusNode::depthProfile;
+//std::unique_ptr<ob::Context> AstraPlusNode::ctx;
+//std::unique_ptr<ob::Pipeline> AstraPlusNode::pipeline;
+//std::shared_ptr<ob::VideoStreamProfile> AstraPlusNode::colorProfile;
+//std::shared_ptr<ob::VideoStreamProfile>AstraPlusNode::depthProfile;
 
 AstraPlusNode::AstraPlusNode(var params) :
 	Node(getTypeString(), Node::SOURCE, params),
 	Thread("AstraPlus"),
+	depthWidth(0),
+	depthHeight(0),
 	ifx(0),
 	ify(0),
-	depthData(nullptr),
+	pointsData(nullptr),
 	newFrameAvailable(false)
 {
 	outDepth = addSlot("Out Cloud", false, POINTCLOUD);
@@ -46,8 +48,6 @@ void AstraPlusNode::clearItem()
 	Node::clearItem();
 	outDepth = nullptr;
 	outColor = nullptr;
-
-	if (depthData != nullptr) free(depthData);
 }
 
 bool AstraPlusNode::initInternal()
@@ -85,11 +85,8 @@ bool AstraPlusNode::initInternal()
 
 	if (pipeline == nullptr) return false;
 
-	//Init depth data
-	if (depthData != nullptr) free(depthData);
-	int dataSize = depthProfile->width() * depthProfile->height() * 2;
-	depthData = (uint8_t*)malloc(dataSize);
-	memset(depthData, 0, dataSize);
+	depthWidth = depthProfile->width();
+	depthHeight = depthProfile->height();
 
 
 	colorImage = Image(Image::PixelFormat::RGB, depthProfile->width(), depthProfile->height(), true);
@@ -143,6 +140,12 @@ void AstraPlusNode::setupPipeline()
 			pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL, alignDepthToColor->boolValue());
 		else if (pipeline->getDevice()->isPropertySupported(OB_DEVICE_PROPERTY_DEPTH_ALIGN_SOFTWARE_BOOL))
 			pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_SOFTWARE_BOOL, alignDepthToColor->boolValue());
+
+		pointCloudFilter = pipeline->createFilter<ob::PointCloudFilter>();
+	}
+	else
+	{
+		pointCloudFilter.reset();
 	}
 }
 
@@ -168,46 +171,38 @@ void AstraPlusNode::processInternal()
 	}
 
 
-	if (depthData == nullptr) return;
+	if (pointsData == nullptr) return;
 	if (!newFrameAvailable && processOnlyOnNewFrame->boolValue()) return;
 
-	int dw = depthProfile->width();
-	int dh = depthProfile->height();
 
 	int ds = downSample->intValue();
-	int downW = ceil(dw * 1.0f / ds);
-	int downH = ceil(dh * 1.0f / ds);
+	int downW = ceil(depthWidth * 1.0f / ds);
+	int downH = ceil(depthHeight * 1.0f / ds);
 	CloudPtr cloud(new Cloud(downW, downH));
 
-	float fx = 2 * atan(dw * 1.0f / (2.0f * ifx));
-	float fy = 2 * atan(dh * 1.0f / (2.0f * ify));
+	//float fx = 2 * atan(depthWidth * 1.0f / (2.0f * ifx));
+	//float fy = 2 * atan(depthHeight * 1.0f / (2.0f * ify));
 
 	{
 		GenericScopedLock lock(frameLock);
-		for (int ty = 0; ty < dh; ty += ds)
+		for (int ty = 0; ty < depthHeight; ty += ds)
 		{
-			for (int tx = 0; tx < dw; tx += ds)
+			for (int tx = 0; tx < depthWidth; tx += ds)
 			{
-				float relX = .5f - (tx * 1.0f / dw);
-				float relY = .5f - (ty * 1.0f / dh);
+				//float relX = .5f - (tx * 1.0f / depthWidth);
+				//float relY = .5f - (ty * 1.0f / depthHeight);
 
-				int index = tx + ty * dw;
-				int dp = depthData[index * 2 + 1] << 8 | depthData[index * 2];
+				int index = tx + ty * depthWidth;
+				//int dp = depthData[index * 2 + 1] << 8 | depthData[index * 2];
 
-				float d = dp / 1000.0f;
+				//float d = dp / 1000.0f;
 
-				float x = relX * d * fx;
-				float y = relY * d * fy;
-				float z = d;
+				//float x = relX * d * fx;
+				//float y = relY * d * fy;
+				//float z = d;
 
-				try
-				{
-					cloud->at(floor(tx / ds), floor(ty / ds)) = pcl::PointXYZ(x, y, z);
-				}
-				catch (...)
-				{
-					LOG("here");
-				}
+				float3_t p = pointsData[index];
+				cloud->at(floor(tx * 1.0f / ds), floor(ty * 1.0f / ds)) = pcl::PointXYZ(-p.xyz.x / 1000.0f, p.xyz.y / 1000.0f, p.xyz.z / 1000.0f);
 			}
 		}
 	}
@@ -228,27 +223,27 @@ void AstraPlusNode::run()
 
 	while (!threadShouldExit())
 	{
+		wait(2);
+
 		auto frameset = pipeline->waitForFrames(100);
-		if (frameset == nullptr)
-		{
-			wait(20);
-			continue;
-		}
+		if (frameset == nullptr) continue;
 
 		if (threadShouldExit()) break;
 
-		uint8_t* newDepthData = nullptr;
-		uint8_t* newColorData = nullptr;
-
-		int depthDataSize = 0;
-		int colorDataSize = 0;
 
 		if (processDepth->boolValue())
 		{
-			if (std::shared_ptr<ob::DepthFrame> frame = frameset->depthFrame())
+			if (pointCloudFilter != nullptr)
 			{
-				newDepthData = (uint8_t*)frame->data();
-				depthDataSize = frame->dataSize();
+				if (auto frame = pointCloudFilter->process(frameset))
+				{
+					if (auto pointsFrame = frameset->pointsFrame())
+					{
+						GenericScopedLock lock(frameLock);
+						pointsData = (float3_t*)pointsFrame->data();
+						//int pointsDataSize = pointsFrame->dataSize();
+					}
+				}
 			}
 		}
 
@@ -256,33 +251,25 @@ void AstraPlusNode::run()
 		{
 			if (std::shared_ptr<ob::ColorFrame> frame = frameset->colorFrame())
 			{
-				newColorData = (uint8_t*)frame->data();
-				colorDataSize = frame->dataSize();
+				uint8_t* newColorData = (uint8_t*)frame->data();
+				int colorDataSize = frame->dataSize();
+
+				if (newColorData != nullptr && colorImage.isValid())
+				{
+					MemoryInputStream is(newColorData, colorDataSize, false);
+					JPEGImageFormat format;
+
+					GenericScopedLock lock(imageLock);
+					colorImage = format.decodeImage(is);
+				}
 			}
 		}
+		newFrameAvailable = true;
+	}
 
-		if (newDepthData != nullptr || newColorData != nullptr)
-		{
-			GenericScopedLock lock(frameLock);
-
-			if (depthData != nullptr && newDepthData != nullptr) memcpy(depthData, newDepthData, depthDataSize);
-			if (newColorData != nullptr && colorImage.isValid())
-			{
-				//Image::BitmapData bmd(colorImage, Image::BitmapData::writeOnly);
-				//memcpy(bmd.data, newColorData, colorDataSize);
-
-				MemoryInputStream is(newColorData, colorDataSize, false);
-
-				JPEGImageFormat format;
-
-				GenericScopedLock lock(imageLock);
-				colorImage = format.decodeImage(is);
-			}
-
-			newFrameAvailable = true;
-		}
-
-		wait(20);
+	{
+		GenericScopedLock lock(frameLock);
+		pointsData = nullptr;
 	}
 
 	NNLOG("Astraplus stop reading frames");

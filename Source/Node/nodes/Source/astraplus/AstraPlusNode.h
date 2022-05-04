@@ -21,11 +21,12 @@ public:
 
     void clearItem() override;
 
-    static std::unique_ptr<ob::Context> ctx;
-    static std::unique_ptr<ob::Pipeline> pipeline;
+    std::unique_ptr<ob::Context> ctx;
+    std::unique_ptr<ob::Pipeline> pipeline;
 
-    static std::shared_ptr<ob::VideoStreamProfile> colorProfile;
-    static std::shared_ptr<ob::VideoStreamProfile> depthProfile;
+    std::shared_ptr<ob::VideoStreamProfile> colorProfile;
+    std::shared_ptr<ob::VideoStreamProfile> depthProfile;
+    std::shared_ptr<ob::PointCloudFilter> pointCloudFilter;
     std::shared_ptr<ob::Config> config;
 
     NodeConnectionSlot* outDepth;
@@ -44,8 +45,11 @@ public:
     float ify;
     cv::Mat camMatrix;
 
+    int depthWidth;
+    int depthHeight;
+
     SpinLock frameLock;
-    uint8_t* depthData;
+    float3_t* pointsData;
     
     Image colorImage;
 

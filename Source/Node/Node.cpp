@@ -88,6 +88,7 @@ void Node::processInternalPassthrough()
 		case NodeConnectionType::MATRIX: sendMatrix(out, slotMatrixMap[in]); break;
 		case NodeConnectionType::VECTOR: sendVector(out, slotVectorMap[in]); break;
 		case NodeConnectionType::INDICES: sendIndices(out, slotIndicesMap[in]); break;
+
 		}
 	}
 	processInternalPassthroughInternal();

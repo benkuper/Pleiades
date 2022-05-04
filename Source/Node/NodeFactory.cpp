@@ -14,13 +14,16 @@ NodeFactory::NodeFactory()
 {
     //defs.add(Definition::createDef<ContainerNode>("", ContainerNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AstraPlusNode>("Source", AstraPlusNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<AstraProNode>("Source", AstraProNode::getTypeStringStatic()));
     defs.add(Definition::createDef<Kinect2Node>("Source", Kinect2Node::getTypeStringStatic()));
 
     defs.add(Definition::createDef<QRCodeNode>("RGB", QRCodeNode::getTypeStringStatic()));
 
+    defs.add(Definition::createDef<TransformNode>("Point Cloud", TransformNode::getTypeStringStatic()));
     defs.add(Definition::createDef<CropBoxNode>("Point Cloud", CropBoxNode::getTypeStringStatic()));
     defs.add(Definition::createDef<VoxelGridNode>("Point Cloud", VoxelGridNode::getTypeStringStatic()));
     defs.add(Definition::createDef<PlaneSegmentationNode>("Point Cloud", PlaneSegmentationNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<MergeNode>("Point Cloud", MergeNode::getTypeStringStatic()));
     defs.add(Definition::createDef<RecorderNode>("Point Cloud", RecorderNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<EuclideanClusterNode>("Clusters", EuclideanClusterNode::getTypeStringStatic()));
