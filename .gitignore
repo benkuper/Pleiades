@@ -71,3 +71,8 @@ extras/Projucer/JUCECompileEngine.dylib
 
 Binaries/Debug
 Binaries/Release
+External/orbbec/astraplus/lib/linux/
+
+External/orbbec/astrapro/lib/linux/
+
+External/opencv/lib/linux/
