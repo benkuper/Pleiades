@@ -17,6 +17,8 @@ public:
     TransformNode(var params = var());
     ~TransformNode();
 
+    NodeConnectionSlot* inTransform;
+    
     NodeConnectionSlot* in;
     NodeConnectionSlot* out;
     

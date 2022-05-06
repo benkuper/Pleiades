@@ -44,6 +44,7 @@ public:
 	HashMap<NodeConnectionSlot*, CloudPtr> slotCloudMap;
 	HashMap<NodeConnectionSlot*, Array<ClusterPtr>> slotClustersMap;
 	HashMap<NodeConnectionSlot*, cv::Mat> slotMatrixMap;
+	HashMap<NodeConnectionSlot*, cv::Affine3f> slotTransformMap;
 	HashMap<NodeConnectionSlot*, Eigen::Vector3f> slotVectorMap;
 	HashMap<NodeConnectionSlot*, PIndices> slotIndicesMap;
 	HashMap<NodeConnectionSlot*, Image> slotImageMap;
@@ -52,6 +53,8 @@ public:
 
 	//process
 	SpinLock processLock;
+	bool processOnlyOnce;
+	bool hasProcessed; //if it has already processed in this frame
 
 	//Stats
 	double lastProcessTime;
@@ -75,6 +78,9 @@ public:
 	virtual void processInternalPassthrough();
 	virtual void processInternalPassthroughInternal() {}
 
+	virtual void resetForNextLoop();
+	virtual bool isStartingNode();
+
 	//Slots
 	NodeConnectionSlot* addSlot(StringRef name, bool isInput, NodeConnectionType t);
 
@@ -82,6 +88,7 @@ public:
 	virtual void receivePointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
 	virtual void receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
 	virtual void receiveMatrix(NodeConnectionSlot* slot, cv::Mat matrix);
+	virtual void receiveTransform(NodeConnectionSlot* slot, cv::Affine3f transform);
 	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
 	virtual void receiveImage(NodeConnectionSlot* slot, Image indices);
@@ -91,6 +98,7 @@ public:
 	void sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud);
 	void sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters);
 	void sendMatrix(NodeConnectionSlot* slot, cv::Mat matrix);
+	void sendTransform(NodeConnectionSlot* slot, cv::Affine3f transform);
 	void sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);
 	void sendImage(NodeConnectionSlot* slot, Image indices);

@@ -20,13 +20,15 @@ PlaneSegmentationNode::PlaneSegmentationNode(var params) :
 	planeCloud = addSlot("Segmented", false, POINTCLOUD);
 	planeCenterSlot = addSlot("Plane Center", false, VECTOR);
 	planeNormalSlot = addSlot("Plane Normal", false, VECTOR);
+	outTransform = addSlot("Transform", false, TRANSFORM);
 
 	continuous = addBoolParameter("Continuous Search", "If checked, search always for the plane. Otherwise, it will only search when triggering", false);
 	findPlane = addTrigger("Find Plane", "Find the plane. Now.");
 
 	downSample = addIntParameter("Down Sample", "Down sample for the segmentation. The transformed cloud keep the source resolution", 1, 1, 16);
 	distanceThreshold = addFloatParameter("Distance Threshold", "Distance Threshold", .01, 0);
-	invertPlane = addBoolParameter("Invert Plane", "If checked, send the cloud without the plane points.If not, sends only the plane points", false);
+	transformPlane = addBoolParameter("Transform Plane", "If checked, applies the transformation that aligns the floor and centers it around 0", true);
+	invertDetection = addBoolParameter("Invert Detection", "If checked, send the cloud without the plane points.If not, sends only the plane points", false);
 	cleanUp = addBoolParameter("Clean Up", "If checked, this will clean bad points (i.e. points at 0,0,0) before transformation", true);
 }
 
@@ -128,7 +130,7 @@ void PlaneSegmentationNode::processInternal()
 			pcl::ExtractIndices<PPoint> extract;
 			extract.setInputCloud(cloud);
 			extract.setIndices(inliers);
-			if (invertPlane->boolValue()) extract.setNegative(true);
+			if (invertDetection->boolValue()) extract.setNegative(true);
 			extract.filterDirectly(cloud);
 			sendPointCloud(planeCloud, cloud);
 		}
@@ -139,20 +141,28 @@ void PlaneSegmentationNode::processInternal()
 	if (!inCenter->isEmpty()) planeCenter = Eigen::Vector3f(slotVectorMap[inCenter]);
 
 
+	Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+	transform.rotate(reproj);
+	transform.translate(-planeCenter);
+
 	if (!out->isEmpty())
 	{
-		CloudPtr transformedCloud(new Cloud(source->width, source->height));
-
-		Eigen::Affine3f transform = Eigen::Affine3f::Identity();
-		transform.rotate(reproj);
-		transform.translate(-planeCenter);
-		pcl::transformPointCloud(*source, *transformedCloud, transform);
-		sendPointCloud(out, transformedCloud);
+		if (transformPlane->boolValue())
+		{
+			CloudPtr transformedCloud(new Cloud(source->width, source->height));
+			pcl::transformPointCloud(*source, *transformedCloud, transform);
+			sendPointCloud(out, transformedCloud);
+		}
+		else
+		{
+			sendPointCloud(out, source);
+		}
 	}
 
 
 	sendVector(planeCenterSlot, planeCenter);
 	sendVector(planeNormalSlot, planeNormal);
+	sendTransform(outTransform, transform);
 }
 
 var PlaneSegmentationNode::getJSONData()

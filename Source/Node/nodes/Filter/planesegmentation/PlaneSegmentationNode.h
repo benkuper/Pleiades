@@ -23,13 +23,15 @@ public:
     NodeConnectionSlot* inCenter;
     NodeConnectionSlot* planeCenterSlot;
     NodeConnectionSlot* planeNormalSlot;
+    NodeConnectionSlot* outTransform;
 
     BoolParameter* continuous;
     Trigger* findPlane;
 
     IntParameter* downSample;
     FloatParameter* distanceThreshold;
-    BoolParameter* invertPlane;
+    BoolParameter* transformPlane;
+    BoolParameter* invertDetection;
     BoolParameter* cleanUp;
 
     Eigen::Vector3f planeCenter;

@@ -1,3 +1,4 @@
+#include "Node.h"
 /*
   =============================================================================
 
@@ -12,6 +13,8 @@ Node::Node(StringRef name, NodeType type, var params) :
 	BaseItem(name, true),
 	type(type),
 	isInit(false),
+	processOnlyOnce(true),
+	hasProcessed(false),
 	lastProcessTime(0),
 	deltaTime(0),
 	processTimeMS(0),
@@ -47,6 +50,12 @@ void Node::clearItem()
 
 void Node::process()
 {
+	if (hasProcessed && processOnlyOnce)
+	{
+		removeNextToProcess();
+		return;
+	}
+
 	GenericScopedLock lock(processLock);
 	long ms = Time::getMillisecondCounter();
 
@@ -71,6 +80,7 @@ void Node::process()
 	lastProcessTime = (t / 1000.0);
 
 	removeNextToProcess();
+	hasProcessed = true;
 }
 
 void Node::processInternalPassthrough()
@@ -86,12 +96,24 @@ void Node::processInternalPassthrough()
 		case NodeConnectionType::POINTCLOUD: sendPointCloud(out, slotCloudMap[in]); break;
 		case NodeConnectionType::CLUSTERS: sendClusters(out, slotClustersMap[in]); break;
 		case NodeConnectionType::MATRIX: sendMatrix(out, slotMatrixMap[in]); break;
+		case NodeConnectionType::TRANSFORM: sendTransform(out, slotTransformMap[in]); break;
 		case NodeConnectionType::VECTOR: sendVector(out, slotVectorMap[in]); break;
 		case NodeConnectionType::INDICES: sendIndices(out, slotIndicesMap[in]); break;
 
 		}
 	}
 	processInternalPassthroughInternal();
+}
+
+void Node::resetForNextLoop()
+{
+	clearSlotMaps();
+	hasProcessed = false;
+}
+
+bool Node::isStartingNode()
+{
+	return type == SOURCE;
 }
 
 NodeConnectionSlot* Node::addSlot(StringRef name, bool isInput, NodeConnectionType t)
@@ -107,37 +129,43 @@ NodeConnectionSlot* Node::addSlot(StringRef name, bool isInput, NodeConnectionTy
 void Node::receivePointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 {
 	slotCloudMap.set(slot, cloud);
-	if (slot->processOnReceive) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed && processOnlyOnce)) addNextToProcess();
 }
 
 void Node::receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 {
 	slotClustersMap.set(slot, clusters);
-	if (slot->processOnReceive) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
 }
 
 void Node::receiveMatrix(NodeConnectionSlot* slot, cv::Mat matrix)
 {
 	slotMatrixMap.set(slot, matrix);
-	if (slot->processOnReceive) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
+}
+
+void Node::receiveTransform(NodeConnectionSlot* slot, cv::Affine3f transform)
+{
+	slotTransformMap.set(slot, transform);
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
 }
 
 void Node::receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector)
 {
 	slotVectorMap.set(slot, vector);
-	if (slot->processOnReceive) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
 }
 
 void Node::receiveIndices(NodeConnectionSlot* slot, PIndices indices)
 {
 	slotIndicesMap.set(slot, indices);
-	if (slot->processOnReceive) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
 }
 
 void Node::receiveImage(NodeConnectionSlot* slot, Image image)
 {
 	slotImageMap.set(slot, image);
-	if (slot->processOnReceive) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
 }
 
 
@@ -182,6 +210,18 @@ void Node::sendMatrix(NodeConnectionSlot* slot, cv::Mat matrix)
 		if (c->dest == nullptr || c->dest->node == nullptr) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveMatrix(c->dest, matrix);
+	}
+}
+
+
+void Node::sendTransform(NodeConnectionSlot* slot, cv::Affine3f transform)
+{
+	if (slot == nullptr) return;
+	for (auto& c : slot->connections)
+	{
+		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		//if (!c->dest->node->enabled->boolValue()) continue;
+		c->dest->node->receiveTransform(c->dest, transform);
 	}
 }
 

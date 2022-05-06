@@ -12,6 +12,7 @@ TransformNode::TransformNode(var params) :
 	Node(getTypeString(), FILTER, params)
 {
 	addInOutSlot(&in, &out, POINTCLOUD, "In", "Transformed");
+	inTransform = addSlot("In Transform", true, TRANSFORM);
 
 	translate = addPoint3DParameter("Translate", "Translate the cloud");
 	rotate = addPoint3DParameter("Rotate", "Rotate the cloud");
@@ -36,10 +37,17 @@ void TransformNode::processInternal()
 		Vector3D<float> trans = translate->getVector();
 
 		Vector3D<float> rot = rotate->getVector();
-		Eigen::Quaternionf rotQuat =pleiades::euler2Quaternion(rot.z, rot.x, rot.y);
+		Eigen::Quaternionf rotQuat = pleiades::euler2Quaternion(rot.z, rot.x, rot.y);
+
 		
 		transform.translate(Eigen::Vector3f(trans.x, trans.y, trans.z));
 		transform.rotate(rotQuat);
+
+		if (!inTransform->isEmpty())
+		{
+			Eigen::Affine3f t = slotTransformMap[inTransform];
+			transform *= t.matrix();
+		}
 
 		pcl::transformPointCloud(*source, *transformedCloud, transform);
 		sendPointCloud(out, transformedCloud);
