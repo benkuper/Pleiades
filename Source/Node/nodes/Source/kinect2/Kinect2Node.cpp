@@ -11,11 +11,13 @@
 
 Kinect2Node::Kinect2Node(var params) :
 	Node(getTypeString(), Node::SOURCE, params),
-	Thread("AstraPlus"),
+	Thread("Kinect2"),
+#if USE_KINECT
 	kinect(nullptr),
 	depthReader(nullptr),
 	colorReader(nullptr),
 	framePoints(nullptr),
+#endif
 	newFrameAvailable(false)
 {
 	outDepth = addSlot("Out Cloud", false, POINTCLOUD);
@@ -50,10 +52,10 @@ void Kinect2Node::clearItem()
 	SafeRelease(coordinateMapper);
 	if (kinect) kinect->Close();
 	SafeRelease(kinect);
+	free(framePoints);
 
 #endif
 
-	free(framePoints);
 
 	//if (depthData != nullptr) free(depthData);
 }
@@ -110,13 +112,13 @@ bool Kinect2Node::initInternal()
 	}
 
 	NNLOG("Kinect is initialized");
+	startThread();
 
 #else
-	LOGERROR("Kinect has not been compiled in this version");
+	LOGERROR("Kinect has not been compiled in this platform");
 	return false;
 #endif
 
-	startThread();
 
 	return true;
 }
@@ -124,6 +126,7 @@ bool Kinect2Node::initInternal()
 
 void Kinect2Node::processInternal()
 {
+#if USE_KINECT
 	if (isClearing) return;
 
 	CameraIntrinsics* intrinsics = NULL;
@@ -167,6 +170,7 @@ void Kinect2Node::processInternal()
 	sendPointCloud(outDepth, cloud);
 	if (colorImage.isValid()) sendImage(outColor, colorImage);
 	newFrameAvailable = false;
+	#endif
 }
 
 void Kinect2Node::processInternalPassthroughInternal()
@@ -176,11 +180,12 @@ void Kinect2Node::processInternalPassthroughInternal()
 
 void Kinect2Node::run()
 {
+#if USE_KINECT
 	wait(10);
 
 	while (!threadShouldExit())
 	{
-#if USE_KINECT
+
 		if (!depthReader)
 		{
 			return;
@@ -242,12 +247,13 @@ void Kinect2Node::run()
 
 			newFrameAvailable = true;
 
-#endif
+
 			wait(20);
 		}
 	}
 
 	NNLOG("Kinect2 stop reading frames");
+#endif
 }
 
 void Kinect2Node::onContainerParameterChangedInternal(Parameter* p)

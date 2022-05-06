@@ -40,6 +40,7 @@ public:
 	// Body reader
 	IDepthFrameReader* depthReader;
 	IColorFrameReader* colorReader;
+	CameraSpacePoint* framePoints;    // Maps depth pixels to 3d coordinates
 #endif
 
 	NodeConnectionSlot* outDepth;
@@ -59,7 +60,6 @@ public:
 	int colorHeight;
 
 	SpinLock frameLock;
-	CameraSpacePoint* framePoints;    // Maps depth pixels to 3d coordinates
 	Image colorImage;
 
 	bool newFrameAvailable;
