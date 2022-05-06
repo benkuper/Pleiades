@@ -58,8 +58,7 @@ typedef signed char schar;
 #  define CV_BIG_INT(n)   n##I64
 #  define CV_BIG_UINT(n)  n##UI64
 #else
-   typedef int64_t int64;
-   typedef uint64_t uint64;
+
 #  define CV_BIG_INT(n)   n##LL
 #  define CV_BIG_UINT(n)  n##ULL
 #endif
