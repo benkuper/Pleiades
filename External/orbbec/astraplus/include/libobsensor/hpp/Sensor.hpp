@@ -1,7 +1,11 @@
 /**
+ * \if English
+ * @file Sensor.hpp
+ * @brief Sensor related types, used to obtain stream configuration, open and close streams, set and get sensor properties.
+ * \else
  * @file Sensor.hpp
  * @brief 传感器相关类型，用于获取流配置，开关流，设置及获取传感器属性等操作
- *
+ * \endif
  */
 #pragma once
 
@@ -20,216 +24,156 @@ class Device;
 class Frame;
 class ImuFrame;
 
-using FrameCallback = std::function< void( std::shared_ptr< Frame > frame ) >;
+/**
+ * \if English
+ * @brief frame data callback
+ *
+ * @param frame  frame data
+ * \else
+ * @brief 帧数据回调
+ *
+ * @param frame  帧数据
+ * \endif
+ */
+using FrameCallback = std::function<void(std::shared_ptr<Frame> frame)>;
 
 class OB_EXTENSION_API Sensor {
 protected:
-    std::unique_ptr< SensorImpl > impl_;
-    FrameCallback                 callback_;
+    std::unique_ptr<SensorImpl> impl_;
 
 public:
-    Sensor( std::unique_ptr< SensorImpl > impl );
-    virtual ~Sensor();
+    Sensor(std::unique_ptr<SensorImpl> impl);
+    virtual ~Sensor() noexcept;
 
     /**
+     * \if English
+     * @brief sensor type
+     *
+     * @return OBSensorType returns the sensor type
+     * \else
      * @brief 传感器类型
      *
      * @return OBSensorType 返回传感器类型
+     * \endif
      */
     OBSensorType type();
 
     /**
-     * @brief 设置结构体定义数据类型的设备属性
+     * \if English
+     * @brief Get the list of stream profiles
      *
-     * @param propertyId 属性id
-     * @param data 要设置的属性数据
-     * @param dataSize 要设置的属性大小
-     */
-    void setStructuredData( OBGlobalUnifiedProperty propertyId, const void* data, uint32_t dataSize );
-    /**
-     * @brief 获取结构体定义数据类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @param data 获取的属性数据
-     * @param dataSize 获取的属性大小
-     */
-    void getStructuredData( OBGlobalUnifiedProperty propertyId, void* data, uint32_t* dataSize );
-
-    /**
-     * @brief 获取raw data类型的传感器属性
-     *
-     * @param propertyId 属性id
-     * @param callback 获取的数据及进度回调
-     * @param async    是否异步执行
-     * @return 接口调用是否成功
-     */
-    bool getRawData( OBGlobalUnifiedProperty propertyId, GetDataCallback callback, bool async = false );
-    /**
-     * @brief 设置raw data类型的传感器属性
-     *
-     * @param propertyId 属性id
-     * @param data 要设置的属性数据
-     * @param dataSize 设置的属性大小
-     * @param callback 进度回调
-     * @param async    是否异步执行
-     * @return 接口调用是否成功
-     */
-    bool setRawData( OBGlobalUnifiedProperty propertyId, void* data, uint32_t dataSize, SetDataCallback callback, bool async = false );
-    /**
-     * @brief 设置int类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @param property 要设置的属性
-     */
-    void setIntProperty( OBGlobalUnifiedProperty propertyId, int32_t property );
-
-    /**
-     * @brief 设置float类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @param property 要设置的属性
-     */
-    void setFloatProperty( OBGlobalUnifiedProperty propertyId, float property );
-
-    /**
-     * @brief 设置bool类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @param property 要设置的属性
-     */
-    void setBoolProperty( OBGlobalUnifiedProperty propertyId, bool property );
-
-    /**
-     * @brief 获取int类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @return int32_t 获取的属性数据
-     */
-    int32_t getIntProperty( OBGlobalUnifiedProperty propertyId );
-
-    /**
-     * @brief 获取float类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @return float 获取的属性数据
-     */
-    float getFloatProperty( OBGlobalUnifiedProperty propertyId );
-
-    /**
-     * @brief 获取bool类型的设备属性
-     *
-     * @param propertyId 属性id
-     * @return bool 获取的属性数据
-     */
-    bool getBoolProperty( OBGlobalUnifiedProperty propertyId );
-
-    /**
-     * @brief 获取int类型的设备属性的范围
-     *
-     * @param propertyId 属性id
-     * @return OBIntPropertyRange 属性的范围
-     */
-    OBIntPropertyRange getIntPropertyRange( OBGlobalUnifiedProperty propertyId );
-
-    /**
-     * @brief 获取float类型的设备属性的范围
-     *
-     * @param propertyId 属性id
-     * @return OBFloatPropertyRange 属性的范围
-     */
-    OBFloatPropertyRange getFloatPropertyRange( OBGlobalUnifiedProperty propertyId );
-
-    /**
-     * @brief 获取Bool类型的设备属性的范围
-     *
-     * @param propertyId 属性id
-     * @return OBBoolPropertyRange 属性的范围
-     */
-    OBBoolPropertyRange getBoolPropertyRange( OBGlobalUnifiedProperty propertyId );
-
-    /**
-     * @brief 获取Sensor支持的属性的数量
-     *
-     * @return uint32_t 返回支持的属性的数量
-     */
-    uint32_t getSupportedPropertyCount();
-
-    /**
-     * @brief 获取Sensor支持的属性
-     *
-     * @param uint32_t 属性的index
-     * @return OBGlobalUnifiedPropertyItem 返回支持的属性的类型
-     */
-    OBGlobalUnifiedPropertyItem getSupportedProperty( uint32_t index );
-
-    /**
-     * @brief 判断传感器属性是否支持
-     *
-     * @param propertyId 属性id
-     * @return true 支持该属性
-     * @return false 不支持该属性
-     */
-    bool isPropertySupported( OBGlobalUnifiedProperty propertyId );
-
-    /**
+     * @return std::shared_ptr<StreamProfileList> returns the stream configuration list
+     * \else
      * @brief 获取传感器的流配置列表
      *
      * @return std::shared_ptr<StreamProfileList> 返回流配置列表
+     * \endif
      */
-    const std::shared_ptr< StreamProfileList > getStreamProfileList();
+    const std::shared_ptr<StreamProfileList> getStreamProfileList();
 
     /**
+     * \if English
+     * @brief Open frame data stream and set up a callback
+     *
+     * @param streamProfile Stream configuration
+     * @param callback Set the callback when frame data arrives
+     * \else
      * @brief 开启流并设置帧数据回调
      *
      * @param streamProfile 流的配置
      * @param callback 设置帧数据到达时的回调
+     * \endif
      */
-    void start( std::shared_ptr< StreamProfile > streamProfile, FrameCallback callback );
+    void start(std::shared_ptr<StreamProfile> streamProfile, FrameCallback callback);
     /**
+     * \if English
+     * @brief Stop stream
+     * \else
      * @brief 停止流
-     *
+     * \endif
      */
     void stop();
+
+    /**
+	 * \if English
+	 * @brief Dynamically switch resolutions
+     *
+     * @param streamProfile Resolution to switch
+	 * \else
+     * @brief 动态切换分辨率
+     *
+     * @param streamProfile 需要切换的分辨率
+	 * \endif
+     */
+    void switchProfile(std::shared_ptr<StreamProfile> streamProfile);
 };
 
 class OB_EXTENSION_API SensorList {
 private:
-    std::unique_ptr< SensorListImpl > impl_;
+    std::unique_ptr<SensorListImpl> impl_;
 
 public:
-    SensorList( std::unique_ptr< SensorListImpl > impl );
+    SensorList(std::unique_ptr<SensorListImpl> impl);
 
-    virtual ~SensorList();
+    virtual ~SensorList() noexcept;
 
     /**
+     * \if English
+     * @brief Get sensor count
+     *
+     * @return uint32_t returns the number of Sensors
+     * \else
      * @brief 获取Sensor数量
      *
      * @return uint32_t 返回Sensor的数量
+     * \endif
      */
     uint32_t count();
 
     /**
+     * \if English
+     * @brief Get the type of the specified Sensor
+     *
+     * @param index  Sensor index
+     * @return OBSensorType returns the Sensor type
+     * \else
      * @brief 获取指定Sensor的类型
      *
      * @param index Sensor索引
      * @return OBSensorType 返回Sensor类型
+     * \endif
      */
-    OBSensorType type( uint32_t index );
+    OBSensorType type(uint32_t index);
 
     /**
+     * \if English
+     * @brief Get Sensor by index number
+     *
+     * @param index  To create a device cable, the range is [0, count-1], if the index exceeds the range, an exception will be thrown
+
+     * @return std::shared_ptr<Sensor> returns the Sensor object
+     * \else
      * @brief 通过索引号获取Sensor
      *
      * @param index 要创建设备的索，范围 [0, count-1]，如果index超出范围将抛异常
      * @return std::shared_ptr<Sensor> 返回Sensor对象
+     * \endif
      */
-    std::shared_ptr< Sensor > getSensor( uint32_t index );
+    std::shared_ptr<Sensor> getSensor(uint32_t index);
 
     /**
+     * \if English
+     * @brief Obtain the Sensor through the Sensor type
+     *
+     * @param sensorType Sensor type to be obtained
+     * @return std::shared_ptr<Sensor>  returns a Sensor object, if the specified type of Sensor does not exist, it will return empty
+     * \else
      * @brief 通过Sensor类型获取Sensor
      *
      * @param sensorType 要获取的Sensor类型
      * @return std::shared_ptr<Sensor> 返回Sensor对象，如果指定类型Sensor不存在，将返回空
+     * \endif
      */
-    std::shared_ptr< Sensor > getSensor( OBSensorType sensorType );
+    std::shared_ptr<Sensor> getSensor(OBSensorType sensorType);
 };
 }  // namespace ob
