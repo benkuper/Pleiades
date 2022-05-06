@@ -62,7 +62,7 @@ bool AstraPlusNode::initInternal()
 	if (ctx == nullptr)
 	{
 		ctx.reset(new ob::Context());
-		ctx->setLoggerServerity(OBLogServerity::OB_LOG_SEVERITY_ERROR);
+		//ctx->setLoggerServerity(OBLogServerity::OB_LOG_SEVERITY_ERROR);
 	}
 
 	if (pipeline == nullptr)
@@ -154,12 +154,12 @@ void AstraPlusNode::setupPipeline()
 	{
 		config->enableStream(depthProfile);
 
-		if (pipeline->getDevice()->isPropertySupported(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL))
-			pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_HARDWARE_BOOL, alignDepthToColor->boolValue());
-		else if (pipeline->getDevice()->isPropertySupported(OB_DEVICE_PROPERTY_DEPTH_ALIGN_SOFTWARE_BOOL))
-			pipeline->getDevice()->setBoolProperty(OB_DEVICE_PROPERTY_DEPTH_ALIGN_SOFTWARE_BOOL, alignDepthToColor->boolValue());
+		if(pipeline->getDevice()->isPropertySupported(OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL, OB_PERMISSION_WRITE)) 
+        	pipeline->getDevice()->setBoolProperty(OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL, alignDepthToColor->boolValue());
+		
 
-		pointCloudFilter = pipeline->createFilter<ob::PointCloudFilter>();
+		auto cameraParam = pipeline->getCameraParam();
+		pointCloudFilter->setCameraParam(cameraParam);
 	}
 	else
 	{
@@ -177,13 +177,16 @@ void AstraPlusNode::processInternal()
 	if (ifx == 0 || ify == 0)
 	{
 		OBSensorType sensorType = alignDepthToColor->boolValue() ? OBSensorType::OB_SENSOR_COLOR : OBSensorType::OB_SENSOR_DEPTH;
-		OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(sensorType);
-		ifx = intrinsic.fx;
-		ify = intrinsic.fy;
+		//OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(sensorType);
+		//ifx = intrinsic.fx;
+		//ify = intrinsic.fy;
+		//need to update to the new sdk code
+		ifx = 1;
+		ify = 1;
 
 		camMatrix = cv::Mat::zeros(3, 3, CV_64FC1);
-		camMatrix.at<double>(0, 0) = intrinsic.fx;
-		camMatrix.at<double>(1, 1) = intrinsic.fy;
+		camMatrix.at<double>(0, 0) = ifx;
+		camMatrix.at<double>(1, 1) = ify;
 		sendMatrix(outCamMatrix, camMatrix);
 		//, 0, 3, intrinsic.cx, 0, intrinsic.fy, intrinsic.cy, 0, 0, 1);
 	}
@@ -219,8 +222,8 @@ void AstraPlusNode::processInternal()
 				//float y = relY * d * fy;
 				//float z = d;
 
-				float3_t p = pointsData[index];
-				cloud->at(floor(tx * 1.0f / ds), floor(ty * 1.0f / ds)) = pcl::PointXYZ(-p.xyz.x / 1000.0f, p.xyz.y / 1000.0f, p.xyz.z / 1000.0f);
+				OBPoint p = pointsData[index];
+				cloud->at(floor(tx * 1.0f / ds), floor(ty * 1.0f / ds)) = pcl::PointXYZ(-p.x / 1000.0f, p.y / 1000.0f, p.z / 1000.0f);
 			}
 		}
 	}
@@ -274,21 +277,17 @@ void AstraPlusNode::run()
 		if (threadShouldExit()) break;
 
 
-		if (processDepth->boolValue())
+		if (processDepth->boolValue() && frameset->depthFrame() != nullptr)
 		{
-			if (pointCloudFilter != nullptr)
+			pointCloudFilter->setCreatePointFormat(OB_FORMAT_POINT);
+			if(auto frame = pointCloudFilter->process(frameset))
 			{
-				if (auto frame = pointCloudFilter->process(frameset))
+				if (auto pointsFrame = frameset->pointsFrame())
 				{
-					if (auto pointsFrame = frameset->pointsFrame())
-					{
-						GenericScopedLock lock(frameLock);
-						pointsData = (float3_t*)pointsFrame->data();
+					GenericScopedLock lock(frameLock);
+					pointsData = (OBPoint*)pointsFrame->data();
 
-						NNLOG(pointsFrame->dataSize());
-
-						newFrameAvailable = true;
-					}
+					newFrameAvailable = true;
 				}
 			}
 		}

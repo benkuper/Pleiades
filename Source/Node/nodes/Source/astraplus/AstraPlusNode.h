@@ -49,7 +49,8 @@ public:
     int depthHeight;
 
     SpinLock frameLock;
-    float3_t* pointsData;
+
+    OBPoint* pointsData;
     
     Image colorImage;
 
