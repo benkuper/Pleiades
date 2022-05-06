@@ -36,3 +36,8 @@ void MainContentComponent::init()
 
 	OrganicMainContentComponent::init();
 }
+
+void MainContentComponent::setupOpenGL()
+{
+	//do nothing
+}

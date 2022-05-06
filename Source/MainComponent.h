@@ -10,4 +10,5 @@ public:
 	~MainContentComponent();
 
 	virtual void init() override;
+	virtual void setupOpenGL() override;
 };
