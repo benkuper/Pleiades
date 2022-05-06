@@ -25,16 +25,15 @@ void MergeNode::processInternal()
 {
 	if (!out->isEmpty())
 	{
-		CloudPtr outC = slotCloudMap[ins[0]];
-		if (outC == nullptr) return;
+		CloudPtr outC(new Cloud());
 
-
-		for (int i = 1; i < ins.size() - 1; i++)
+		for (int i = 0; i < ins.size(); i++)
 		{
 			CloudPtr c = slotCloudMap[ins[i]];
 			if (c == nullptr) continue;
 			*outC += *c;
 		}
+
 		sendPointCloud(out, outC);
 	}
 }
