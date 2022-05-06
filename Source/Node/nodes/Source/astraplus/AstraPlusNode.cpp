@@ -21,6 +21,7 @@ AstraPlusNode::AstraPlusNode(var params) :
 	ifx(0),
 	ify(0),
 	pointsData(nullptr),
+	timeAtlastDeviceQuery(0),
 	newFrameAvailable(false)
 {
 	outDepth = addSlot("Out Cloud", false, POINTCLOUD);
@@ -28,8 +29,7 @@ AstraPlusNode::AstraPlusNode(var params) :
 	outCamMatrix = addSlot("Out Camera Matrix", false, MATRIX);
 	outDistCoeffs = addSlot("Out Distortion Coeffs", false, MATRIX);
 
-
-
+	deviceIndex = addIntParameter("Device Index", "Index of the device", 0, 0);
 	downSample = addIntParameter("Down Sample", "Simple downsampling from the initial 640x480 point cloud. Value of 2 will result in a 320x240 point cloud", 2, 1, 16);
 
 	processDepth = addBoolParameter("Process Depth", "If checked, will process depth frames", true);
@@ -52,7 +52,13 @@ void AstraPlusNode::clearItem()
 
 bool AstraPlusNode::initInternal()
 {
+	if (!enabled->boolValue()) return false;
 
+	//do not init too much if in loop (when device is not available)
+	long t = Time::getMillisecondCounter();
+	if (t - timeAtlastDeviceQuery < 1000) return false;
+	timeAtlastDeviceQuery = t;
+	
 	if (ctx == nullptr)
 	{
 		ctx.reset(new ob::Context());
@@ -63,7 +69,19 @@ bool AstraPlusNode::initInternal()
 	{
 		try
 		{
-			pipeline.reset(new ob::Pipeline());
+			auto deviceList = ctx->queryDeviceList();
+			auto device = deviceList->getDevice(deviceIndex->intValue());
+			if (device == nullptr)
+			{
+				if (getWarningMessage().isEmpty())
+				{
+					NLOGWARNING(niceName, "Astra+ device not found at index " << deviceIndex->intValue());
+					setWarningMessage("Astra+ not connected.");
+				}
+				return false;
+			}
+
+			pipeline.reset(new ob::Pipeline(device));
 			setupProfiles();
 			setupPipeline();
 
@@ -77,8 +95,8 @@ bool AstraPlusNode::initInternal()
 		{
 			if (getWarningMessage().isEmpty())
 			{
-				NLOGWARNING(niceName, "Could not initialize Astra+. Is it connected ?");
-				setWarningMessage("Astra+ not connected.");
+				NLOGWARNING(niceName, "Could not initialize Astra+. Is it connected ? " << e.what());
+				setWarningMessage("Astra+ not connected");
 			}
 		}
 	}
@@ -170,6 +188,7 @@ void AstraPlusNode::processInternal()
 		//, 0, 3, intrinsic.cx, 0, intrinsic.fy, intrinsic.cy, 0, 0, 1);
 	}
 
+	GenericScopedLock lock(frameLock);
 
 	if (pointsData == nullptr) return;
 	if (!newFrameAvailable && processOnlyOnNewFrame->boolValue()) return;
@@ -184,7 +203,6 @@ void AstraPlusNode::processInternal()
 	//float fy = 2 * atan(depthHeight * 1.0f / (2.0f * ify));
 
 	{
-		GenericScopedLock lock(frameLock);
 		for (int ty = 0; ty < depthHeight; ty += ds)
 		{
 			for (int tx = 0; tx < depthWidth; tx += ds)
@@ -221,9 +239,34 @@ void AstraPlusNode::run()
 {
 	wait(10);
 
+	timeAtlastDeviceQuery = Time::getMillisecondCounter();
+
 	while (!threadShouldExit())
 	{
 		wait(2);
+
+		long t = Time::getMillisecondCounter();
+		if (t - timeAtlastDeviceQuery > 1000)
+		{
+			try
+			{
+				auto deviceList = ctx->queryDeviceList();
+				auto device = deviceList->getDevice(deviceIndex->intValue());
+				if (device == nullptr)
+				{
+					NLOGWARNING(niceName, "Device disconnected");
+					isInit = false;
+					pipeline.reset();
+					break;
+				}
+			}
+			catch (std::exception e)
+			{
+				//NLOGERROR(niceName, "Error querying device : " << e.what());
+			}
+
+			timeAtlastDeviceQuery = t;
+		}
 
 		auto frameset = pipeline->waitForFrames(100);
 		if (frameset == nullptr) continue;
@@ -241,7 +284,10 @@ void AstraPlusNode::run()
 					{
 						GenericScopedLock lock(frameLock);
 						pointsData = (float3_t*)pointsFrame->data();
-						//int pointsDataSize = pointsFrame->dataSize();
+
+						NNLOG(pointsFrame->dataSize());
+
+						newFrameAvailable = true;
 					}
 				}
 			}
@@ -261,10 +307,11 @@ void AstraPlusNode::run()
 
 					GenericScopedLock lock(imageLock);
 					colorImage = format.decodeImage(is);
+
+					newFrameAvailable = true;
 				}
 			}
 		}
-		newFrameAvailable = true;
 	}
 
 	{
@@ -279,26 +326,29 @@ void AstraPlusNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
 
-	if (p == enabled)
+	if (!isCurrentlyLoadingData)
 	{
-		if (!enabled->boolValue())
+		if (p == enabled)
 		{
-			stopThread(1000);
+			if (!enabled->boolValue())
+			{
+				stopThread(1000);
+				if(pipeline != nullptr) pipeline->stop();
+			}
+			else if (pipeline != nullptr)
+			{
+				isInit = false;
+				pipeline.reset();
+			}
 		}
-		else if (pipeline != nullptr) startThread();
-	}
-	else if (p == alignDepthToColor || p == processColor || p == processDepth)
-	{
-		if (pipeline != nullptr)
+		else if (p == alignDepthToColor || p == processColor || p == processDepth || p == deviceIndex)
 		{
-			pipeline->stop();
-			setupPipeline();
-			pipeline->start(config);
+			stopThread(100);
+			isInit = false;
+			pipeline.reset();
+			ifx = 0;
+			ify = 0;
 		}
-
-		//force recalculate intrinsics
-		ifx = 0;
-		ify = 0;
 	}
 }
 

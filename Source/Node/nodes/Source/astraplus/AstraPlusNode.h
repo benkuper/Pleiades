@@ -34,12 +34,12 @@ public:
     NodeConnectionSlot* outCamMatrix;
     NodeConnectionSlot* outDistCoeffs;
 
+    IntParameter* deviceIndex;
     IntParameter* downSample;
     BoolParameter* processDepth;
     BoolParameter* processColor;
     BoolParameter* alignDepthToColor;
     BoolParameter* processOnlyOnNewFrame;
-
 
     float ifx;
     float ify;
@@ -53,7 +53,7 @@ public:
     
     Image colorImage;
 
-
+    long timeAtlastDeviceQuery;
     bool newFrameAvailable;
 
     bool initInternal() override;
