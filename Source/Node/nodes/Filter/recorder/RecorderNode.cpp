@@ -17,8 +17,7 @@ RecorderNode::RecorderNode(var params) :
 	cloudIS(nullptr),
 	cloudOS(nullptr),
 	clustersIS(nullptr),
-	clustersOS(nullptr),
-	targetFrameData(nullptr)
+	clustersOS(nullptr)
 
 {
 	addInOutSlot(&inCloud, &outCloud, POINTCLOUD, "In Cloud", "Out Cloud");
@@ -30,19 +29,22 @@ RecorderNode::RecorderNode(var params) :
 
 	recordState = addEnumParameter("Record State", "The state of recording / playing");
 	recordState->addOption("Idle", IDLE)->addOption("Recording", RECORDING)->addOption("Playing", PLAYING)->addOption("Paused", PAUSED);
+	recordState->isSavable = false;
+	
 	record = addTrigger("Record", "Start recording the file");
 	play = addTrigger("Play", "Play the file");
 	stop = addTrigger("Stop", "Stop the recording or playing depending on the current state");
 	pause = addTrigger("Pause", "Pause the recording or playing depending on the current state");
 
 	progression = addFloatParameter("Progression", "Progression of the playback", 0, 0, 1);
+	progression->isSavable = false;
 
 	directory->setDefaultValue(File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(String(ProjectInfo::projectName) + "/records").getFullPathName());
 }
 
 RecorderNode::~RecorderNode()
 {
-	free(targetFrameData);
+	//if(targetFrameData != nullptr) free(targetFrameData);
 }
 
 
@@ -84,11 +86,10 @@ void RecorderNode::processInternal()
 		if (cloudIS != nullptr)
 		{
 			curPlayTime += curTime - lastTimeAtPlay;
+			
+			
 			if (readNextFrame())
 			{
-				if (cloud == nullptr) cloud.reset(new Cloud());
-				cloud->resize(targetFrameDataSize);
-				memcpy(cloud->points.data(), targetFrameData, targetFrameDataSize * sizeof(PPoint));
 
 				changingProgressionFromPlay = true;
 				progression->setValue(curPlayTime / totalTime);
@@ -132,9 +133,11 @@ bool RecorderNode::readNextFrame()
 		return readNextFrame();
 	}
 
-	targetFrameData = (PPoint*)malloc(targetFrameDataSize * sizeof(PPoint));
-	cloudIS->read(targetFrameData, targetFrameDataSize * sizeof(PPoint));
-
+	if (cloud == nullptr) cloud.reset(new Cloud());
+	cloud->resize(targetFrameDataSize);
+	//memcpy(cloud->points.data(), targetFrameData, targetFrameDataSize * sizeof(PPoint));
+	//targetFrameData = (PPoint*)malloc(targetFrameDataSize * sizeof(PPoint));
+	cloudIS->read(cloud->points.data(), targetFrameDataSize * sizeof(PPoint));
 
 	return true;
 }
@@ -225,6 +228,14 @@ void RecorderNode::setupFiles()
 	clustersFile = directory->getFile().getChildFile(fileName->stringValue() + ".clusters");
 }
 
+bool RecorderNode::isStartingNode()
+{
+	RecordState s = recordState->getValueDataAsEnum<RecordState>();
+	if (s == PLAYING || s == PAUSED) return true;
+
+	return false;
+}
+
 void RecorderNode::onContainerTriggerTriggered(Trigger* t)
 {
 	Node::onContainerTriggerTriggered(t);
@@ -243,20 +254,21 @@ void RecorderNode::onContainerParameterChangedInternal(Parameter* p)
 	}
 	else if (p == progression)
 	{
-		RecordState s = recordState->getValueDataAsEnum<RecordState>();
-		if ((s == PLAYING || s == PAUSED) && !changingProgressionFromPlay)
+		if (!isCurrentlyLoadingData)
 		{
-			curPlayTime = progression->floatValue() * totalTime;
-			cloudIS->setPosition(8); //reset read position
-			targetFrameTime = curPlayTime;
-
-			if (s == PAUSED)
+			RecordState s = recordState->getValueDataAsEnum<RecordState>();
+			if ((s == PLAYING || s == PAUSED) && !changingProgressionFromPlay)
 			{
-				if (readNextFrame())
+				if (cloudIS != nullptr)
 				{
-					if (cloud == nullptr) cloud.reset(new Cloud());
-					cloud->resize(targetFrameDataSize);
-					memcpy(cloud->points.data(), targetFrameData, targetFrameDataSize * sizeof(PPoint));
+					curPlayTime = progression->floatValue() * totalTime;
+					cloudIS->setPosition(8); //reset read position
+					targetFrameTime = curPlayTime;
+
+					if (s == PAUSED)
+					{
+						readNextFrame();
+					}
 				}
 			}
 		}

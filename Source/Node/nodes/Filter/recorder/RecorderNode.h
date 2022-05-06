@@ -68,7 +68,7 @@ public:
 	int numFramesWritten;
 	
 	float targetFrameTime;
-	PPoint* targetFrameData;
+	//PPoint* targetFrameData;
 	int targetFrameDataSize;
 
 	SpinLock stateLock;
@@ -80,6 +80,8 @@ public:
 	void setState(RecordState s);
 
 	void setupFiles();
+
+	bool isStartingNode() override;
 
 
 	void onContainerTriggerTriggered(Trigger* t) override;
