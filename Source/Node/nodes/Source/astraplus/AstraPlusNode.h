@@ -21,7 +21,7 @@ public:
 
     void clearItem() override;
 
-    std::unique_ptr<ob::Context> ctx;
+    static std::unique_ptr<ob::Context> ctx;
     std::unique_ptr<ob::Pipeline> pipeline;
 
     std::shared_ptr<ob::VideoStreamProfile> colorProfile;

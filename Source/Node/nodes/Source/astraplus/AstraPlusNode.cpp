@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-//std::unique_ptr<ob::Context> AstraPlusNode::ctx;
+std::unique_ptr<ob::Context> AstraPlusNode::ctx;
 //std::unique_ptr<ob::Pipeline> AstraPlusNode::pipeline;
 //std::shared_ptr<ob::VideoStreamProfile> AstraPlusNode::colorProfile;
 //std::shared_ptr<ob::VideoStreamProfile>AstraPlusNode::depthProfile;
