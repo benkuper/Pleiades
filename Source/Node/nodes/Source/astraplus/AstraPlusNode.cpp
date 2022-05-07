@@ -58,7 +58,7 @@ bool AstraPlusNode::initInternal()
 	long t = Time::getMillisecondCounter();
 	if (t - timeAtlastDeviceQuery < 1000) return false;
 	timeAtlastDeviceQuery = t;
-	
+
 	if (ctx == nullptr)
 	{
 		ctx.reset(new ob::Context());
@@ -154,10 +154,11 @@ void AstraPlusNode::setupPipeline()
 	{
 		config->enableStream(depthProfile);
 
-		if(pipeline->getDevice()->isPropertySupported(OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL, OB_PERMISSION_WRITE)) 
-        	pipeline->getDevice()->setBoolProperty(OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL, alignDepthToColor->boolValue());
-		
+		if (pipeline->getDevice()->isPropertySupported(OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL, OB_PERMISSION_WRITE))
+			pipeline->getDevice()->setBoolProperty(OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL, alignDepthToColor->boolValue());
 
+
+		pointCloudFilter.reset(new ob::PointCloudFilter());
 		auto cameraParam = pipeline->getCameraParam();
 		pointCloudFilter->setCameraParam(cameraParam);
 	}
@@ -242,33 +243,39 @@ void AstraPlusNode::run()
 {
 	wait(10);
 
+	const char* uid = pipeline->getDevice()->getDeviceInfo()->uid();
+
 	timeAtlastDeviceQuery = Time::getMillisecondCounter();
 
 	while (!threadShouldExit())
 	{
 		wait(2);
 
+
 		long t = Time::getMillisecondCounter();
 		if (t - timeAtlastDeviceQuery > 1000)
 		{
-			try
-			{
-				auto deviceList = ctx->queryDeviceList();
-				auto device = deviceList->getDevice(deviceIndex->intValue());
-				if (device == nullptr)
-				{
-					NLOGWARNING(niceName, "Device disconnected");
-					isInit = false;
-					pipeline.reset();
-					break;
-				}
-			}
-			catch (std::exception e)
-			{
-				//NLOGERROR(niceName, "Error querying device : " << e.what());
-			}
 
-			timeAtlastDeviceQuery = t;
+			{
+				try
+				{
+					auto deviceList = ctx->queryDeviceList();
+					const char* tuid = deviceList->uid(deviceIndex->intValue());
+					if (strcmp(uid, tuid) != 0)
+					{
+						NLOGWARNING(niceName, "Device disconnected");
+						isInit = false;
+						pipeline.reset();
+						break;
+					}
+				}
+				catch (std::exception e)
+				{
+					//NLOGERROR(niceName, "Error querying device : " << e.what());
+				}
+
+				timeAtlastDeviceQuery = t;
+			}
 		}
 
 		auto frameset = pipeline->waitForFrames(100);
@@ -280,15 +287,12 @@ void AstraPlusNode::run()
 		if (processDepth->boolValue() && frameset->depthFrame() != nullptr)
 		{
 			pointCloudFilter->setCreatePointFormat(OB_FORMAT_POINT);
-			if(auto frame = pointCloudFilter->process(frameset))
+			if (auto frame = pointCloudFilter->process(frameset))
 			{
-				if (auto pointsFrame = frameset->pointsFrame())
-				{
-					GenericScopedLock lock(frameLock);
-					pointsData = (OBPoint*)pointsFrame->data();
+				GenericScopedLock lock(frameLock);
+				pointsData = (OBPoint*)frame->data();
 
-					newFrameAvailable = true;
-				}
+				newFrameAvailable = true;
 			}
 		}
 
@@ -332,7 +336,7 @@ void AstraPlusNode::onContainerParameterChangedInternal(Parameter* p)
 			if (!enabled->boolValue())
 			{
 				stopThread(1000);
-				if(pipeline != nullptr) pipeline->stop();
+				if (pipeline != nullptr) pipeline->stop();
 			}
 			else if (pipeline != nullptr)
 			{
