@@ -129,7 +129,7 @@ NodeConnectionSlot* Node::addSlot(StringRef name, bool isInput, NodeConnectionTy
 void Node::receivePointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 {
 	slotCloudMap.set(slot, cloud);
-	if (slot->processOnReceive && (!hasProcessed && processOnlyOnce)) addNextToProcess();
+	if (slot->processOnReceive && (!hasProcessed || !processOnlyOnce)) addNextToProcess();
 }
 
 void Node::receiveClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
