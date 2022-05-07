@@ -23,6 +23,7 @@ public:
 
     static std::unique_ptr<ob::Context> ctx;
     std::unique_ptr<ob::Pipeline> pipeline;
+    std::shared_ptr<ob::Device> device;
 
     std::shared_ptr<ob::VideoStreamProfile> colorProfile;
     std::shared_ptr<ob::VideoStreamProfile> depthProfile;

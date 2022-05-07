@@ -65,20 +65,24 @@ bool AstraPlusNode::initInternal()
 		//ctx->setLoggerServerity(OBLogServerity::OB_LOG_SEVERITY_ERROR);
 	}
 
-	if (pipeline == nullptr)
+	if (pipeline == nullptr || device == nullptr)
 	{
 		try
 		{
 			auto deviceList = ctx->queryDeviceList();
-			auto device = deviceList->getDevice(deviceIndex->intValue());
+			
 			if (device == nullptr)
 			{
-				if (getWarningMessage().isEmpty())
+				device = deviceList->getDevice(deviceIndex->intValue());
+				if (device == nullptr)
 				{
-					NLOGWARNING(niceName, "Astra+ device not found at index " << deviceIndex->intValue());
-					setWarningMessage("Astra+ not connected.");
+					if (getWarningMessage().isEmpty())
+					{
+						NLOGWARNING(niceName, "Astra+ device not found at index " << deviceIndex->intValue());
+						setWarningMessage("Astra+ not connected.");
+					}
+					return false;
 				}
-				return false;
 			}
 
 			pipeline.reset(new ob::Pipeline(device));
@@ -144,6 +148,8 @@ void AstraPlusNode::setupProfiles()
 			break;
 		}
 	}
+
+	
 }
 
 void AstraPlusNode::setupPipeline()
@@ -286,10 +292,11 @@ void AstraPlusNode::run()
 
 		if (processDepth->boolValue() && frameset->depthFrame() != nullptr)
 		{
+			GenericScopedLock lock(frameLock);
+			pointCloudFilter->reset();
 			pointCloudFilter->setCreatePointFormat(OB_FORMAT_POINT);
 			if (auto frame = pointCloudFilter->process(frameset))
 			{
-				GenericScopedLock lock(frameLock);
 				pointsData = (OBPoint*)frame->data();
 
 				newFrameAvailable = true;
@@ -342,6 +349,7 @@ void AstraPlusNode::onContainerParameterChangedInternal(Parameter* p)
 			{
 				isInit = false;
 				pipeline.reset();
+				device.reset();
 			}
 		}
 		else if (p == alignDepthToColor || p == processColor || p == processDepth || p == deviceIndex)
@@ -349,6 +357,7 @@ void AstraPlusNode::onContainerParameterChangedInternal(Parameter* p)
 			stopThread(100);
 			isInit = false;
 			pipeline.reset();
+			device.reset();
 			ifx = 0;
 			ify = 0;
 		}
