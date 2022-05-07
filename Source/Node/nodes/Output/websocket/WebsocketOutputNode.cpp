@@ -18,7 +18,10 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 	downSample = addIntParameter("Downsample", "Simple down sample before sending to the clients, not 2d downsampling, but once every x.", 1, 1, 16);
 	doStreamClouds = addBoolParameter("Stream Clouds", "Stream Clouds", true);
 	doStreamClusters = addBoolParameter("Stream Clusters", "Stream Clusters", true);
-	streamClusterPoints = addBoolParameter("Stream Cluster Points","Stream cloud inside clusters", true);
+	streamClusterPoints = addBoolParameter("Stream Cluster Points", "Stream cloud inside clusters", true);
+
+	processOnlyOnce = false;
+
 	initServer();
 }
 
@@ -53,41 +56,45 @@ void WebsocketOutputNode::initServer()
 
 void WebsocketOutputNode::processInternal()
 {
-	if(doStreamClouds->boolValue())
+	if (doStreamClouds->boolValue())
 	{
-	int id = 0;
-	for (auto& s : inClouds)
-	{
-		id++; //always increment to have consistent ids
-		if (s->isEmpty()) continue;
-		CloudPtr c = slotCloudMap[s];
-		if (c == nullptr) continue;
-		streamCloud(c, id);
-	}
+		int id = 0;
+		for (auto& s : inClouds)
+		{
+			id++; //always increment to have consistent ids
+			if (s->isEmpty()) continue;
+			CloudPtr c = slotCloudMap[s];
+			if (c == nullptr) continue;
+			streamCloud(c, id);
+		}
 	}
 
 
-	if(doStreamClusters->boolValue())
+	if (doStreamClusters->boolValue())
 	{
-	for (auto& s : inClusters)
-	{
-		if (s->isEmpty()) continue;
-		Array<ClusterPtr> c = slotClustersMap[s];
-		if (c.isEmpty()) continue;
-		streamClusters(c);
+		for (auto& s : inClusters)
+		{
+			if (s->isEmpty()) continue;
+			Array<ClusterPtr> c = slotClustersMap[s];
+			if (c.isEmpty()) continue;
+			streamClusters(c);
+		}
 	}
-	}
+
+	//clear after each send, avoid sending multiple time the same in one frame
+	slotCloudMap.clear();
+	slotClustersMap.clear();
 }
 
 void WebsocketOutputNode::streamCloud(CloudPtr cloud, int id)
 {
 	if (server.getNumActiveConnections() == 0) return;
-	
+
 	NNLOG("Send cloud " << id << " with " << cloud->size() << " points");
 
 	MemoryOutputStream os;
 	os.writeByte(CloudType); //cloud type
-	os.writeInt(1000+id); //write 1000+ id to specify that it doesn't have metadata
+	os.writeInt(1000 + id); //write 1000+ id to specify that it doesn't have metadata
 
 	int ds = downSample->intValue();
 	for (int i = 0; i < cloud->size(); i += ds)
@@ -110,7 +117,7 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 {
 	if (server.getNumActiveConnections() == 0) return;
 	if (cluster->cloud == nullptr) return;
-	
+
 	bool includeContent = streamClusterPoints->boolValue();
 	MemoryOutputStream os;
 
@@ -133,16 +140,16 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 	os.writeFloat(cluster->boundingBoxMax.y);
 	os.writeFloat(cluster->boundingBoxMax.z);
 
-	if(includeContent)
+	if (includeContent)
 	{
-	int ds = downSample->intValue();
-	for (int i = 0; i < cluster->cloud->size(); i += ds)
-	{
-		auto p = cluster->cloud->points[i];
-		os.writeFloat(p.x);
-		os.writeFloat(p.y);
-		os.writeFloat(p.z);
-	}
+		int ds = downSample->intValue();
+		for (int i = 0; i < cluster->cloud->size(); i += ds)
+		{
+			auto p = cluster->cloud->points[i];
+			os.writeFloat(p.x);
+			os.writeFloat(p.y);
+			os.writeFloat(p.z);
+		}
 	}
 	server.send((char*)os.getData(), os.getDataSize());
 }
