@@ -152,18 +152,20 @@ jobs:
     #if: false # tmp disable
 
     name: Linux
-    runs-on: ubuntu-20.04
+    
     strategy:
       matrix:
         include:
         - arch: x64
           buildFolder: "LinuxMakefile"
           buildConfig: "Release"
-          
+          os: ubuntu-20.04
+
         - arch: armhf
           packageArch: armhf
           buildFolder: "Raspberry"
           buildConfig: "Release"
+          os: ubuntu-18.04
 
         # - arch: aarch64
         #   packageArch: arm64
@@ -171,6 +173,8 @@ jobs:
         #   buildConfig: "Release64"
           
       fail-fast: false
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repo
