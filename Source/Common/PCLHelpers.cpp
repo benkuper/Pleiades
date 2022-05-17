@@ -15,6 +15,7 @@ Cluster::Cluster(int id, CloudPtr cloud) :
 	cloud(cloud)
 {
 	state = ENTERED;
+	if (cloud == nullptr) cloud.reset(new Cloud());
 	lastUpdateTime = Time::getMillisecondCounterHiRes() / 1000.0;
 }
 
