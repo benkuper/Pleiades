@@ -51,8 +51,8 @@ jobs:
         run: |
           Set-Variable -Name "PKGNAME" -Value "${{ env.ProjectName }}-${{ steps.set_variables.outputs.suffix }}"
           Invoke-WebRequest "${{ secrets.DEPDIRURL }}pcl_installer_win.exe" -OutFile ./pcl_installer_win.exe
-          cmd.exe /c "call `pcl_installer_win.exe /S`"
-          
+          cmd.exe /c "call `"pcl_installer_win.exe /S`""
+
       - name: Build
         run:  msbuild "Builds/${{ matrix.buildFolder }}/${{ env.ProjectName }}.sln" /p:PreferredToolArchitecture=x64 /m /verbosity:normal /p:Configuration=${{ steps.set_variables.outputs.config }}
 
