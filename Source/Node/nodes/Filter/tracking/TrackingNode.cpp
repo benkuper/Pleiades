@@ -111,8 +111,8 @@ void TrackingNode::processInternal()
 	//	}
 	//}
 
-	hungarian.Solve(distanceMatrix, matchedClusterIndices);
 
+	hungarian.Solve(distanceMatrix, matchedClusterIndices);
 	
 
 	double curT = Time::getMillisecondCounterHiRes() / 1000.0;

@@ -9,9 +9,6 @@
 */
 
 std::unique_ptr<ob::Context> AstraPlusNode::ctx;
-//std::unique_ptr<ob::Pipeline> AstraPlusNode::pipeline;
-//std::shared_ptr<ob::VideoStreamProfile> AstraPlusNode::colorProfile;
-//std::shared_ptr<ob::VideoStreamProfile>AstraPlusNode::depthProfile;
 
 AstraPlusNode::AstraPlusNode(var params) :
 	Node(getTypeString(), Node::SOURCE, params),
@@ -183,7 +180,7 @@ void AstraPlusNode::processInternal()
 
 	if (ifx == 0 || ify == 0)
 	{
-		OBSensorType sensorType = alignDepthToColor->boolValue() ? OBSensorType::OB_SENSOR_COLOR : OBSensorType::OB_SENSOR_DEPTH;
+		//OBSensorType sensorType = alignDepthToColor->boolValue() ? OBSensorType::OB_SENSOR_COLOR : OBSensorType::OB_SENSOR_DEPTH;
 		//OBCameraIntrinsic intrinsic = pipeline->getDevice()->getCameraIntrinsic(sensorType);
 		//ifx = intrinsic.fx;
 		//ify = intrinsic.fy;

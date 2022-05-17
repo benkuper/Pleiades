@@ -1,3 +1,4 @@
+#include "WebsocketOutputNode.h"
 /*
   ==============================================================================
 
@@ -12,7 +13,7 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 	Node(getTypeString(), OUTPUT, params)
 {
 	for (int i = 0; i < 4; i++) inClouds.add(addSlot("Cloud In " + String(i), true, POINTCLOUD));
-	for (int i = 0; i < 2; i++) inClusters.add(addSlot("ClusterIn " + String(i), true, CLUSTERS));
+	for (int i = 0; i < 4; i++) inClusters.add(addSlot("ClusterIn " + String(i), true, CLUSTERS));
 
 	port = addIntParameter("Local Port", "Port to bind the server to", 6060, 1024, 65535);
 	downSample = addIntParameter("Downsample", "Simple down sample before sending to the clients, not 2d downsampling, but once every x.", 1, 1, 16);
@@ -22,29 +23,33 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 
 	processOnlyOnce = false;
 
-	initServer();
+	if(!Engine::mainEngine->isLoadingFile) initServer();
 }
 
 WebsocketOutputNode::~WebsocketOutputNode()
 {
-	server.stop();
+	server->stop();
 }
 
 
 void WebsocketOutputNode::initServer()
 {
-	if (server.isConnected)
+	if (server != nullptr && server->isConnected)
 	{
 		NNLOG("Stopping Server");
-		server.stop();
+		server->stop();
 	}
 
-	if (!enabled->boolValue()) return;
+	server.reset();
 
-	server.rootPath = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(ProjectInfo::projectName + String("/server"));
-	server.start(port->intValue());
+	if (!enabled->boolValue() || isCurrentlyLoadingData) return;
+	
+	server.reset(new SimpleWebSocketServer());
 
-	if (server.isConnected)
+	server->rootPath = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(ProjectInfo::projectName + String("/server"));
+	server->start(port->intValue());
+
+	if (server->isConnected)
 	{
 		NNLOG("Server is running on port " << port->intValue());
 	}
@@ -88,7 +93,7 @@ void WebsocketOutputNode::processInternal()
 
 void WebsocketOutputNode::streamCloud(CloudPtr cloud, int id)
 {
-	if (server.getNumActiveConnections() == 0) return;
+	if (server != nullptr && server->getNumActiveConnections() == 0) return;
 
 	NNLOG("Send cloud " << id << " with " << cloud->size() << " points");
 
@@ -104,18 +109,18 @@ void WebsocketOutputNode::streamCloud(CloudPtr cloud, int id)
 		os.writeFloat(p.y);
 		os.writeFloat(p.z);
 	}
-	server.send((char*)os.getData(), os.getDataSize());
+	server->send((char*)os.getData(), os.getDataSize());
 }
 
 void WebsocketOutputNode::streamClusters(Array<ClusterPtr> clusters)
 {
-	if (server.getNumActiveConnections() == 0) return;
+	if (server != nullptr && server->getNumActiveConnections() == 0) return;
 	for (int i = 0; i < clusters.size(); i++) streamCluster(clusters[i]);
 }
 
 void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 {
-	if (server.getNumActiveConnections() == 0) return;
+	if (server != nullptr && server->getNumActiveConnections() == 0) return;
 	if (cluster->cloud == nullptr) return;
 
 	bool includeContent = streamClusterPoints->boolValue();
@@ -151,11 +156,16 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 			os.writeFloat(p.z);
 		}
 	}
-	server.send((char*)os.getData(), os.getDataSize());
+	server->send((char*)os.getData(), os.getDataSize());
 }
 
 void WebsocketOutputNode::onContainerParameterChangedInternal(Parameter* p)
 {
-	if (p == port) initServer();
-	else if (p == enabled) initServer();
+	Node::onContainerParameterChangedInternal(p);
+	if (p == port || p == enabled) initServer();
+}
+
+void WebsocketOutputNode::afterLoadJSONDataInternal()
+{
+	initServer();
 }

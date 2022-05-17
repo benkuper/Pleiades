@@ -36,7 +36,7 @@ public:
 	BoolParameter* doStreamClusters;
 	BoolParameter* streamClusterPoints;
  
-    SimpleWebSocketServer server;
+    std::unique_ptr<SimpleWebSocketServer> server;
 
 
     void initServer();
@@ -48,6 +48,8 @@ public:
     void streamCluster(ClusterPtr cluster);
 
     void onContainerParameterChangedInternal(Parameter* p) override;
+
+    void afterLoadJSONDataInternal() override;
 
     String getTypeString() const override { return getTypeStringStatic(); }
     static String getTypeStringStatic() { return "Websocket Out"; }

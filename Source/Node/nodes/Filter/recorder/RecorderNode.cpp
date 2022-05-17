@@ -24,17 +24,20 @@ RecorderNode::RecorderNode(var params) :
 	addInOutSlot(&inClusters, &outClusters, CLUSTERS, "In Clusters", " Out Clusters");
 
 	directory = addFileParameter("Directory", "Folder to record/load data to/from");
+	directory->directoryMode = true;
 
 	fileName = addStringParameter("File prefix", "Name of the file, .cloud and .clusters will be appended", "record");
 
 	recordState = addEnumParameter("Record State", "The state of recording / playing");
 	recordState->addOption("Idle", IDLE)->addOption("Recording", RECORDING)->addOption("Playing", PLAYING)->addOption("Paused", PAUSED);
 	recordState->isSavable = false;
-	
+
 	record = addTrigger("Record", "Start recording the file");
+	overwrite = addBoolParameter("Overwrite", "If checked, this will overwrite the record file is one is there. Otherwise recording will do nothing", false);
 	play = addTrigger("Play", "Play the file");
 	stop = addTrigger("Stop", "Stop the recording or playing depending on the current state");
 	pause = addTrigger("Pause", "Pause the recording or playing depending on the current state");
+	autoPlay = addBoolParameter("Play at load", "If checked, this will play on load", false);
 
 	progression = addFloatParameter("Progression", "Progression of the playback", 0, 0, 1);
 	progression->isSavable = false;
@@ -86,8 +89,8 @@ void RecorderNode::processInternal()
 		if (cloudIS != nullptr)
 		{
 			curPlayTime += curTime - lastTimeAtPlay;
-			
-			
+
+
 			if (readNextFrame())
 			{
 
@@ -153,13 +156,16 @@ void RecorderNode::setState(RecordState s)
 	case IDLE:
 		if (prevState == RECORDING)
 		{
-			cloudOS->setPosition(0);
-			cloudOS->writeInt(numFramesWritten);
-			cloudOS->writeFloat(lastRecordedFrameTime);
-			if (cloudOS != nullptr) cloudOS->flush();
-			cloudOS.reset();
+			if (numFramesWritten > 0)
+			{
+				cloudOS->setPosition(0);
+				cloudOS->writeInt(numFramesWritten);
+				cloudOS->writeFloat(lastRecordedFrameTime);
+				if (cloudOS != nullptr) cloudOS->flush();
+				cloudOS.reset();
 
-			LOG("Recorded " << lastRecordedFrameTime << "s in " << numFramesWritten << " frames in file " << cloudFile.getFullPathName());
+				LOG("Recorded " << lastRecordedFrameTime << "s in " << numFramesWritten << " frames in file " << cloudFile.getFullPathName());
+			}
 		}
 		else if (prevState == PLAYING)
 		{
@@ -169,20 +175,30 @@ void RecorderNode::setState(RecordState s)
 
 	case RECORDING:
 		if (prevState == PLAYING || prevState == PAUSED) cloudIS.reset();
+		numFramesWritten = 0;
 
 		if (!directory->getFile().exists()) directory->getFile().createDirectory();
 
-		if (cloudFile.exists()) cloudFile.deleteFile();
+		if (cloudFile.exists())
+		{
+			if (overwrite->boolValue()) cloudFile.deleteFile();
+			else
+			{
+				NLOGWARNING(niceName, "File already exists and overwrite disabled, not recording");
+				//setState(IDLE);
+				return;
+			}
+		}
 
 		cloudOS.reset(new FileOutputStream(cloudFile));
 		if (cloudOS->failedToOpen())
 		{
 			LOGERROR("Failed to open file " << cloudFile.getFullPathName() << " to record");
+
 			return;
 		}
 		cloudOS->writeInt(0); //will hold frames Written
 		cloudOS->writeFloat(0); //will hold totalTime
-		numFramesWritten = 0;
 		timeAtRecord = Time::getMillisecondCounter() / 1000.;
 		break;
 
@@ -273,4 +289,10 @@ void RecorderNode::onContainerParameterChangedInternal(Parameter* p)
 			}
 		}
 	}
+}
+
+void RecorderNode::afterLoadJSONDataInternal()
+{
+	Node::afterLoadJSONDataInternal();
+	if (autoPlay->boolValue()) play->trigger();
 }

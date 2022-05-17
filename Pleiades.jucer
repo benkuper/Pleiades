@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/astraplus/include&#10;../../External/orbbec/astrapro/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;../../External/zbar/include"
+              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/astraplus/include&#10;../../External/orbbec/astrapro/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include"
               projectLineFeed="&#10;">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
@@ -134,6 +134,12 @@
             </GROUP>
           </GROUP>
           <GROUP id="{CF09C6E6-DFE8-AE77-A05A-9513E1FCEF9A}" name="Source">
+            <GROUP id="{39F10CF2-CDDE-DC15-974B-C3C0F543B0F3}" name="websocket">
+              <FILE id="lJ7m69" name="WebsocketSourceNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Source/websocket/WebsocketSourceNode.cpp"/>
+              <FILE id="acrGId" name="WebsocketSourceNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Source/websocket/WebsocketSourceNode.h"/>
+            </GROUP>
             <GROUP id="{42BA0BDA-B812-E8E3-5320-30220723C38D}" name="astrapro">
               <FILE id="ywUXC7" name="AstraProNode.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/Source/astrapro/AstraProNode.cpp"/>
@@ -260,6 +266,29 @@
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
+    <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="OrbbecSDK.lib&#10;astra.lib&#10;astra_core.lib&#10;Kinect20.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib&#10;"
+            smallIcon="ddDsaL" bigIcon="ddDsaL">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/Debug" headerPath="&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"
+                       libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=d"/>
+        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/Release" headerPath="C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"
+                       libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=" alwaysGenerateDebugSymbols="1"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="JUCE/modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_osc" path="JUCE/modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
+      </MODULEPATHS>
+    </VS2022>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_core" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>

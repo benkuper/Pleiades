@@ -37,8 +37,8 @@ class Cluster
 {
 public:
 	Cluster(int id, CloudPtr cloud);
-
 	Cluster(std::shared_ptr<Cluster>& other);
+	virtual ~Cluster() {}
 
 	int id = 0;
 	CloudPtr cloud;

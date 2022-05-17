@@ -16,6 +16,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<AstraPlusNode>("Source", AstraPlusNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AstraProNode>("Source", AstraProNode::getTypeStringStatic()));
     defs.add(Definition::createDef<Kinect2Node>("Source", Kinect2Node::getTypeStringStatic()));
+    defs.add(Definition::createDef<WebsocketSourceNode>("Source", WebsocketSourceNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<QRCodeNode>("RGB", QRCodeNode::getTypeStringStatic()));
 
@@ -30,6 +31,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<TrackingNode>("Clusters", TrackingNode::getTypeStringStatic()));
     defs.add(Definition::createDef<OneEuroFilterNode>("Clusters", OneEuroFilterNode::getTypeStringStatic()));
     defs.add(Definition::createDef<PredictionNode>("Clusters", PredictionNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<MergeClustersNode>("Clusters", MergeClustersNode::getTypeStringStatic()));
 
 
     defs.add(Definition::createDef<WebsocketOutputNode>("Output", WebsocketOutputNode::getTypeStringStatic()));

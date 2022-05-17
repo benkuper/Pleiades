@@ -40,9 +40,14 @@ public:
 
 	
 	Trigger* record;
+
+	BoolParameter* overwrite;
 	Trigger* play;
 	Trigger* pause;
 	Trigger* stop;
+
+	BoolParameter* autoPlay;
+
 	enum RecordState { IDLE, RECORDING, PLAYING, PAUSED };
 	EnumParameter* recordState;
 
@@ -86,6 +91,8 @@ public:
 
 	void onContainerTriggerTriggered(Trigger* t) override;
 	void onContainerParameterChangedInternal(Parameter* p) override;
+
+	void afterLoadJSONDataInternal() override;
 
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static String getTypeStringStatic() { return "Recorder"; }

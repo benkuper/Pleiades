@@ -9,7 +9,7 @@
 // by Cong Ma, 2016
 // 
 
-HungarianAlgorithm::HungarianAlgorithm() {}
+HungarianAlgorithm::HungarianAlgorithm() : recurseStep(0) {}
 HungarianAlgorithm::~HungarianAlgorithm() {}
 
 //********************************************************//
@@ -32,6 +32,8 @@ double HungarianAlgorithm::Solve(Array<Array<double>>& distanceMatrix, Array<int
 		for (int j = 0; j < nCols; j++)
 			distMatrixIn[i + nRows * j] = distanceMatrix[i][j];
 
+
+	recurseStep = 0;
 	// call solving function
 	assignmentoptimal(_assignment, &cost, distMatrixIn, nRows, nCols);
 
@@ -246,7 +248,9 @@ void HungarianAlgorithm::step2b(int* assignment, double* distMatrix, bool* starM
 		if (coveredColumns[col])
 			nOfCoveredColumns++;
 
-	if (nOfCoveredColumns == minDim)
+
+	recurseStep++;
+	if (nOfCoveredColumns == minDim || recurseStep > 100)
 	{
 		/* algorithm finished */
 		buildassignmentvector(assignment, starMatrix, nOfRows, nOfColumns);
@@ -262,6 +266,7 @@ void HungarianAlgorithm::step2b(int* assignment, double* distMatrix, bool* starM
 /********************************************************/
 void HungarianAlgorithm::step3(int* assignment, double* distMatrix, bool* starMatrix, bool* newStarMatrix, bool* primeMatrix, bool* coveredColumns, bool* coveredRows, int nOfRows, int nOfColumns, int minDim)
 {
+
 	bool zerosFound;
 	int row, col, starCol;
 
