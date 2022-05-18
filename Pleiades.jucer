@@ -269,11 +269,11 @@
     <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="OrbbecSDK.lib&#10;astra.lib&#10;astra_core.lib&#10;Kinect20.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib&#10;"
             smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/Debug" headerPath="&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"
-                       libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
+        <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/Debug" headerPath="&#10;..\..\PCL 1.10.1\include\pcl-1.10&#10;..\..\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;..\..\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;..\..\PCL 1.10.1\3rdParty\FLANN\include&#10;"
+                       libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;..\..\PCL 1.10.1\lib"
                        defines="LSUFFIX=d"/>
-        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/Release" headerPath="C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"
-                       libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
+        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/Release" headerPath="..\..\PCL 1.10.1\include\pcl-1.10&#10;..\..\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;..\..\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;..\..\PCL 1.10.1\3rdParty\FLANN\include&#10;"
+                       libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;..\..\PCL 1.10.1\lib"
                        defines="LSUFFIX=" alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

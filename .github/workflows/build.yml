@@ -51,7 +51,7 @@ jobs:
         run: |
           Invoke-WebRequest "${{ secrets.DEPDIRURL }}pcl_files.zip" -OutFile ./pcl_files.zip -V
            7z e pcl_files.zip -aoa
-        working-directory: "C:/Program Files/"
+        working-directory: "./"
 
       - name: Build
         run:  msbuild "Builds/${{ matrix.buildFolder }}/${{ env.ProjectName }}.sln" /p:PreferredToolArchitecture=x64 /m /verbosity:normal /p:Configuration=${{ steps.set_variables.outputs.config }}

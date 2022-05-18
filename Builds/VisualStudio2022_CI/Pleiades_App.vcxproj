@@ -47,12 +47,12 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\App\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pleiades</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LibraryPath);..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\debug;C:\Program Files\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MDd</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LibraryPath);..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\debug;..\..\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MDd</LibraryPath>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\..\..\Binaries\Release\App\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\App\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pleiades</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LibraryPath);..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\release;C:\Program Files\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MD</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LibraryPath);..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\release;..\..\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MD</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -65,7 +65,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;C:\Program Files\PCL 1.10.1\include\pcl-1.10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include;../../Source;../../External/orbbec/astraplus/include;../../External/orbbec/astrapro/include;../../External/kinect/include;../../External/servus/include;../../External/opencv/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;..\..\PCL 1.10.1\include\pcl-1.10;..\..\PCL 1.10.1\3rdParty\Boost\include\boost-1_72;..\..\PCL 1.10.1\3rdParty\Eigen\eigen3;..\..\PCL 1.10.1\3rdParty\FLANN\include;../../Source;../../External/orbbec/astraplus/include;../../External/orbbec/astrapro/include;../../External/kinect/include;../../External/servus/include;../../External/opencv/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60106;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_WIN_WEBVIEW2=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;LSUFFIX=d;JUCER_VS2022_78B14C07=1;JUCE_APP_VERSION=1.0.0b1;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)\Pleiades.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\debug;C:\Program Files\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\debug;..\..\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
       <AdditionalDependencies>OrbbecSDK.lib;astra.lib;astra_core.lib;Kinect20.lib;Servus.lib;pcl_commond.lib;pcl_featuresd.lib;pcl_filtersd.lib;pcl_iod.lib;pcl_io_plyd.lib;pcl_kdtreed.lib;pcl_mld.lib;pcl_octreed.lib;pcl_sample_consensusd.lib;pcl_searchd.lib;pcl_segmentationd.lib;pcl_trackingd.lib;pcl_registrationd.lib;opencv_world455d.lib;zlibd.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -98,7 +98,7 @@
     </Bscmake>
     <Lib>
       <AdditionalDependencies>OrbbecSDK.lib;astra.lib;astra_core.lib;Kinect20.lib;Servus.lib;pcl_commond.lib;pcl_featuresd.lib;pcl_filtersd.lib;pcl_iod.lib;pcl_io_plyd.lib;pcl_kdtreed.lib;pcl_mld.lib;pcl_octreed.lib;pcl_sample_consensusd.lib;pcl_searchd.lib;pcl_segmentationd.lib;pcl_trackingd.lib;pcl_registrationd.lib;opencv_world455d.lib;zlibd.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\debug;C:\Program Files\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\debug;..\..\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -112,7 +112,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;C:\Program Files\PCL 1.10.1\include\pcl-1.10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include;../../Source;../../External/orbbec/astraplus/include;../../External/orbbec/astrapro/include;../../External/kinect/include;../../External/servus/include;../../External/opencv/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;..\..\PCL 1.10.1\include\pcl-1.10;..\..\PCL 1.10.1\3rdParty\Boost\include\boost-1_72;..\..\PCL 1.10.1\3rdParty\Eigen\eigen3;..\..\PCL 1.10.1\3rdParty\FLANN\include;../../Source;../../External/orbbec/astraplus/include;../../External/orbbec/astrapro/include;../../External/kinect/include;../../External/servus/include;../../External/opencv/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60106;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_WIN_WEBVIEW2=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;LSUFFIX;JUCER_VS2022_78B14C07=1;JUCE_APP_VERSION=1.0.0b1;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -137,7 +137,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\release;C:\Program Files\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\release;..\..\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalDependencies>OrbbecSDK.lib;astra.lib;astra_core.lib;Kinect20.lib;Servus.lib;pcl_common.lib;pcl_features.lib;pcl_filters.lib;pcl_io.lib;pcl_io_ply.lib;pcl_kdtree.lib;pcl_ml.lib;pcl_octree.lib;pcl_sample_consensus.lib;pcl_search.lib;pcl_segmentation.lib;pcl_tracking.lib;pcl_registration.lib;opencv_world455.lib;zlib.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -148,7 +148,7 @@
     </Bscmake>
     <Lib>
       <AdditionalDependencies>OrbbecSDK.lib;astra.lib;astra_core.lib;Kinect20.lib;Servus.lib;pcl_common.lib;pcl_features.lib;pcl_filters.lib;pcl_io.lib;pcl_io_ply.lib;pcl_kdtree.lib;pcl_ml.lib;pcl_octree.lib;pcl_sample_consensus.lib;pcl_search.lib;pcl_segmentation.lib;pcl_tracking.lib;pcl_registration.lib;opencv_world455.lib;zlib.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\release;C:\Program Files\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\External\orbbec\astraplus\lib\win;..\..\External\orbbec\astrapro\lib\win;..\..\External\kinect\lib;..\..\External\opencv\lib\win;..\..\External\servus\lib\win\x64\release;..\..\PCL 1.10.1\lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2022\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
