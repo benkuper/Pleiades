@@ -25,6 +25,7 @@ public:
 
 	void clearItem() override;
 
+	static bool astraIsInit;
 
 	std::unique_ptr<astra::StreamSet> streamSet;
 	astra::StreamReader reader;
@@ -33,6 +34,7 @@ public:
 	NodeConnectionSlot* outDepth;
 	NodeConnectionSlot* outColor;
 
+	IntParameter* deviceIndex;
 	IntParameter* downSample;
 	BoolParameter* processDepth;
 	BoolParameter* processColor;
@@ -44,6 +46,7 @@ public:
 	int depthWidth;
 	int depthHeight;
 	astra::Vector3f* pointsData;
+	int pointsDataSize;
 
 	Image colorImage;
 

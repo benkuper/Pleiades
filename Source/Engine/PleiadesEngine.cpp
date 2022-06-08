@@ -23,11 +23,17 @@ PleiadesEngine::~PleiadesEngine()
 	isClearing = true;
 	RootNodeManager::deleteInstance();
 	NodeFactory::deleteInstance();
+	if (AstraProNode::astraIsInit) astra_terminate();
 }
 
 void PleiadesEngine::clearInternal()
 {
 	RootNodeManager::getInstance()->clear();
+	if (AstraProNode::astraIsInit)
+	{
+		astra_terminate();
+		AstraProNode::astraIsInit = false;
+	}
 }
 
 var PleiadesEngine::getJSONData()

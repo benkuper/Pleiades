@@ -16,6 +16,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<AstraPlusNode>("Source", AstraPlusNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AstraProNode>("Source", AstraProNode::getTypeStringStatic()));
     defs.add(Definition::createDef<Kinect2Node>("Source", Kinect2Node::getTypeStringStatic()));
+    defs.add(Definition::createDef<KinectAzureNode>("Source", KinectAzureNode::getTypeStringStatic()));
     defs.add(Definition::createDef<WebsocketSourceNode>("Source", WebsocketSourceNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<QRCodeNode>("RGB", QRCodeNode::getTypeStringStatic()));

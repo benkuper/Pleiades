@@ -8,16 +8,20 @@
   ==============================================================================
 */
 
+bool AstraProNode::astraIsInit = false;
+
 AstraProNode::AstraProNode(var params) :
 	Node(getTypeString(), Node::SOURCE, params),
 	Thread("Astra Pro"),
 	pointsData(nullptr),
+	pointsDataSize(0),
 	newFrameAvailable(false)
 {
 	outDepth = addSlot("Out Cloud", false, POINTCLOUD);
 	outColor = addSlot("Out Color", false, RGB);
 
 
+	deviceIndex = addIntParameter("Device Index", "Index of the device", 0, 0);
 	downSample = addIntParameter("Down Sample", "Simple downsampling from the initial 640x480 point cloud. Value of 2 will result in a 320x240 point cloud", 2, 1, 16);
 
 	processDepth = addBoolParameter("Process Depth", "If checked, will process depth frames", true);
@@ -35,13 +39,19 @@ AstraProNode::~AstraProNode()
 
 void AstraProNode::clearItem()
 {
+	stopThread(1000);
+
 	Node::clearItem();
 
-	stopThread(1000);
 
 	outDepth = nullptr;
 	outColor = nullptr;
 
+	if (pointsData != nullptr)
+	{
+		free(pointsData);
+		pointsData = nullptr;
+	}
 
 }
 
@@ -94,14 +104,16 @@ void AstraProNode::run()
 {
 
 	astra_status_t result = astra_initialize();
-
 	if (result != 0)
 	{
 		LOGWARNING("Astra init error : " << result);
 		return;
 	}
 
-	astra::StreamSet streamSet;
+	astraIsInit = true;
+
+	String uri = "device/sensor" + deviceIndex->stringValue();
+	astra::StreamSet streamSet(uri.toStdString().c_str());
 	astra::StreamReader reader = streamSet.create_reader();
 
 	//ReaderListener listener;
@@ -152,6 +164,8 @@ void AstraProNode::run()
 		wait(5);
 		astra_update();
 
+		if (isClearing || threadShouldExit()) return;
+
 		if (reader.has_new_frame())
 		{
 			astra::Frame frame = reader.get_latest_frame();
@@ -164,7 +178,13 @@ void AstraProNode::run()
 					GenericScopedLock lock(frameLock);
 					depthWidth = pointFrame.width();
 					depthHeight = pointFrame.height();
-					pointsData = (astra::Vector3f*)pointFrame.data();
+					int dataSize = depthWidth * depthHeight * pointFrame.bytes_per_pixel();
+					if (pointsDataSize != dataSize)
+					{
+						pointsDataSize = dataSize;
+						pointsData = (astra::Vector3f*)malloc(pointsDataSize);
+					}
+					memcpy(pointsData, pointFrame.data(), pointsDataSize);
 				}
 			}
 
@@ -187,10 +207,12 @@ void AstraProNode::run()
 
 	{
 		GenericScopedLock lock(frameLock);
+		pointsDataSize = 0;
+		free(pointsData);
 		pointsData = nullptr;
 	}
 
-	astra::terminate();
+	//astra::terminate();
 }
 
 void AstraProNode::onContainerParameterChangedInternal(Parameter* p)
@@ -200,6 +222,11 @@ void AstraProNode::onContainerParameterChangedInternal(Parameter* p)
 	{
 		if (enabled->boolValue()) startThread();
 		else stopThread(1000);
+	}
+	else if (p == deviceIndex)
+	{
+		stopThread(1000);
+		startThread();
 	}
 }
 

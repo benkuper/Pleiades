@@ -55,6 +55,7 @@ public:
 	SpinLock processLock;
 	bool processOnlyOnce;
 	bool hasProcessed; //if it has already processed in this frame
+	bool processOnlyWhenAllConnectedNodesHaveProcessed;
 
 	//Stats
 	double lastProcessTime;
@@ -80,6 +81,8 @@ public:
 
 	virtual void resetForNextLoop();
 	virtual bool isStartingNode();
+	
+	virtual bool haveAllConnectedInputsProcessed();
 
 	//Slots
 	NodeConnectionSlot* addSlot(StringRef name, bool isInput, NodeConnectionType t);
@@ -92,6 +95,7 @@ public:
 	virtual void receiveVector(NodeConnectionSlot* slot, Eigen::Vector3f vector);
 	virtual void receiveIndices(NodeConnectionSlot* slot, PIndices indices);
 	virtual void receiveImage(NodeConnectionSlot* slot, Image indices);
+
 
 	void clearSlotMaps();
 
@@ -108,6 +112,7 @@ public:
 
 	NodeConnectionSlot* getSlotWithName(StringRef name, bool isInput);
 
+	void checkAddNextToProcessForSlot(NodeConnectionSlot* s);
 	void addNextToProcess();
 	void removeNextToProcess();
 

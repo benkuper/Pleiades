@@ -11,6 +11,7 @@
 NodeUI::NodeUI(Node* node) :
     BaseItemUI(node)
 {
+    
 }
 
 NodeUI::~NodeUI()

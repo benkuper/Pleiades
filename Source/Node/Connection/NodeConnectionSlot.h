@@ -35,5 +35,7 @@ public:
 
 	bool isConnectedTo(NodeConnectionSlot* s);
 
+	bool hasConnectedNodeProcessed(bool trueIfEmpty = true);
+
 	bool isEmpty() const { return connections.size() == 0; }
 };

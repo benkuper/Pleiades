@@ -66,6 +66,7 @@
 #include "nodes/Source/astraplus/AstraPlusNode.h"
 #include "nodes/Source/astrapro/AstraProNode.h"
 #include "nodes/Source/kinect2/Kinect2Node.h"
+#include "nodes/Source/azure/KinectAzureNode.h"
 #include "nodes/Source/websocket/WebsocketSourceNode.h"
 
 

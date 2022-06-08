@@ -23,7 +23,7 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 
 	processOnlyOnce = false;
 
-	if(!Engine::mainEngine->isLoadingFile) initServer();
+	if (!Engine::mainEngine->isLoadingFile) initServer();
 }
 
 WebsocketOutputNode::~WebsocketOutputNode()
@@ -43,7 +43,7 @@ void WebsocketOutputNode::initServer()
 	server.reset();
 
 	if (!enabled->boolValue() || isCurrentlyLoadingData) return;
-	
+
 	server.reset(new SimpleWebSocketServer());
 
 	server->rootPath = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(ProjectInfo::projectName + String("/server"));

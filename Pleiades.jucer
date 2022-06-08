@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b1" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/astraplus/include&#10;../../External/orbbec/astrapro/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include"
+              version="1.0.0b3" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/astraplus/include&#10;../../External/orbbec/astrapro/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;../../External/azure/include"
               projectLineFeed="&#10;">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
@@ -134,6 +134,12 @@
             </GROUP>
           </GROUP>
           <GROUP id="{CF09C6E6-DFE8-AE77-A05A-9513E1FCEF9A}" name="Source">
+            <GROUP id="{C54B1CB4-D32C-B684-A9C1-AC1347CC3DC0}" name="azure">
+              <FILE id="dB28HX" name="KinectAzureNode.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/Source/azure/KinectAzureNode.cpp"/>
+              <FILE id="lOf4GE" name="KinectAzureNode.h" compile="0" resource="0"
+                    file="Source/Node/nodes/Source/azure/KinectAzureNode.h"/>
+            </GROUP>
             <GROUP id="{39F10CF2-CDDE-DC15-974B-C3C0F543B0F3}" name="websocket">
               <FILE id="lJ7m69" name="WebsocketSourceNode.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/Source/websocket/WebsocketSourceNode.cpp"/>
@@ -197,14 +203,14 @@
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
                JUCE_IP_AND_PORT_DETECTION="1"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;astra.lib&#10;astra_core.lib&#10;Kinect20.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib&#10;"
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OrbbecSDK.lib&#10;astra.lib&#10;astra_core.lib&#10;Kinect20.lib&#10;Servus.lib&#10;pcl_common${LSUFFIX}.lib&#10;pcl_features${LSUFFIX}.lib&#10;pcl_filters${LSUFFIX}.lib&#10;pcl_io${LSUFFIX}.lib&#10;pcl_io_ply${LSUFFIX}.lib&#10;pcl_kdtree${LSUFFIX}.lib&#10;pcl_ml${LSUFFIX}.lib&#10;pcl_octree${LSUFFIX}.lib&#10;pcl_sample_consensus${LSUFFIX}.lib&#10;pcl_search${LSUFFIX}.lib&#10;pcl_segmentation${LSUFFIX}.lib&#10;pcl_tracking${LSUFFIX}.lib&#10;pcl_registration${LSUFFIX}.lib&#10;opencv_world455${LSUFFIX}.lib&#10;zlib${LSUFFIX}.lib&#10;k4a.lib"
             smallIcon="ddDsaL" bigIcon="ddDsaL">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Pleiades" binaryPath="Binaries/Debug"
-                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=d" libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\azure\lib\win&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\debug&#10;C:\Program Files\PCL 1.10.1\lib"
                        headerPath="&#10;C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Pleiades" binaryPath="Binaries/Release"
-                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
+                       defines="LSUFFIX=" libraryPath="..\..\External\orbbec\astraplus\lib\win&#10;..\..\External\orbbec\astrapro\lib\win&#10;..\..\External\kinect\lib&#10;..\..\External\azure\lib\win&#10;..\..\External\opencv\lib\win&#10;..\..\External\servus\lib\win\x64\release&#10;C:\Program Files\PCL 1.10.1\lib"
                        headerPath="C:\Program Files\PCL 1.10.1\include\pcl-1.10&#10;C:\Program Files\PCL 1.10.1\3rdParty\Boost\include\boost-1_72&#10;C:\Program Files\PCL 1.10.1\3rdParty\Eigen\eigen3&#10;C:\Program Files\PCL 1.10.1\3rdParty\FLANN\include&#10;"
                        alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>

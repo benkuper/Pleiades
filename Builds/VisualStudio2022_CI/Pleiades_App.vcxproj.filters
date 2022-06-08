@@ -65,6 +65,9 @@
     <Filter Include="Pleiades\Source\Node\nodes\Filter">
       <UniqueIdentifier>{2C054D83-72DE-6112-7A9B-5E2638A9BF00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pleiades\Source\Node\nodes\Source\azure">
+      <UniqueIdentifier>{546F7706-2904-DBCC-4398-C09A56FAE7E7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Pleiades\Source\Node\nodes\Source\websocket">
       <UniqueIdentifier>{D918A485-BAF3-23F4-34A0-E641CAA88976}</UniqueIdentifier>
     </Filter>
@@ -387,6 +390,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\Filter\planesegmentation\PlaneSegmentationNode.cpp">
       <Filter>Pleiades\Source\Node\nodes\Filter\planesegmentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\Source\azure\KinectAzureNode.cpp">
+      <Filter>Pleiades\Source\Node\nodes\Source\azure</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\Source\websocket\WebsocketSourceNode.cpp">
       <Filter>Pleiades\Source\Node\nodes\Source\websocket</Filter>
@@ -1172,6 +1178,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\Filter\planesegmentation\PlaneSegmentationNode.h">
       <Filter>Pleiades\Source\Node\nodes\Filter\planesegmentation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\Source\azure\KinectAzureNode.h">
+      <Filter>Pleiades\Source\Node\nodes\Source\azure</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\Source\websocket\WebsocketSourceNode.h">
       <Filter>Pleiades\Source\Node\nodes\Source\websocket</Filter>

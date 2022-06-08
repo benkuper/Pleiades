@@ -52,6 +52,7 @@ public:
     SpinLock frameLock;
 
     OBPoint* pointsData;
+    int pointsDataSize;
     
     Image colorImage;
 

@@ -36,21 +36,24 @@ public:
 	NodeConnectionSlot* outClusters;
 
 	FileParameter* directory;
+	EnumParameter* fileList;
 	StringParameter* fileName;
-
 	
 	Trigger* record;
-
 	BoolParameter* overwrite;
+
 	Trigger* play;
 	Trigger* pause;
 	Trigger* stop;
+
+
 
 	BoolParameter* autoPlay;
 
 	enum RecordState { IDLE, RECORDING, PLAYING, PAUSED };
 	EnumParameter* recordState;
 
+	Point2DParameter* loopRange;
 	FloatParameter* progression;
 
 	File cloudFile;
@@ -69,6 +72,7 @@ public:
 	double lastTimeAtPlay;
 
 	double curPlayTime;
+
 	double totalTime;
 	int numFramesWritten;
 	
@@ -84,6 +88,7 @@ public:
 
 	void setState(RecordState s);
 
+	void updateFileList();
 	void setupFiles();
 
 	bool isStartingNode() override;

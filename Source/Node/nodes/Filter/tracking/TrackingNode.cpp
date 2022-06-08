@@ -14,10 +14,10 @@ TrackingNode::TrackingNode(var params) :
 {
 	addInOutSlot(&in, &out, CLUSTERS);
 
-	searchDist = addFloatParameter("Search Distance", "in meter", .1f, 0, 1);
+	searchDist = addFloatParameter("Search Distance", "in meter", .1f, 0, 2);
 	enableGhosting = addBoolParameter("Enable Ghosting", "", false);
-	ghostSearchDist = addFloatParameter("Ghost Search Distance", "in meter", .1f);
-	minAgeForGhost = addFloatParameter("Min Ghost Age", "in seconds.", 1); // Minimum required age to become a ghost, default 1
+	ghostSearchDist = addFloatParameter("Ghost Search Distance", "in meter", .5f);
+	minAgeForGhost = addFloatParameter("Min Ghost Age", "in seconds.", .1f); // Minimum required age to become a ghost, default 1
 	maxGhostAge = addFloatParameter("Max Ghost Age", "in seconds.", 1); // Maximum time in sec a ghost can remain, default 0.5f
 
 	clearClusters = addTrigger("Clear clusters", "");
@@ -76,8 +76,8 @@ void TrackingNode::processInternal()
 
 			//float clusterSize = (cluster->boundingBoxMax - cluster->boundingBoxMin).length();
 			// Should we reintegrate size-base search ? something like  dist > 4 * clusterSize
-			if (cluster->state != Cluster::GHOST && dist > sDist) tDistMatrix.set(j, INT32_MAX);
-			else if (cluster->state == Cluster::GHOST && dist > ghostSDist) tDistMatrix.set(j, INT32_MAX);
+			if (cluster->state != Cluster::GHOST && dist > sDist) tDistMatrix.set(j, 10000+j);
+			else if (cluster->state == Cluster::GHOST && dist > ghostSDist) tDistMatrix.set(j, 10000 + j);
 			else tDistMatrix.set(j, dist);
 		}
 
@@ -112,6 +112,18 @@ void TrackingNode::processInternal()
 	//}
 
 
+	//int d1 = 0;
+	//for (auto& d : distanceMatrix)
+	//{
+	//	int d2 = 0;
+	//	for (auto& dd : d)
+	//	{
+	//		NNLOG("> " << d1 << "." << d2 << " : " << dd);
+	//		d2++;
+	//	}
+	//	d1++;
+	//}
+
 	hungarian.Solve(distanceMatrix, matchedClusterIndices);
 	
 
@@ -123,7 +135,7 @@ void TrackingNode::processInternal()
 		ClusterPtr cluster = trackedClusters[i];
 		int matchedID = matchedClusterIndices[i];
 
-		if (matchedID != -1 && distanceMatrix[i][matchedID] == INT32_MAX) matchedID = -1;
+		if (matchedID != -1 && distanceMatrix[i][matchedID] >= 10000) matchedID = -1;
 
 		if (matchedID != -1)
 		{

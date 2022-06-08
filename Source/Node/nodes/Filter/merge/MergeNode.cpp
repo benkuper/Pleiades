@@ -11,9 +11,11 @@
 MergeNode::MergeNode(var params) :
 	Node(getTypeString(), FILTER, params)
 {
-	for (int i = 0; i < 4; i++) ins.add(addSlot("In " + String(i + 1), true, POINTCLOUD));
+	for (int i = 0; i < 8; i++) ins.add(addSlot("In " + String(i + 1), true, POINTCLOUD));
 	out = addSlot("Merged", false, POINTCLOUD);
 
+	processOnlyOnce = true;
+	processOnlyWhenAllConnectedNodesHaveProcessed = true;
 }
 
 MergeNode::~MergeNode()
@@ -23,16 +25,22 @@ MergeNode::~MergeNode()
 
 void MergeNode::processInternal()
 {
+
 	if (!out->isEmpty())
 	{
 		CloudPtr outC(new Cloud());
 
+		StringArray mergedSlots;
 		for (int i = 0; i < ins.size(); i++)
 		{
 			CloudPtr c = slotCloudMap[ins[i]];
 			if (c == nullptr) continue;
 			*outC += *c;
+			mergedSlots.add(String(i + 1));
 		}
+
+
+		NNLOG("Merged " << mergedSlots.size() << " (" << mergedSlots.joinIntoString(",") << "), total points : " << outC->size());
 
 		sendPointCloud(out, outC);
 	}
@@ -165,7 +173,7 @@ void MergeClustersNode::processInternal()
 		clustersToRemove.add(it.getValue());
 	}
 
-	for (auto& c : mergedClusters) if(c->state != Cluster::WILL_LEAVE) c->update();
+	for (auto& c : mergedClusters) if (c->state != Cluster::WILL_LEAVE) c->update();
 
 	//sending
 	outClusters.clear();

@@ -9,7 +9,7 @@
 // by Cong Ma, 2016
 // 
 
-HungarianAlgorithm::HungarianAlgorithm() : recurseStep(0) {}
+HungarianAlgorithm::HungarianAlgorithm() : recurseStep2b(0), recurseStep3(0) {}
 HungarianAlgorithm::~HungarianAlgorithm() {}
 
 //********************************************************//
@@ -33,7 +33,8 @@ double HungarianAlgorithm::Solve(Array<Array<double>>& distanceMatrix, Array<int
 			distMatrixIn[i + nRows * j] = distanceMatrix[i][j];
 
 
-	recurseStep = 0;
+	recurseStep2b = 0;
+	recurseStep3 = 0;
 	// call solving function
 	assignmentoptimal(_assignment, &cost, distMatrixIn, nRows, nCols);
 
@@ -249,10 +250,11 @@ void HungarianAlgorithm::step2b(int* assignment, double* distMatrix, bool* starM
 			nOfCoveredColumns++;
 
 
-	recurseStep++;
-	if (nOfCoveredColumns == minDim || recurseStep > 100)
+	recurseStep2b++;
+	if (nOfCoveredColumns == minDim || recurseStep2b > 1000)
 	{
 		/* algorithm finished */
+		if(recurseStep2b > 1000) LOGWARNING("Recurse step 2b > 100000 ( " << recurseStep2b << "), stop hungarian to avoid stack overflow");
 		buildassignmentvector(assignment, starMatrix, nOfRows, nOfColumns);
 	}
 	else
@@ -266,7 +268,15 @@ void HungarianAlgorithm::step2b(int* assignment, double* distMatrix, bool* starM
 /********************************************************/
 void HungarianAlgorithm::step3(int* assignment, double* distMatrix, bool* starMatrix, bool* newStarMatrix, bool* primeMatrix, bool* coveredColumns, bool* coveredRows, int nOfRows, int nOfColumns, int minDim)
 {
-
+	recurseStep3++;
+	if (recurseStep3 > 100000)
+	{
+		/* algorithm finished */
+		LOGWARNING("Recurse step 3 > 100000, stop hungarian to avoid stack overflow");
+		buildassignmentvector(assignment, starMatrix, nOfRows, nOfColumns);
+		return;
+	}
+	
 	bool zerosFound;
 	int row, col, starCol;
 

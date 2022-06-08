@@ -1,3 +1,4 @@
+#include "NodeConnectionSlot.h"
 /*
   ==============================================================================
 
@@ -53,4 +54,11 @@ bool NodeConnectionSlot::isConnectedTo(NodeConnectionSlot* s)
 	}
 
 	return false;
+}
+
+bool NodeConnectionSlot::hasConnectedNodeProcessed(bool trueIfEmpty)
+{
+	if (isEmpty()) return trueIfEmpty;
+	if (connections[0]->source == nullptr || connections[0]->source->node == nullptr) return trueIfEmpty;
+	return connections[0]->source->node->hasProcessed;
 }

@@ -18,6 +18,7 @@ AstraPlusNode::AstraPlusNode(var params) :
 	ifx(0),
 	ify(0),
 	pointsData(nullptr),
+	pointsDataSize(0),
 	timeAtlastDeviceQuery(0),
 	newFrameAvailable(false)
 {
@@ -45,6 +46,12 @@ void AstraPlusNode::clearItem()
 	Node::clearItem();
 	outDepth = nullptr;
 	outColor = nullptr;
+
+	if (pointsData != nullptr)
+	{
+		free(pointsData);
+		pointsData = nullptr;
+	}
 }
 
 bool AstraPlusNode::initInternal()
@@ -56,63 +63,73 @@ bool AstraPlusNode::initInternal()
 	if (t - timeAtlastDeviceQuery < 1000) return false;
 	timeAtlastDeviceQuery = t;
 
-	if (ctx == nullptr)
-	{
-		ctx.reset(new ob::Context());
-		//ctx->setLoggerServerity(OBLogServerity::OB_LOG_SEVERITY_ERROR);
-	}
+	try {
 
-	if (pipeline == nullptr || device == nullptr)
-	{
-		try
+		if (ctx == nullptr)
 		{
-			auto deviceList = ctx->queryDeviceList();
-			
-			if (device == nullptr)
+			ctx.reset(new ob::Context());
+			//ctx->setLoggerServerity(OBLogServerity::OB_LOG_SEVERITY_ERROR);
+		}
+
+		if (pipeline == nullptr || device == nullptr)
+		{
+			try
 			{
-				device = deviceList->getDevice(deviceIndex->intValue());
+				auto deviceList = ctx->queryDeviceList();
+
 				if (device == nullptr)
 				{
-					if (getWarningMessage().isEmpty())
+					device = deviceList->getDevice(deviceIndex->intValue());
+					if (device == nullptr)
 					{
-						NLOGWARNING(niceName, "Astra+ device not found at index " << deviceIndex->intValue());
-						setWarningMessage("Astra+ not connected.");
+						if (getWarningMessage().isEmpty())
+						{
+							NLOGWARNING(niceName, "Astra+ device not found at index " << deviceIndex->intValue());
+							setWarningMessage("Astra+ not connected.");
+						}
+						return false;
 					}
-					return false;
+				}
+
+				pipeline.reset(new ob::Pipeline(device));
+				setupProfiles();
+				setupPipeline();
+
+				jassert(pipeline != nullptr);
+				pipeline->start(config);
+
+				clearWarning();
+
+				NLOG(niceName, "Astra+ connected and initialized.");
+			}
+			catch (ob::Error e)
+			{
+				if (getWarningMessage().isEmpty())
+				{
+					NLOGWARNING(niceName, "Could not initialize Astra+. Is it connected ? " << e.getMessage());
+					setWarningMessage("Astra+ not connected");
 				}
 			}
-
-			pipeline.reset(new ob::Pipeline(device));
-			setupProfiles();
-			setupPipeline();
-
-			pipeline->start(config);
-
-			clearWarning();
-
-			NLOG(niceName, "Astra+ connected and initialized.");
 		}
-		catch (std::exception e)
-		{
-			if (getWarningMessage().isEmpty())
-			{
-				NLOGWARNING(niceName, "Could not initialize Astra+. Is it connected ? " << e.what());
-				setWarningMessage("Astra+ not connected");
-			}
-		}
+
+		if (pipeline == nullptr) return false;
+
+		depthWidth = depthProfile->width();
+		depthHeight = depthProfile->height();
+
+
+		colorImage = Image(Image::PixelFormat::RGB, depthProfile->width(), depthProfile->height(), true);
+
+		startThread();
+
+		return true;
+	}
+	catch (ob::Error e)
+	{
+		NLOGERROR(niceName, "Init Failed : " << e.getMessage());
 	}
 
-	if (pipeline == nullptr) return false;
-
-	depthWidth = depthProfile->width();
-	depthHeight = depthProfile->height();
-
-
-	colorImage = Image(Image::PixelFormat::RGB, depthProfile->width(), depthProfile->height(), true);
-
-	startThread();
-
-	return true;
+	return false;
 }
 
 void AstraPlusNode::setupProfiles()
@@ -145,8 +162,6 @@ void AstraPlusNode::setupProfiles()
 			break;
 		}
 	}
-
-	
 }
 
 void AstraPlusNode::setupPipeline()
@@ -176,7 +191,9 @@ void AstraPlusNode::processInternal()
 	if (isClearing) return;
 
 	if (pipeline == nullptr) init();
-	jassert(pipeline != nullptr);
+	if (pipeline == nullptr) return;
+
+	//jassert(pipeline != nullptr);
 
 	if (ifx == 0 || ify == 0)
 	{
@@ -263,16 +280,28 @@ void AstraPlusNode::run()
 				try
 				{
 					auto deviceList = ctx->queryDeviceList();
-					const char* tuid = deviceList->uid(deviceIndex->intValue());
-					if (strcmp(uid, tuid) != 0)
+					if (deviceList != nullptr)
 					{
-						NLOGWARNING(niceName, "Device disconnected");
-						isInit = false;
-						pipeline.reset();
-						break;
+						const char* tuid = deviceList->deviceCount() == 0 ? "" : deviceList->uid(deviceIndex->intValue());
+						if (strcmp(uid, tuid) != 0)
+						{
+							NLOGWARNING(niceName, "Device disconnected");
+							isInit = false;
+
+							{
+								GenericScopedLock lock(frameLock);
+								pointsDataSize = 0;
+								free(pointsData);
+								pointsData = nullptr;
+							}
+
+							pipeline.reset();
+							break;
+						}
 					}
+
 				}
-				catch (std::exception e)
+				catch (...)
 				{
 					//NLOGERROR(niceName, "Error querying device : " << e.what());
 				}
@@ -294,7 +323,12 @@ void AstraPlusNode::run()
 			pointCloudFilter->setCreatePointFormat(OB_FORMAT_POINT);
 			if (auto frame = pointCloudFilter->process(frameset))
 			{
-				pointsData = (OBPoint*)frame->data();
+				if (pointsDataSize != (int)frame->dataSize())
+				{
+					pointsDataSize = (int)frame->dataSize();
+					pointsData = (OBPoint*)malloc(pointsDataSize);
+				}
+				memcpy(pointsData, frame->data(), pointsDataSize);
 
 				newFrameAvailable = true;
 			}
@@ -323,8 +357,12 @@ void AstraPlusNode::run()
 
 	{
 		GenericScopedLock lock(frameLock);
+		pointsDataSize = 0;
+		free(pointsData);
 		pointsData = nullptr;
 	}
+
+
 
 	NNLOG("Astraplus stop reading frames");
 }

@@ -18,7 +18,8 @@ class HungarianAlgorithm
 public:
 	HungarianAlgorithm();
 	~HungarianAlgorithm();
-	int recurseStep;
+	int recurseStep3;
+	int recurseStep2b;
 	double Solve(Array<Array<double>>& distMatrix, Array<int>& assignment);
 
 private:
