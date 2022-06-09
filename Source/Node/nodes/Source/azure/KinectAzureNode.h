@@ -10,8 +10,10 @@
 
 #pragma once
 
+#ifndef USE_AZURE
 #if !JUCE_WINDOWS
 #define USE_AZURE 0
+#endif
 #endif
 
 #ifndef USE_AZURE

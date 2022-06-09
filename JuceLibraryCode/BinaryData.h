@@ -12,7 +12,7 @@ namespace BinaryData
     const int            crash_pngSize = 163598;
 
     extern const char*   default_playout;
-    const int            default_playoutSize = 1073;
+    const int            default_playoutSize = 1022;
 
     extern const char*   icon_png;
     const int            icon_pngSize = 81617;

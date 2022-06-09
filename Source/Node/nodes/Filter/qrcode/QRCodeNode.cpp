@@ -73,6 +73,7 @@ void QRCodeNode::processInternal()
 
 void QRCodeNode::calibCam(Image& img)
 {
+#if USE_QR
 	std::vector<cv::Point2f> pointBuf;
 	int chessBoardFlags = cv::CALIB_CB_ADAPTIVE_THRESH || cv::CALIB_CB_FAST_CHECK;
 
@@ -118,11 +119,12 @@ void QRCodeNode::calibCam(Image& img)
 
 		NNLOG("Found calibration : ");
 	}
-
+#endif
 }
 
 void QRCodeNode::detectQR(CloudPtr source, Image& img)
 {
+#if USE_QR
 	NNLOG("Finding plane..");
 
 	Image::BitmapData bmd(img, Image::BitmapData::readOnly);
@@ -247,7 +249,7 @@ void QRCodeNode::detectQR(CloudPtr source, Image& img)
 			g.drawLine(points[index + j].x, points[index + j].y, points[index + (j + 1) % 4].x, points[index + (j + 1) % 4].y, 2);
 		}
 	}
-
+#endif
 }
 
 void QRCodeNode::transformAndSend(CloudPtr source)

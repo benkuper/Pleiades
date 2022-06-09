@@ -13,10 +13,13 @@ Kinect2Node::Kinect2Node(var params) :
 	Node(getTypeString(), Node::SOURCE, params),
 	Thread("Kinect2"),
 #if USE_KINECT
+#if USE_FREENECT
+#else
 	kinect(nullptr),
 	depthReader(nullptr),
 	colorReader(nullptr),
 	framePoints(nullptr),
+#endif
 #endif
 	newFrameAvailable(false)
 {
@@ -25,7 +28,7 @@ Kinect2Node::Kinect2Node(var params) :
 	outCamMatrix = addSlot("Out Camera Matrix", false, MATRIX);
 	outDistCoeffs = addSlot("Out Distortion Coeffs", false, MATRIX);
 
-
+	deviceIndex = addIntParameter("Device Index", "Choose the index of the device, only working on linux.",0,0,8);
 	downSample = addIntParameter("Down Sample", "Simple downsampling from the initial 640x480 point cloud. Value of 2 will result in a 320x240 point cloud", 2, 1, 16);
 
 	processDepth = addBoolParameter("Process Depth", "If checked, will process depth frames", true);
@@ -47,13 +50,19 @@ void Kinect2Node::clearItem()
 	stopThread(1000);
 
 #if USE_KINECT
+#if USE_FREENECT
+
+	
+	delete pipeline;
+
+#else
 	SafeRelease(depthReader);
 	SafeRelease(colorReader);
 	SafeRelease(coordinateMapper);
 	if (kinect) kinect->Close();
 	SafeRelease(kinect);
 	free(framePoints);
-
+#endif
 #endif
 
 
@@ -63,7 +72,51 @@ void Kinect2Node::clearItem()
 bool Kinect2Node::initInternal()
 {
 #if USE_KINECT
+#if USE_FREENECT
 
+	long t = Time::getMillisecondCounter();
+	if (t - timeAtLastInit < 1000) return false;
+	timeAtLastInit = t;
+
+	if(pipeline == nullptr)	pipeline = new libfreenect2::CpuPacketPipeline();
+
+	if(pipeline == nullptr)
+	{
+		NLOGERROR(niceName, "Could not initialize libfreenect2 pipeline");
+		return false;
+	}
+
+	int numDevices = freenect2.enumerateDevices();
+	if(numDevices == 0)
+  {
+  	NLOGERROR(niceName, "No device connected");
+  	return false;
+  }
+
+  NNLOG(numDevices << " devices detected");
+  for(int i = 0; i < numDevices; i++)
+  {
+  	NNLOG("[" << i << "] " << freenect2.getDeviceSerialNumber(i));
+  }
+
+  serial = freenect2.getDeviceSerialNumber(deviceIndex->intValue());
+
+  if(serial.isEmpty())
+  {
+	NLOGERROR(niceName, "Could not find device at index " << deviceIndex->intValue());
+	return false;
+  }
+
+  dev = freenect2.openDevice(serial.toStdString());
+
+  if(dev == nullptr)
+  {
+    NLOGERROR(niceName, "Could not open device " << serial);
+    return false;
+  }
+
+
+#else
 	HRESULT hr;
 
 	hr = GetDefaultKinectSensor(&kinect);
@@ -111,6 +164,9 @@ bool Kinect2Node::initInternal()
 		return false;
 	}
 
+
+#endif
+
 	NNLOG("Kinect is initialized");
 	startThread();
 
@@ -129,6 +185,7 @@ void Kinect2Node::processInternal()
 #if USE_KINECT
 	if (isClearing) return;
 
+#if !USE_FREENECT
 	CameraIntrinsics* intrinsics = NULL;
 	HRESULT ihr = coordinateMapper->GetDepthCameraIntrinsics(intrinsics);
 	if (SUCCEEDED(ihr))
@@ -139,8 +196,9 @@ void Kinect2Node::processInternal()
 		sendMatrix(outCamMatrix, camMatrix);
 	}
 
-
 	if (framePoints == nullptr) return;
+#endif
+
 	if (!newFrameAvailable && processOnlyOnNewFrame->boolValue()) return;
 
 
@@ -157,11 +215,22 @@ void Kinect2Node::processInternal()
 			for (int tx = 0; tx < depthWidth; tx += ds)
 			{
 				int index = tx + ty * depthWidth;
+
+				#if USE_FREENECT
+				Vector3D<float> p = points[index];
+				#else
 				CameraSpacePoint p = framePoints[index];
+				#endif
 
 				int ix = floor(tx * 1.0f / ds);
 				int iy = floor(ty * 1.0f / ds);
+				
+				#if USE_FREENECT
+				cloud->at(ix, iy) = pcl::PointXYZ(p.x, p.y, p.z);
+				#else
 				cloud->at(ix, iy) = pcl::PointXYZ(p.X, p.Y, p.Z);
+				#endif
+				
 				//if (ty == depthHeight / 2) DBG(cloud->at(ix, iy).x);
 			}
 		}
@@ -170,7 +239,7 @@ void Kinect2Node::processInternal()
 	sendPointCloud(outDepth, cloud);
 	if (colorImage.isValid()) sendImage(outColor, colorImage);
 	newFrameAvailable = false;
-	#endif
+#endif
 }
 
 void Kinect2Node::processInternalPassthroughInternal()
@@ -181,11 +250,63 @@ void Kinect2Node::processInternalPassthroughInternal()
 void Kinect2Node::run()
 {
 #if USE_KINECT
+
+#if USE_FREENECT
+	int types = 0;
+	libfreenect2::FrameMap frames;
+  	libfreenect2::Registration registration(dev->getIrCameraParams(), dev->getColorCameraParams());
+	libfreenect2::Frame undistorted(K2_DEPTH_WIDTH, K2_DEPTH_HEIGHT, 4);//, registered(512, 424, 4);
+	
+	libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
+	if (processColor->boolValue()) types |= libfreenect2::Frame::Color;
+  	if (processDepth->boolValue()) types |= libfreenect2::Frame::Ir | libfreenect2::Frame::Depth;
+
+	if(dev != nullptr)
+	{
+		dev->start();
+		dev->setIrAndDepthFrameListener(&listener);
+		dev->startStreams(processColor->boolValue(), processDepth->boolValue());
+	}
+
+#endif
 	wait(10);
 
 	while (!threadShouldExit())
 	{
+		wait(20);
 
+#if USE_FREENECT
+		if (!listener.waitForNewFrame(frames, 2*1000)) // 2 seconds
+		{
+			NLOGWARNING(niceName,"Frame timeout");
+			continue;
+		}
+
+		libfreenect2::Frame *depth = frames[libfreenect2::Frame::Depth];
+
+		registration.undistortDepth(depth, &undistorted);
+		
+		NNLOG("Got a frame");
+		int ds = downSample->intValue();
+
+		{
+			GenericScopedLock lock(frameLock);
+			for(int tx=0;tx<K2_DEPTH_WIDTH;tx+=ds)
+			{
+				for(int ty=0;ty<K2_DEPTH_HEIGHT;ty++)
+				{
+					Vector3D<float> p;
+					registration.getPointXYZ(&undistorted, ty,tx, p.x, p.y, p.z);
+					points[ty*K2_DEPTH_WIDTH+tx] = p;
+				}
+			}
+
+		}
+
+		listener.release(frames);
+
+		newFrameAvailable = true;
+#else
 		if (!depthReader)
 		{
 			return;
@@ -243,14 +364,19 @@ void Kinect2Node::run()
 			}
 
 			SafeRelease(depthFrame);
-
-
 			newFrameAvailable = true;
-
-
-			wait(20);
 		}
+#endif
 	}
+
+
+#if USE_FREENECT
+	if(dev != nullptr)
+	{
+		dev->stop();
+  		dev->close();
+	}
+#endif
 
 	NNLOG("Kinect2 stop reading frames");
 #endif
