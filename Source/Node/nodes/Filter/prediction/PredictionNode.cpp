@@ -15,7 +15,7 @@ PredictionNode::PredictionNode(var params) :
 
 	strength = addFloatParameter("Strength", "Prediction coefficient", 1, 0, 5);
 	velocityThreshold = addFloatParameter("Velocity Treshold", "Threshold at which the prediction is effective", 1, 0, 2);
-}
+}	
 
 PredictionNode::~PredictionNode()
 {

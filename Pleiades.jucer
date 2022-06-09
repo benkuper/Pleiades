@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="T06wZB" name="Pleiades" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" bundleIdentifier="com.benkuper.Pleiades"
-              version="1.0.0b3" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/astraplus/include&#10;../../External/orbbec/astrapro/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;"
+              version="1.0.0b4" cppLanguageStandard="17" headerPath="../../Source&#10;../../External/orbbec/astraplus/include&#10;../../External/orbbec/astrapro/include&#10;../../External/kinect/include&#10;../../External/servus/include&#10;../../External/opencv/include&#10;"
               projectLineFeed="&#10;">
   <MAINGROUP id="BPh6Ie" name="Pleiades">
     <GROUP id="{1B9D67CD-477D-D31B-AC82-99768D1EBC7A}" name="Resources">
