@@ -10,6 +10,8 @@
 
 #pragma once
 
+
+
 class CropBoxNode :
     public Node
 {
@@ -20,8 +22,23 @@ public:
     NodeConnectionSlot* in;
     NodeConnectionSlot* out;
 
-    Point3DParameter* minPoint;
-    Point3DParameter* maxPoint;
+    enum CropMode { ADD, SUBTRACT, INTERSECT };
+
+    class CBox : 
+        public BaseItem
+    {
+    public:
+        CBox();
+        ~CBox();
+
+        EnumParameter* cropMode;
+        Point3DParameter* minPoint;
+        Point3DParameter* maxPoint;
+
+        String getTypeString() const override { return "Box"; }
+    };
+
+    BaseManager<CBox> boxes;
 
     BoolParameter * keepOrganized;
     BoolParameter* cleanUp;
