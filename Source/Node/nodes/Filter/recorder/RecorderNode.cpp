@@ -11,6 +11,7 @@
 RecorderNode::RecorderNode(var params) :
 	Node(getTypeString(), FILTER, params),
 	changingProgressionFromPlay(false),
+	forcePauseReadNextFrame(false),
 	lastRecordedFrameTime(0),
 	curPlayTime(0),
 	totalTime(0),
@@ -107,20 +108,29 @@ void RecorderNode::processInternal()
 
 				float loopStart = loopRange->x * totalTime;
 				float loopEnd = loopRange->y * totalTime;
-				if(loopStart != loopEnd) progression->setValue((curPlayTime-loopStart) / (loopEnd-loopStart));
+				if (loopStart != loopEnd) progression->setValue((curPlayTime - loopStart) / (loopEnd - loopStart));
 
 				changingProgressionFromPlay = false;
 			}
 
-			if(cloud != nullptr) sendPointCloud(outCloud, cloud);
+			if (cloud != nullptr)
+			{
+				//GenericScopedLock lock(cloudLock);
+				sendPointCloud(outCloud, cloud);
+			}
 
 			lastTimeAtPlay = curTime;
 		}
 		break;
 
 	case PAUSED:
+	{
+		if (forcePauseReadNextFrame) readNextFrame();
+		forcePauseReadNextFrame = false;
+		//GenericScopedLock lock(cloudLock);
 		sendPointCloud(outCloud, cloud);
-		break;
+	}
+	break;
 	}
 }
 
@@ -156,10 +166,13 @@ bool RecorderNode::readNextFrame()
 		return readNextFrame();
 	}
 
-	if (cloud == nullptr) cloud.reset(new Cloud());
-	cloud->resize(targetFrameDataSize);
-	if(targetFrameDataSize > 0) cloudIS->read(cloud->points.data(), targetFrameDataSize * sizeof(PPoint));
 
+	{		
+		//GenericScopedLock lock(cloudLock);
+		if (cloud == nullptr) cloud.reset(new Cloud());
+		cloud->resize(targetFrameDataSize);
+		if (targetFrameDataSize > 0) cloudIS->read(cloud->points.data(), targetFrameDataSize * sizeof(PPoint));
+	}
 	return true;
 }
 
@@ -180,13 +193,15 @@ void RecorderNode::setState(RecordState s)
 				cloudOS->writeInt(numFramesWritten);
 				cloudOS->writeFloat(lastRecordedFrameTime);
 				if (cloudOS != nullptr) cloudOS->flush();
-				cloudOS.reset();
 
 				LOG("Recorded " << lastRecordedFrameTime << "s in " << numFramesWritten << " frames in file " << cloudFile.getFullPathName());
 
 				String fileName = cloudOS->getFile().getFileName();
 				updateFileList();
 				fileList->setValue(fileName);
+
+				cloudOS.reset();
+
 			}
 		}
 		else if (prevState == PLAYING)
@@ -200,14 +215,14 @@ void RecorderNode::setState(RecordState s)
 		numFramesWritten = 0;
 
 		if (!directory->getFile().exists()) directory->getFile().createDirectory();
-		if (cloudFile.exists()) 
+		if (cloudFile.exists())
 		{
-			if(!overwrite->boolValue())  cloudFile = directory->getFile().getNonexistentChildFile(cloudFile.getFileNameWithoutExtension(), ".cloud");
-		//else
-		//{
-		//	NLOGWARNING(niceName, "File already exists and overwrite disabled, not recording");
-		//	//setState(IDLE);
-		//	return;
+			if (!overwrite->boolValue())  cloudFile = directory->getFile().getNonexistentChildFile(cloudFile.getFileNameWithoutExtension(), ".cloud");
+			//else
+			//{
+			//	NLOGWARNING(niceName, "File already exists and overwrite disabled, not recording");
+			//	//setState(IDLE);
+			//	return;
 		}
 
 		cloudOS.reset(new FileOutputStream(cloudFile));
@@ -243,6 +258,21 @@ void RecorderNode::setState(RecordState s)
 			numFramesWritten = cloudIS->readInt();
 			totalTime = cloudIS->readFloat();
 			targetFrameTime = -1;
+
+			frameInfos.clear();
+			int frameIndex = 0;
+			while (frameIndex < numFramesWritten)
+			{
+				int posInFile = cloudIS->getPosition();
+				FrameInfo f = { cloudIS->readFloat(), posInFile, cloudIS->readInt() };
+				frameInfos.add(f);
+				cloudIS->setPosition(cloudIS->getPosition() + f.numPoints * sizeof(PPoint));
+				frameIndex++;
+			}
+
+			cloudIS->setPosition(8);
+
+
 			LOG("Loading file : " << totalTime << "s, " << numFramesWritten << " frames from " << cloudFile.getFullPathName());
 		}
 
@@ -277,7 +307,7 @@ void RecorderNode::setupFiles()
 	String clFileName = fileName->stringValue();
 	cloudFile = dirFile.getChildFile(cFileName + ".cloud");
 	clustersFile = dirFile.getChildFile(cFileName + ".clusters");
-	
+
 }
 
 bool RecorderNode::isStartingNode()
@@ -286,6 +316,24 @@ bool RecorderNode::isStartingNode()
 	if (s == PLAYING || s == PAUSED) return true;
 
 	return false;
+}
+
+RecorderNode::FrameInfo RecorderNode::getFrameInfoForTime(float t, bool getNextFrame)
+{
+	if (frameInfos.size() == 0) return FrameInfo();
+
+	for (int i = 0; i < frameInfos.size(); i++)
+	{
+		FrameInfo f = frameInfos[i];
+		if (f.time == t) return f;
+		if (f.time > t)
+		{
+			if (getNextFrame) return f;
+			return frameInfos[i - 1];
+		}
+	}
+
+	return frameInfos[0];
 }
 
 void RecorderNode::onContainerTriggerTriggered(Trigger* t)
@@ -314,13 +362,20 @@ void RecorderNode::onContainerParameterChangedInternal(Parameter* p)
 				{
 					float loopStart = loopRange->x * totalTime;
 					float loopEnd = loopRange->y * totalTime;
-					curPlayTime = loopStart + progression->floatValue() * (loopEnd - loopStart);
-					cloudIS->setPosition(8); //reset read position
-					targetFrameTime = curPlayTime;
+					float targetPlayTime = loopStart + progression->floatValue() * (loopEnd - loopStart);
 
-					if (s == PAUSED)
+					FrameInfo closestFrame = getFrameInfoForTime(targetPlayTime);
+
+					if (closestFrame.filePosition != 0)
 					{
-						readNextFrame();
+						cloudIS->setPosition(closestFrame.filePosition); //reset read position
+						targetFrameTime = closestFrame.time;
+						curPlayTime = targetFrameTime;
+
+						if (s == PAUSED)
+						{
+							forcePauseReadNextFrame = true;
+						}
 					}
 				}
 			}

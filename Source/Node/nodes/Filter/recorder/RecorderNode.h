@@ -46,8 +46,6 @@ public:
 	Trigger* pause;
 	Trigger* stop;
 
-
-
 	BoolParameter* autoPlay;
 
 	enum RecordState { IDLE, RECORDING, PLAYING, PAUSED };
@@ -66,7 +64,19 @@ public:
 
 	CloudPtr cloud;
 
+	SpinLock cloudLock;
+
+	struct FrameInfo
+	{
+		float time = 0;
+		int filePosition = 0;
+		int numPoints = 0;
+	};
+
+	Array<FrameInfo> frameInfos;
+
 	bool changingProgressionFromPlay;
+	bool forcePauseReadNextFrame;
 	double timeAtRecord;
 	double lastRecordedFrameTime;
 	double lastTimeAtPlay;
@@ -82,7 +92,6 @@ public:
 
 	SpinLock stateLock;
 
-
 	void processInternal() override;
 	bool readNextFrame();
 
@@ -93,6 +102,7 @@ public:
 
 	bool isStartingNode() override;
 
+	FrameInfo getFrameInfoForTime(float t, bool getNextFrame = false);
 
 	void onContainerTriggerTriggered(Trigger* t) override;
 	void onContainerParameterChangedInternal(Parameter* p) override;
