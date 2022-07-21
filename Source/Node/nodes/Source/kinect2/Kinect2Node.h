@@ -11,10 +11,10 @@
 #pragma once
 
 #ifndef USE_KINECT
-#if JUCE_WINDOWS || JUCE_LINUX
+#if JUCE_WINDOWS
 #define USE_KINECT 1
 #if JUCE_LINUX
-#define USE_FREENECT 1
+#define USE_FREENECT 0
 #endif //LINUX
 #endif //WINLINUX
 #endif //Ndef kinect
