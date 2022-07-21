@@ -14,7 +14,7 @@ EuclideanClusterNode::EuclideanClusterNode(var params) :
 	in = addSlot("In", true, POINTCLOUD);
 	out = addSlot("Out", false, CLUSTERS);
 
-	tolerance = addFloatParameter("Tolerance", "The neighbour distance to tolerate when searching neighbours for clustering. In mm", .02f, .001f);
+	tolerance = addFloatParameter("Tolerance", "The neighbour distance to tolerate when searching neighbours for clustering. In meters", .02f, .001f);
 	minSize = addIntParameter("Min Size", "The minimum amount of points that a cluster can have", 100);
 	maxSize = addIntParameter("Max Size", "The maximum amount of points that a cluster can have", 25000);
 
@@ -38,7 +38,7 @@ void EuclideanClusterNode::processInternal()
 
 	std::vector<pcl::PointIndices> clusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance(tolerance->floatValue() / 1000.0); // 2cm
+	ec.setClusterTolerance(tolerance->floatValue());
 	ec.setMinClusterSize(minSize->intValue());
 	ec.setMaxClusterSize(maxSize->intValue());
 	ec.setSearchMethod(tree);
