@@ -26,6 +26,9 @@
     <Filter Include="Pleiades\Source\Node\nodes\Output">
       <UniqueIdentifier>{1E134292-FF38-788B-4608-7504721FCADA}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pleiades\Source\Node\nodes\Filter\bodytracker">
+      <UniqueIdentifier>{B27BC5AD-A728-DB01-8FD4-CDAB96D18D53}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Pleiades\Source\Node\nodes\Filter\transform">
       <UniqueIdentifier>{D66285FC-7350-2380-28CC-EBBDE3953506}</UniqueIdentifier>
     </Filter>
@@ -348,6 +351,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\Output\augmenta\AugmentaOutputNode.cpp">
       <Filter>Pleiades\Source\Node\nodes\Output\augmenta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\Filter\bodytracker\BodyTrackerNode.cpp">
+      <Filter>Pleiades\Source\Node\nodes\Filter\bodytracker</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\Filter\transform\TransformNode.cpp">
       <Filter>Pleiades\Source\Node\nodes\Filter\transform</Filter>
@@ -1136,6 +1142,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\Output\augmenta\AugmentaOutputNode.h">
       <Filter>Pleiades\Source\Node\nodes\Output\augmenta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\Filter\bodytracker\BodyTrackerNode.h">
+      <Filter>Pleiades\Source\Node\nodes\Filter\bodytracker</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\Filter\transform\TransformNode.h">
       <Filter>Pleiades\Source\Node\nodes\Filter\transform</Filter>
