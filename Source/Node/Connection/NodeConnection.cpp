@@ -9,7 +9,7 @@
 */
 
 NodeConnection::NodeConnection(NodeManager* nodeManager, NodeConnectionSlot* source, NodeConnectionSlot* dest) :
-	BaseItem("Connection", false, false),
+	BaseItem("Connection", true, false),
 	nodeManager(nodeManager),
 	source(nullptr),
 	dest(nullptr),

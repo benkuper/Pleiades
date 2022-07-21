@@ -117,6 +117,12 @@ void NodeConnectionViewUI::buildPath()
 	}
 
 }
+void NodeConnectionViewUI::mouseDoubleClick(const MouseEvent &e)
+{
+	BaseItemMinimalUI::mouseDoubleClick(e);
+	if(item != nullptr) item->enabled->setValue(!item->enabled->boolValue());
+}
+
 bool NodeConnectionViewUI::hitTest(int x, int y)
 {
 	return hitPath.contains((float)x, (float)y);

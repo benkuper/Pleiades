@@ -32,6 +32,8 @@ public:
 
     void buildPath();
 
+    void mouseDoubleClick(const MouseEvent &e) override;
+
     bool hitTest(int x, int y) override;
 
     void setSourceConnector(NodeConnector* c);
