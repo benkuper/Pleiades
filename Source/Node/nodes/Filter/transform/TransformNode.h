@@ -24,7 +24,7 @@ public:
     
     Point3DParameter* translate;
     Point3DParameter* rotate;
-    //Point3DParameter* scale;
+    Point3DParameter* scale;
 
     void processInternal() override;
 

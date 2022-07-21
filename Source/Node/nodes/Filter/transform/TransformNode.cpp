@@ -16,6 +16,12 @@ TransformNode::TransformNode(var params) :
 
 	translate = addPoint3DParameter("Translate", "Translate the cloud");
 	rotate = addPoint3DParameter("Rotate", "Rotate the cloud");
+	scale = addPoint3DParameter("Scale", "Scale the cloud");
+	var v;
+	v.append(1);
+	v.append(1);
+	v.append(1);
+	scale->setDefaultValue(v);
 }
 
 TransformNode::~TransformNode()
@@ -35,6 +41,7 @@ void TransformNode::processInternal()
 		Eigen::Affine3f transform = Eigen::Affine3f::Identity();
 
 		Vector3D<float> trans = translate->getVector();
+		Vector3D<float> sc = scale->getVector();
 
 		Vector3D<float> rot = rotate->getVector();
 		Eigen::Quaternionf rotQuat = pleiades::euler2Quaternion(rot.z, rot.x, rot.y);
@@ -42,6 +49,8 @@ void TransformNode::processInternal()
 		
 		transform.translate(Eigen::Vector3f(trans.x, trans.y, trans.z));
 		transform.rotate(rotQuat);
+
+		transform.scale(Eigen::Vector3f(sc.x, sc.y, sc.z));
 
 		if (!inTransform->isEmpty())
 		{
