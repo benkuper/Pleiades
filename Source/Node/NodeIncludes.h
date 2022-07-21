@@ -59,6 +59,8 @@
 
 #include "nodes/Filter/transform/TransformNode.h"
 #include "nodes/Filter/merge/MergeNode.h"
+#include "nodes/Filter/bodytracker/BodyTrackerNode.h"
+
 
 
 

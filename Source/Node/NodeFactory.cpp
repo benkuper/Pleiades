@@ -33,6 +33,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<OneEuroFilterNode>("Clusters", OneEuroFilterNode::getTypeStringStatic()));
     defs.add(Definition::createDef<PredictionNode>("Clusters", PredictionNode::getTypeStringStatic()));
     defs.add(Definition::createDef<MergeClustersNode>("Clusters", MergeClustersNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<BodyTrackerNode>("Clusters", BodyTrackerNode::getTypeStringStatic()));
 
 
     defs.add(Definition::createDef<WebsocketOutputNode>("Output", WebsocketOutputNode::getTypeStringStatic()));

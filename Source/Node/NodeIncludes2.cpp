@@ -29,3 +29,6 @@
 
 #include "nodes/Filter/transform/TransformNode.cpp"
 #include "nodes/Filter/merge/MergeNode.cpp"
+
+#include "nodes/Filter/bodytracker/BodyTrackerNode.cpp"
+
