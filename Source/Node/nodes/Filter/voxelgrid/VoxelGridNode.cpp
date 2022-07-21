@@ -26,7 +26,7 @@ void VoxelGridNode::processInternal()
 {
 	CloudPtr source = slotCloudMap[in];
 	if (source->empty()) return;
-
+	
 	NNLOG("Start downsample, num input points : " << (int)source->size());
 
 	Vector3D ls = leafSize->getVector();

@@ -35,7 +35,7 @@ public:
 	BoolParameter* doStreamClouds;
 	BoolParameter* doStreamClusters;
 	BoolParameter* streamClusterPoints;
- 
+
     std::unique_ptr<SimpleWebSocketServer> server;
 
 
