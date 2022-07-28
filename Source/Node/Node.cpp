@@ -65,7 +65,7 @@ void Node::process()
 
 
 	GenericScopedLock lock(processLock);
-	long ms = Time::getMillisecondCounter();
+	uint32 ms = Time::getMillisecondCounter();
 
 	deltaTime = (ms / 1000.0) - lastProcessTime;
 
@@ -83,7 +83,7 @@ void Node::process()
 		NLOGERROR(niceName, "Exception during process :\n" << e.what());
 	}
 
-	long t = Time::getMillisecondCounter();
+	uint32 t = Time::getMillisecondCounter();
 	processTimeMS = t - ms;
 	lastProcessTime = (t / 1000.0);
 

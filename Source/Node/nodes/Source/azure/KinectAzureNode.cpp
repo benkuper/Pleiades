@@ -60,7 +60,7 @@ bool KinectAzureNode::initInternal()
 {
 #if USE_AZURE
 
-	long t = Time::getMillisecondCounter();
+	uint32 t = Time::getMillisecondCounter();
 	if (t - timeAtLastInit < 1000) return false;
 
 	timeAtLastInit = t;
