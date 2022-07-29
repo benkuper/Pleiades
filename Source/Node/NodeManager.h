@@ -19,12 +19,9 @@ public:
     NodeManager();
     ~NodeManager();
     
-    FloatParameter* cpuUsage;
-
     std::unique_ptr<NodeConnectionManager> connectionManager;
 
     void clear() override;
-
 
     virtual Array<UndoableAction*> getRemoveItemUndoableAction(Node* n) override;
     virtual Array<UndoableAction*> getRemoveItemsUndoableAction(Array<Node*> n) override;
@@ -46,6 +43,7 @@ public:
 
     Array<Node*, CriticalSection> nextToProcess;
 
+    IntParameter* fps;
     int processTimeMS;
     int averageFPS;
 

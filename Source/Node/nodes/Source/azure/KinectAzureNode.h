@@ -63,7 +63,7 @@ public:
 	Image colorImage;
 
 	bool newFrameAvailable;
-	long timeAtLastInit;
+	uint32 timeAtLastInit;
 
 	bool initInternal() override;
 

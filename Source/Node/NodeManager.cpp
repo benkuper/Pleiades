@@ -20,7 +20,6 @@ NodeManager::NodeManager() :
 	connectionManager->hideInRemoteControl = true;
 	connectionManager->defaultHideInRemoteControl = true;
 	addChildControllableContainer(connectionManager.get());
-
 }
 
 
@@ -76,6 +75,7 @@ RootNodeManager::RootNodeManager() :
 	averageFPS(0)
 {
 	Engine::mainEngine->addEngineListener(this);
+	fps = addIntParameter("FPS", "Target process rate", 30, 1, 500);
 }
 
 RootNodeManager::~RootNodeManager()
@@ -145,7 +145,8 @@ void RootNodeManager::run()
 		averageFPS = 1000 / jmax(frameDiff, 1);
 		lastFrameTime = t;
 
-		int timeToWait = 10 - processTimeMS;
+		int targetFrameMS = 1000 / fps->intValue();
+		int timeToWait = targetFrameMS - processTimeMS;
 		if (timeToWait > 0) wait(timeToWait); //to make dynamically changing with process time
 	}
 

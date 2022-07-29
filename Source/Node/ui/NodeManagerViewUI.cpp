@@ -91,7 +91,7 @@ void NodeManagerViewUI::refreshStats()
 {
 	if (RootNodeManager* n = dynamic_cast<RootNodeManager*>(manager))
 	{
-		statsLabel.setText(String(n->processTimeMS) + "ms, " + String(n->averageFPS) + ", fps", dontSendNotification);
+		statsLabel.setText("Process : " + String(n->processTimeMS) + "ms - Framerate : " + String(n->averageFPS) + " fps", dontSendNotification);
 	}
 }
 
