@@ -138,8 +138,9 @@ void RootNodeManager::run()
 			nextToProcess.clear();
 		}
 
-		long t = Time::getMillisecondCounter();
+		uint32 t = Time::getMillisecondCounter();
 		processTimeMS = t - millis;
+		maxFPS = 1000 / jmax(processTimeMS, 1);
 
 		int frameDiff = t - lastFrameTime;
 		averageFPS = 1000 / jmax(frameDiff, 1);

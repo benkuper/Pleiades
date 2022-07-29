@@ -56,7 +56,7 @@ public:
     
     Image colorImage;
 
-    long timeAtlastDeviceQuery;
+    uint32 timeAtlastDeviceQuery;
     bool newFrameAvailable;
 
     bool initInternal() override;

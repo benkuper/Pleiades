@@ -46,6 +46,7 @@ public:
     IntParameter* fps;
     int processTimeMS;
     int averageFPS;
+    int maxFPS;
 
     SpinLock itemLoopLock;
 

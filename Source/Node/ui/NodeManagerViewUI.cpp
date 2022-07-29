@@ -60,7 +60,7 @@ void NodeManagerViewUI::resized()
 void NodeManagerViewUI::resizedInternalHeader(Rectangle<int>& r)
 {
 	BaseManagerViewUI::resizedInternalHeader(r);
-	statsLabel.setBounds(r.removeFromRight(150));
+	statsLabel.setBounds(r.removeFromRight(300));
 }
 
 void NodeManagerViewUI::mouseDown(const MouseEvent& e)
@@ -91,7 +91,7 @@ void NodeManagerViewUI::refreshStats()
 {
 	if (RootNodeManager* n = dynamic_cast<RootNodeManager*>(manager))
 	{
-		statsLabel.setText("Process : " + String(n->processTimeMS) + "ms - Framerate : " + String(n->averageFPS) + " fps", dontSendNotification);
+		statsLabel.setText("Process : " + String(n->processTimeMS) + "ms - Framerate : " + String(n->averageFPS) + " fps (Max : "+String(n->maxFPS)+")", dontSendNotification);
 	}
 }
 

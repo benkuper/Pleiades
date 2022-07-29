@@ -74,7 +74,7 @@ bool Kinect2Node::initInternal()
 #if USE_KINECT
 #if USE_FREENECT
 
-	long t = Time::getMillisecondCounter();
+	uint32 t = Time::getMillisecondCounter();
 	if (t - timeAtLastInit < 1000) return false;
 	timeAtLastInit = t;
 

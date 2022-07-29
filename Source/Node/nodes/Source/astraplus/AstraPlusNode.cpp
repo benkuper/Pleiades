@@ -59,7 +59,7 @@ bool AstraPlusNode::initInternal()
 	if (!enabled->boolValue()) return false;
 
 	//do not init too much if in loop (when device is not available)
-	long t = Time::getMillisecondCounter();
+	uint32 t = Time::getMillisecondCounter();
 	if (t - timeAtlastDeviceQuery < 1000) return false;
 	timeAtlastDeviceQuery = t;
 
@@ -272,7 +272,7 @@ void AstraPlusNode::run()
 		wait(2);
 
 
-		long t = Time::getMillisecondCounter();
+		uint32 t = Time::getMillisecondCounter();
 		if (t - timeAtlastDeviceQuery > 1000)
 		{
 

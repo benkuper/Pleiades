@@ -62,7 +62,7 @@ public:
   libfreenect2::PacketPipeline *pipeline = 0;
   Vector3D<float> points[K2_DEPTH_WIDTH*K2_DEPTH_HEIGHT];
   
-  long timeAtLastInit = 0;
+  uint32 timeAtLastInit = 0;
   String serial;
 #else
 	IKinectSensor* kinect;
