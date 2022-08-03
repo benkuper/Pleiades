@@ -18,6 +18,7 @@ public:
     ~EuclideanClusterNode();
 
     NodeConnectionSlot* in;
+    NodeConnectionSlot* inHighres;
     NodeConnectionSlot* out;
 
     FloatParameter * tolerance;

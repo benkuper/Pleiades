@@ -12,6 +12,7 @@ EuclideanClusterNode::EuclideanClusterNode(var params) :
 	Node(getTypeString(), FILTER, params)
 {
 	in = addSlot("In", true, POINTCLOUD);
+	inHighres = addSlot("In High Resolution", true, POINTCLOUD);
 	out = addSlot("Out", false, CLUSTERS);
 
 	tolerance = addFloatParameter("Tolerance", "The neighbour distance to tolerate when searching neighbours for clustering. In meters", .02f, .001f);
@@ -36,10 +37,20 @@ EuclideanClusterNode::~EuclideanClusterNode()
 void EuclideanClusterNode::processInternal()
 {
 	CloudPtr source = slotCloudMap[in];
+	CloudPtr sourceHires = slotCloudMap[inHighres];
+
+	if (source->empty()) return;
+	
 	CloudPtr cloud(new Cloud());
 	pcl::copyPointCloud(*source, *cloud);
 
-	if (source->empty()) return;
+	CloudPtr hiResCloud = nullptr;
+
+	if (sourceHires != nullptr && !sourceHires->empty())
+	{
+		hiResCloud.reset(new Cloud());
+		pcl::copyPointCloud(*sourceHires, *hiResCloud);
+	}
 
 	NNLOG("Start extract, num input points : " << (int)cloud->size());
 
@@ -113,7 +124,27 @@ void EuclideanClusterNode::processInternal()
 		if (clusterSize.x < minSize->x || clusterSize.y < minSize->y || clusterSize.z < minSize->z
 			|| clusterSize.x > maxSize->x || clusterSize.y > maxSize->y || clusterSize.z > maxSize->z) continue;
 		
-		ClusterPtr pc(new Cluster(clusters.size(), c));
+
+	
+
+		CloudPtr cc = nullptr;
+
+		if (hiResCloud != nullptr)
+		{
+			cc.reset(new Cloud());
+
+			pcl::CropBox<pcl::PointXYZ> filter;
+			filter.setInputCloud(hiResCloud);
+			filter.setMin(Eigen::Vector4f(boundsMin.x, boundsMin.y, boundsMin.z, 1));
+			filter.setMax(Eigen::Vector4f(boundsMax.x, boundsMax.y, boundsMax.z, 1));
+			filter.filter(*cc);
+		}
+		else
+		{
+			cc = c;
+		}
+
+		ClusterPtr pc(new Cluster(clusters.size(), cc));
 		if (compute)
 		{
 			average /= it->indices.size();
