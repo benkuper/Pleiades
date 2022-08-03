@@ -1,3 +1,4 @@
+#include "Node.h"
 /*
   =============================================================================
 
@@ -22,6 +23,7 @@ Node::Node(StringRef name, NodeType type, var params) :
 {
 	showWarningInUI = true;
 	logEnabled = addBoolParameter("Log", "If enabled, this will show log messages for this node", false);
+	showServerControls = addBoolParameter("Show Server Controls", "Show controls in web server", true);
 }
 
 Node::~Node()
@@ -130,6 +132,11 @@ bool Node::haveAllConnectedInputsProcessed()
 	return true;
 }
 
+void Node::onContainerParameterChangedInternal(Parameter* p)
+{
+	if (p == enabled) notifyServerControlsUpdated();
+}
+
 NodeConnectionSlot* Node::addSlot(StringRef name, bool isInput, NodeConnectionType t)
 {
 	jassert(getSlotWithName(name, isInput) == nullptr);
@@ -199,7 +206,7 @@ void Node::sendPointCloud(NodeConnectionSlot* slot, CloudPtr cloud)
 
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if(!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receivePointCloud(c->dest, cloud);
 	}
@@ -210,7 +217,7 @@ void Node::sendClusters(NodeConnectionSlot* slot, Array<ClusterPtr> clusters)
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if(!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveClusters(c->dest, clusters);
 	}
@@ -221,7 +228,7 @@ void Node::sendMatrix(NodeConnectionSlot* slot, cv::Mat matrix)
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if(!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveMatrix(c->dest, matrix);
 	}
@@ -233,7 +240,7 @@ void Node::sendTransform(NodeConnectionSlot* slot, cv::Affine3f transform)
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if(!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveTransform(c->dest, transform);
 	}
@@ -244,7 +251,7 @@ void Node::sendVector(NodeConnectionSlot* slot, Eigen::Vector3f vector)
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if(!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveVector(c->dest, vector);
 	}
@@ -255,7 +262,7 @@ void Node::sendIndices(NodeConnectionSlot* slot, PIndices indices)
 	if (slot == nullptr) return;
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if(!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveIndices(c->dest, indices);
 	}
@@ -267,10 +274,28 @@ void Node::sendImage(NodeConnectionSlot* slot, Image image)
 	if (slot->isEmpty()) return;
 	for (auto& c : slot->connections)
 	{
-		if (c->dest == nullptr || c->dest->node == nullptr) continue;
+		if (!checkConnectionCanSend(c)) continue;
 		//if (!c->dest->node->enabled->boolValue()) continue;
 		c->dest->node->receiveImage(c->dest, image);
 	}
+}
+
+bool Node::checkConnectionCanSend(NodeConnection* c)
+{
+	return c->enabled->boolValue() && c->dest != nullptr && c->dest->node != nullptr;
+}
+
+var Node::getServerControls()
+{
+	var data = new DynamicObject();
+	data.getDynamicObject()->setProperty("enabled", enabled->boolValue());
+	data.getDynamicObject()->setProperty("controls", new DynamicObject());
+	return data;
+}
+
+void Node::notifyServerControlsUpdated()
+{
+	nodeListeners.call(&NodeListener::serverControlsUpdated, this);
 }
 
 void Node::addInOutSlot(NodeConnectionSlot** in, NodeConnectionSlot** out, NodeConnectionType type, StringRef inName, StringRef outName, bool passthrough)

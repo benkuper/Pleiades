@@ -15,10 +15,17 @@ EuclideanClusterNode::EuclideanClusterNode(var params) :
 	out = addSlot("Out", false, CLUSTERS);
 
 	tolerance = addFloatParameter("Tolerance", "The neighbour distance to tolerate when searching neighbours for clustering. In meters", .02f, .001f);
-	minSize = addIntParameter("Min Size", "The minimum amount of points that a cluster can have", 100);
-	maxSize = addIntParameter("Max Size", "The maximum amount of points that a cluster can have", 25000);
+	minCount = addIntParameter("Min Count", "The minimum amount of points that a cluster can have", 100);
+	maxCount = addIntParameter("Max count", "The maximum amount of points that a cluster can have", 25000);
+	minSize = addPoint3DParameter("Min Size", "The minimum size for a cluster, in meters");
+	maxSize = addPoint3DParameter("Max Size", "The maximum size for a cluster, in meters");
+	var val;
+	val.append(5);
+	val.append(5);
+	val.append(5);
+	maxSize->setDefaultValue(val);
 
-	computeBox = addBoolParameter("Compute Box", "Compte infos for each cluster", false);
+	computeBox = addBoolParameter("Compute Box", "Compte infos for each cluster", true);
 }
 
 EuclideanClusterNode::~EuclideanClusterNode()
@@ -29,21 +36,33 @@ EuclideanClusterNode::~EuclideanClusterNode()
 void EuclideanClusterNode::processInternal()
 {
 	CloudPtr source = slotCloudMap[in];
+	CloudPtr cloud(new Cloud());
+	pcl::copyPointCloud(*source, *cloud);
+
 	if (source->empty()) return;
 
-	NNLOG("Start extract, num input points : " << (int)source->size());
+	NNLOG("Start extract, num input points : " << (int)cloud->size());
 
 	pcl::search::KdTree<PPoint>::Ptr tree(new pcl::search::KdTree<PPoint>);
-	tree->setInputCloud(source);
+	tree->setInputCloud(cloud);
 
 	std::vector<pcl::PointIndices> clusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
 	ec.setClusterTolerance(tolerance->floatValue());
-	ec.setMinClusterSize(minSize->intValue());
-	ec.setMaxClusterSize(maxSize->intValue());
+	ec.setMinClusterSize(minCount->intValue());
+	ec.setMaxClusterSize(maxCount->intValue());
 	ec.setSearchMethod(tree);
-	ec.setInputCloud(source);
-	ec.extract(clusterIndices);
+	ec.setInputCloud(cloud);
+
+	try
+	{
+		ec.extract(clusterIndices);
+	}
+	catch (...)
+	{
+		NLOGERROR(niceName, "Error trying to extract clusters");
+		return;
+	}
 
 	NNLOG("Extracted, num clusters : " << (int)clusterIndices.size());
 
@@ -63,7 +82,7 @@ void EuclideanClusterNode::processInternal()
 		for (const auto& idx : it->indices)
 		{
 
-			PPoint p = (*source)[idx];
+			PPoint p = (*cloud)[idx];
 
 			if (compute)
 			{
@@ -85,13 +104,22 @@ void EuclideanClusterNode::processInternal()
 		c->height = 1;
 		c->is_dense = true;
 
-		ClusterPtr pc(new Cluster(clusters.size(), c));
 
+		Vector3D<float> boundsMin = Vector3D<float>(minP.x, minP.y, minP.z);;
+		Vector3D<float> boundsMax = Vector3D<float>(maxP.x, maxP.y, maxP.z);;
+
+		Vector3D<float> clusterSize = boundsMax - boundsMin;
+
+		if (clusterSize.x < minSize->x || clusterSize.y < minSize->y || clusterSize.z < minSize->z
+			|| clusterSize.x > maxSize->x || clusterSize.y > maxSize->y || clusterSize.z > maxSize->z) continue;
+		
+		ClusterPtr pc(new Cluster(clusters.size(), c));
 		if (compute)
 		{
 			average /= it->indices.size();
-			pc->boundingBoxMin = Vector3D<float>(minP.x, minP.y, minP.z);
-			pc->boundingBoxMax = Vector3D<float>(maxP.x, maxP.y, maxP.z);
+			pc->boundingBoxMin = boundsMin;
+			pc->boundingBoxMax = boundsMax;
+
 			pc->centroid = Vector3D<float>(average.x, average.y, average.z);;
 		}
 

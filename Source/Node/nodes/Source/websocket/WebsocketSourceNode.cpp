@@ -18,6 +18,7 @@ WebsocketSourceNode::WebsocketSourceNode(var params) :
 	serverPort = addIntParameter("Server port", "Port of the websocket server", 6060);
 	autoClearTime = addFloatParameter("Auto-clear time", "Time to keep a cloud or cluster that has not been updated for a while", 1);
 
+	processOnlyWhenAllConnectedNodesHaveProcessed = true;
 
 	if (!Engine::mainEngine->isLoadingFile) setupClient();
 }
@@ -73,7 +74,11 @@ void WebsocketSourceNode::processInternal()
 	while (clit.next())
 	{
 		cList.add(clit.getValue());
-		if (clit.getValue()->state == Cluster::WILL_LEAVE || curTime - clit.getValue()->lastUpdateTime > 1) clustersToRemove.add(clit.getKey());
+		if (clit.getValue()->state == Cluster::WILL_LEAVE || curTime - clit.getValue()->lastUpdateTime > 1)
+		{
+			clit.getValue()->state = Cluster::WILL_LEAVE;
+			clustersToRemove.add(clit.getKey());
+		}
 	}
 	sendClusters(outClusters, cList);
 
@@ -125,10 +130,14 @@ void WebsocketSourceNode::dataReceived(const MemoryBlock& data)
 		idTimeMap.set(id, curTime);
 
 		int numPoints = is.getNumBytesRemaining() / 12;
+
 		cloud->resize(numPoints);
 		for (int i = 0; i < numPoints; i++)
 		{
-			cloud->at(i) = PPoint(is.readFloat(), is.readFloat(), is.readFloat());
+			float tx = is.readFloat();
+			float ty = is.readFloat();
+			float tz = is.readFloat();
+			cloud->at(i) = PPoint(tx,ty,tz);
 		}
 		NNLOG("Received cloud " << id << ", num points : " << (int)cloud->size());
 	}

@@ -20,6 +20,12 @@ WebsocketOutputNode::WebsocketOutputNode(var params) :
 	doStreamClusters = addBoolParameter("Stream Clusters", "Stream Clusters", true);
 	streamClusterPoints = addBoolParameter("Stream Cluster Points", "Stream cloud inside clusters", true);
 
+	sendControls = addBoolParameter("Send Controls", "If checked, this will send controls for all nodes", true);
+
+	//invertX = addBoolParameter("Invert X", "If checked, this will invert this coordinate", false);
+	//invertY = addBoolParameter("Invert Y", "If checked, this will invert this coordinate", false);
+	//invertZ = addBoolParameter("Invert Z", "If checked, this will invert this coordinate", false);
+
 	processOnlyOnce = false;
 
 	if (!Engine::mainEngine->isLoadingFile) initServer();
@@ -36,6 +42,7 @@ void WebsocketOutputNode::initServer()
 	if (server != nullptr && server->isConnected)
 	{
 		NNLOG("Stopping Server");
+		server->removeWebSocketListener(this);
 		server->stop();
 	}
 
@@ -44,6 +51,7 @@ void WebsocketOutputNode::initServer()
 	if (!enabled->boolValue() || isCurrentlyLoadingData) return;
 
 	server.reset(new SimpleWebSocketServer());
+	server->addWebSocketListener(this);
 
 	server->rootPath = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(ProjectInfo::projectName + String("/server"));
 	server->start(port->intValue());
@@ -156,6 +164,21 @@ void WebsocketOutputNode::streamCluster(ClusterPtr cluster)
 		}
 	}
 	server->send((char*)os.getData(), os.getDataSize());
+}
+
+void WebsocketOutputNode::sendServerControls(var data)
+{
+	if (!sendControls->boolValue() || data.isVoid()) return;
+
+	var d = new DynamicObject();
+	d.getDynamicObject()->setProperty("type", "controls");
+	d.getDynamicObject()->setProperty("data", data);
+	server->send(JSON::toString(d, true));
+}
+
+void WebsocketOutputNode::connectionOpened(const String& id)
+{
+	sendServerControls(RootNodeManager::getInstance()->getServerControls());
 }
 
 void WebsocketOutputNode::onContainerParameterChangedInternal(Parameter* p)

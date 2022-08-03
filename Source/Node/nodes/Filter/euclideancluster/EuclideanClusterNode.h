@@ -21,8 +21,10 @@ public:
     NodeConnectionSlot* out;
 
     FloatParameter * tolerance;
-    IntParameter* minSize;
-    IntParameter * maxSize;
+    IntParameter* minCount;
+    IntParameter * maxCount;
+    Point3DParameter* minSize;
+    Point3DParameter* maxSize;
     BoolParameter* computeBox;
 
     void processInternal() override;

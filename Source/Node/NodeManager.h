@@ -13,7 +13,8 @@
 class NodeConnectionManager;
 
 class NodeManager :
-    public BaseManager<Node>
+    public BaseManager<Node>,
+    public Node::NodeListener
 {
 public:
     NodeManager();
@@ -25,6 +26,13 @@ public:
 
     virtual Array<UndoableAction*> getRemoveItemUndoableAction(Node* n) override;
     virtual Array<UndoableAction*> getRemoveItemsUndoableAction(Array<Node*> n) override;
+
+    virtual void addItemInternal(Node* item, var data) override;
+    virtual void removeItemInternal(Node* item) override;
+
+    var getServerControls();
+
+    void serverControlsUpdated(Node* n) override;
 
     var getJSONData() override;
     void loadJSONDataManagerInternal(var data) override;
@@ -58,6 +66,7 @@ public:
     void removeItemInternal(Node* item) override;
 
     void startLoadFile() override;
+
 
     void afterLoadJSONDataInternal() override;
 };

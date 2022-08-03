@@ -32,6 +32,7 @@ public:
 	virtual ~Node();
 
 	BoolParameter* logEnabled;
+	BoolParameter* showServerControls;
 
 	bool isInit = false;
 
@@ -62,6 +63,7 @@ public:
 	double deltaTime;
 	int processTimeMS;
 
+
 	//ui image safety
 	SpinLock imageLock;
 
@@ -83,6 +85,8 @@ public:
 	virtual bool isStartingNode();
 	
 	virtual bool haveAllConnectedInputsProcessed();
+
+	virtual void onContainerParameterChangedInternal(Parameter* p) override;
 
 	//Slots
 	NodeConnectionSlot* addSlot(StringRef name, bool isInput, NodeConnectionType t);
@@ -107,6 +111,12 @@ public:
 	void sendIndices(NodeConnectionSlot* slot, PIndices indices);
 	void sendImage(NodeConnectionSlot* slot, Image indices);
 
+	bool checkConnectionCanSend(NodeConnection* c);
+
+	//Server
+	virtual var getServerControls();
+	void notifyServerControlsUpdated();
+
 	//Helpers
 	void addInOutSlot(NodeConnectionSlot** in, NodeConnectionSlot** out, NodeConnectionType type, StringRef inName = "In", StringRef outName = "out", bool passthrough = true);
 
@@ -115,6 +125,18 @@ public:
 	void checkAddNextToProcessForSlot(NodeConnectionSlot* s);
 	void addNextToProcess();
 	void removeNextToProcess();
+
+	class  NodeListener
+	{
+	public:
+		/** Destructor. */
+		virtual ~NodeListener() {}
+		virtual void serverControlsUpdated(Node*) {}
+	};
+
+	ListenerList<NodeListener> nodeListeners;
+	void addNodeListener(NodeListener* newListener) { nodeListeners.add(newListener); }
+	void removeNodeListener(NodeListener* listener) { nodeListeners.remove(listener); }
 
 	DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, VIEW_FILTER_UPDATED))
 	virtual BaseNodeViewUI* createViewUI();

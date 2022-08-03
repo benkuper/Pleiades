@@ -751,6 +751,9 @@
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardCommentItem.cpp">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardFeedbackBroadcaster.cpp">
+      <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardGroupItem.cpp">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClCompile>
@@ -1546,6 +1549,9 @@
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardCommentItem.h">
+      <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardFeedbackBroadcaster.h">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardGroupItem.h">

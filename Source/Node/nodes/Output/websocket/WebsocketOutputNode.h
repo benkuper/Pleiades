@@ -10,8 +10,10 @@
 
 #pragma once
 
+
 class WebsocketOutputNode :
-    public Node
+    public Node,
+    public SimpleWebSocketServer::Listener
 {
 public:
     WebsocketOutputNode(var params = var());
@@ -26,6 +28,11 @@ public:
         DebugPlaneType = 5
     };
 
+    enum ControlType {
+        Transform = 0,
+        BoundingBox = 1
+    };
+
     Array<NodeConnectionSlot*> inClouds;
     Array<NodeConnectionSlot*> inClusters;
 
@@ -34,7 +41,12 @@ public:
 	
 	BoolParameter* doStreamClouds;
 	BoolParameter* doStreamClusters;
-	BoolParameter* streamClusterPoints;
+    BoolParameter* streamClusterPoints;
+    BoolParameter* sendControls;
+
+    //BoolParameter* invertX;
+    //BoolParameter* invertY;
+    //BoolParameter* invertZ;
 
     std::unique_ptr<SimpleWebSocketServer> server;
 
@@ -46,6 +58,10 @@ public:
     void streamCloud(CloudPtr cloud, int id);
     void streamClusters(Array<ClusterPtr> clusters);
     void streamCluster(ClusterPtr cluster);
+
+    void sendServerControls(var data = var());
+
+    void connectionOpened(const String& id) override;
 
     void onContainerParameterChangedInternal(Parameter* p) override;
 

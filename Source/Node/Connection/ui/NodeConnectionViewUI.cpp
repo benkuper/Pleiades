@@ -45,7 +45,7 @@ NodeConnectionViewUI::~NodeConnectionViewUI()
 void NodeConnectionViewUI::paint(Graphics& g)
 {
 	Colour c = NORMAL_COLOR;
-	if (item != nullptr)
+	if (item != nullptr && item->enabled->boolValue())
 	{
 		c = NodeConnection::getColorForType(item->connectionType);
 		if (item->isSelected) c = HIGHLIGHT_COLOR;

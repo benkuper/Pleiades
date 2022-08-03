@@ -57,6 +57,9 @@ MergeClustersNode::MergeClustersNode(var params) :
 	detachDistance = addFloatParameter("Detach Distance", "Distance at which 2 merged clusters will split", .7f, 0);
 	mergeOnEnterOnly = addBoolParameter("Merge On Enter Only", "If checked, this will only check for merge on enter. If no candidate, then it will never merge after", false);
 
+	autoClearTime = addFloatParameter("Auto Clear Time", "If some residual nodes are there and have not been marked as will leave, auto clear them if they have not have been update for some time. in seconds", .5f);
+	autoClearTime->canBeDisabledByUser = true;
+
 	resetClusters = addTrigger("Reset", "Reset clusters and ids");
 
 	processOnlyOnce = false;
@@ -95,8 +98,11 @@ void MergeClustersNode::processInternal()
 			if (mergedSource == nullptr)
 			{
 				//create a new one
-				MergedCluster* mCluster = new MergedCluster(mergeIDIncrement++, newSource);
+
+				MergedCluster* mCluster = new MergedCluster(mergeIDIncrement++, newSource, autoClearTime->enabled ? autoClearTime->floatValue() * 1000 : 0);
 				mergedClusters.add(mCluster);
+
+				NNLOG("Add cluster " << mCluster->id);
 				//DBG("Create new Merged, new size : " << mergedClusters.size());
 			}
 			else
@@ -169,21 +175,31 @@ void MergeClustersNode::processInternal()
 		//DBG("Merge " << it.getKey()->id << " with " << it.getValue()->id);
 		HashMap<int, SourceClusterPtr>::Iterator mit(it.getValue()->sourceClusters);
 		while (mit.next()) it.getKey()->addSource(mit.getValue());
+
 		it.getValue()->state = Cluster::WILL_LEAVE;
+
 		clustersToRemove.add(it.getValue());
 	}
 
-	for (auto& c : mergedClusters) if (c->state != Cluster::WILL_LEAVE) c->update();
+	for (auto& c : mergedClusters)
+	{
+		if (c->state != Cluster::WILL_LEAVE) c->update();
+		if (c->state == Cluster::WILL_LEAVE) clustersToRemove.addIfNotAlreadyThere(c);
+	}
 
 	//sending
 	outClusters.clear();
 	for (auto& c : mergedClusters) outClusters.add(ClusterPtr(new Cluster(*c))); //Copy to new ClusterPtr for sending through connection
 
-	NNLOG("Sending " << outClusters.size() << " merged clusters");
+	//NNLOG("Sending " << outClusters.size() << " merged clusters");
 	sendClusters(out, outClusters);
 
 	//clearing will_leave
-	for (auto& c : clustersToRemove) mergedClusters.removeObject(c);
+	for (auto& c : clustersToRemove)
+	{
+		NNLOG("Remove cluster " << c->id);
+		mergedClusters.removeObject(c);
+	}
 
 	//clear slots
 	clearSlotMaps();
@@ -196,8 +212,9 @@ MergeClustersNode::SourceClusterPtr MergeClustersNode::getMergedSourceClusterFor
 	return nullptr;
 }
 
-MergeClustersNode::MergedCluster::MergedCluster(int id, MergeClustersNode::SourceClusterPtr firstSource) :
-	Cluster(id, CloudPtr(new Cloud()))
+MergeClustersNode::MergedCluster::MergedCluster(int id, MergeClustersNode::SourceClusterPtr firstSource, uint32 autoClearTime) :
+	Cluster(id, CloudPtr(new Cloud())),
+	autoClearTime(autoClearTime)
 {
 	addSource(firstSource);
 	state = ENTERED; //force here because addSource will make an update that will remove the entered state
@@ -218,6 +235,7 @@ void MergeClustersNode::MergedCluster::addSource(SourceClusterPtr newSource)
 	else
 	{
 		newSource->parent = this;
+		newSource->timeAtLastUpdate = Time::getMillisecondCounter();
 		sourceClusters.set(newSource->sourceID, newSource);
 	}
 
@@ -229,6 +247,7 @@ void MergeClustersNode::MergedCluster::updateSource(SourceClusterPtr newSource)
 	if (SourceClusterPtr source = getSourceForCluster(newSource))
 	{
 		newSource->parent = this;
+		newSource->timeAtLastUpdate = Time::getMillisecondCounter();
 		sourceClusters.set(source->sourceID, newSource);
 		source.swap(newSource);
 	}
@@ -242,11 +261,16 @@ void MergeClustersNode::MergedCluster::removeSource(SourceClusterPtr newSource)
 		source->parent = nullptr;
 		sourceClusters.remove(source->sourceID);
 	}
+	if (sourceClusters.size() == 0) state = WILL_LEAVE;
 }
 
 void MergeClustersNode::MergedCluster::update()
 {
-	if (sourceClusters.size() == 0) return;
+	if (sourceClusters.size() == 0)
+	{
+		state = WILL_LEAVE;
+		return;
+	}
 
 	CloudPtr newCloud(new Cloud());
 	ClusterPtr newCluster(new Cluster(id, newCloud));
@@ -255,22 +279,58 @@ void MergeClustersNode::MergedCluster::update()
 	newCluster->boundingBoxMin = Vector3D<float>(INT32_MAX, INT32_MAX, INT32_MAX);
 	newCluster->boundingBoxMax = Vector3D<float>(INT32_MIN, INT32_MIN, INT32_MIN);
 
+
+	Array<SourceClusterPtr> sourcesToRemove;
+
+	uint32 t = Time::getMillisecondCounter();
+
+	int processedClusters = 0;
 	HashMap<int, SourceClusterPtr>::Iterator it(sourceClusters);
+
+	bool allStateEntered = true;
+	bool allStateGhost = true;
+	bool allStateWillLeave = true;
+
 	while (it.next())
 	{
 		SourceClusterPtr source = it.getValue();
+
+		if (autoClearTime > 0 && t > source->timeAtLastUpdate + autoClearTime)
+		{
+			sourcesToRemove.add(source);
+			continue;
+		}
+
 		*newCloud += *source->cluster->cloud;
 
 		newCluster->boundingBoxMin = Vector3D<float>(jmin(newCluster->boundingBoxMin.x, source->cluster->boundingBoxMin.x), jmin(newCluster->boundingBoxMin.y, source->cluster->boundingBoxMin.y), jmin(newCluster->boundingBoxMin.z, source->cluster->boundingBoxMin.z));
+
 		newCluster->boundingBoxMax = Vector3D<float>(jmax(newCluster->boundingBoxMax.x, source->cluster->boundingBoxMax.x), jmax(newCluster->boundingBoxMax.y, source->cluster->boundingBoxMax.y), jmax(newCluster->boundingBoxMax.z, source->cluster->boundingBoxMax.z));
+
 		newCluster->centroid += source->cluster->centroid;
 		newCluster->velocity += source->cluster->velocity;
+
+		if (source->cluster->state != ENTERED) allStateEntered = false;
+		if (source->cluster->state != GHOST) allStateGhost = false;
+		if (source->cluster->state != WILL_LEAVE) allStateWillLeave = false;
+
+		processedClusters++;
 	}
 
-	newCluster->centroid /= sourceClusters.size();
-	newCluster->velocity /= sourceClusters.size();
+	for (auto& s : sourcesToRemove) removeSource(s);
+
+	if (sourceClusters.size() > 0)
+	{
+		newCluster->centroid /= sourceClusters.size();
+		newCluster->velocity /= sourceClusters.size();
+	}
 
 	Cluster::update(newCluster);
+
+	if (sourceClusters.size() == 0) state = WILL_LEAVE;
+	else if (allStateEntered) state = ENTERED;
+	else if (allStateGhost) state = GHOST;
+	else if (allStateWillLeave) state = WILL_LEAVE;
 }
 
 MergeClustersNode::SourceClusterPtr MergeClustersNode::MergedCluster::getSourceForCluster(SourceClusterPtr newSource)

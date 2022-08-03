@@ -1,3 +1,4 @@
+#include "CropboxNode.h"
 /*
   ==============================================================================
 
@@ -117,10 +118,38 @@ void CropBoxNode::onContainerTriggerTriggered(Trigger* t)
 	Node::onContainerTriggerTriggered(t);
 }
 
+void CropBoxNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+	Node::onControllableFeedbackUpdateInternal(cc, c);
+	if (cc == &boxes) notifyServerControlsUpdated();
+}
+
+var CropBoxNode::getServerControls()
+{
+	var data = Node::getServerControls();
+	
+	var cData = data.getDynamicObject()->getProperty("controls").getDynamicObject();
+
+	for (auto& b : boxes.items)
+	{
+		if (b->enabled->boolValue())
+		{
+			var bData = new DynamicObject();
+			bData.getDynamicObject()->setProperty("type", WebsocketOutputNode::ControlType::BoundingBox);
+			bData.getDynamicObject()->setProperty("color", b->itemColor->value);
+			bData.getDynamicObject()->setProperty("min", b->minPoint->value);
+			bData.getDynamicObject()->setProperty("max", b->maxPoint->value);
+			cData.getDynamicObject()->setProperty(b->shortName, bData);
+		}
+	}
+	return data;
+}
+
 CropBoxNode::CBox::CBox() :
 	BaseItem(getTypeString())
 {
 	showInspectorOnSelect = false;
+	setHasCustomColor(true);
 
 	cropMode = addEnumParameter("Crop Mode", "Mode to use for this box.");
 	cropMode->addOption("Add", ADD)->addOption("Subtract", SUBTRACT)->addOption("Intersect", INTERSECT);

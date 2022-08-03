@@ -1,4 +1,3 @@
-
 /*
   =============================================================================
 
@@ -34,6 +33,17 @@ void NodeManager::clear()
 	BaseManager::clear();
 }
 
+
+void NodeManager::addItemInternal(Node* item, var data)
+{
+	item->addNodeListener(this);
+}
+
+void NodeManager::removeItemInternal(Node* item)
+{
+	item->removeNodeListener(this);
+}
+
 Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
 {
 	Array<UndoableAction*> result;
@@ -52,6 +62,31 @@ Array<UndoableAction*> NodeManager::getRemoveItemsUndoableAction(Array<Node*> it
 	return result;
 }
 
+var NodeManager::getServerControls()
+{
+	var data = new DynamicObject();
+	for (auto& i : items)
+	{
+		if (!i->showServerControls->boolValue()) continue;
+		data.getDynamicObject()->setProperty(i->shortName, i->getServerControls());
+	}
+	return data;
+}
+
+void NodeManager::serverControlsUpdated(Node* n)
+{
+	if (!n->showServerControls->boolValue()) return;
+	for (auto& i : items)
+	{
+		if (WebsocketOutputNode* wn = dynamic_cast<WebsocketOutputNode*>(i))
+		{
+			var d = new DynamicObject();
+			d.getDynamicObject()->setProperty(n->shortName, n->getServerControls());
+			wn->sendServerControls(d);
+		}
+	}
+}
+
 var NodeManager::getJSONData()
 {
 	var data = BaseManager::getJSONData();
@@ -67,7 +102,6 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 
 
 //ROOT
-
 RootNodeManager::RootNodeManager() :
 	NodeManager(),
 	Thread("Nodes"),

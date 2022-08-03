@@ -40,6 +40,7 @@ public:
 	FloatParameter* detachDistance;
 	BoolParameter* mergeOnEnterOnly;
 
+	FloatParameter* autoClearTime;
 	Trigger* resetClusters;
 
 	int mergeIDIncrement;
@@ -51,6 +52,7 @@ public:
 		int sourceID;
 		ClusterPtr cluster;
 		MergedCluster* parent = nullptr;
+		uint32 timeAtLastUpdate = 0; //auto clear
 
 		bool isSameAs(std::shared_ptr<SourceCluster> other) { return other != nullptr && sourceID == other->sourceID && cluster->id == other->cluster->id; }
 	};
@@ -61,10 +63,11 @@ public:
 		public Cluster
 	{
 	public:
-		MergedCluster(int id, SourceClusterPtr firstSource);
+		MergedCluster(int id, SourceClusterPtr firstSource, uint32 autoClearTime);
 		~MergedCluster();
 
 		HashMap<int, SourceClusterPtr> sourceClusters;
+		uint32 autoClearTime = 0;
 
 		virtual void addSource(SourceClusterPtr newSource);
 		virtual void updateSource(SourceClusterPtr newSource);
